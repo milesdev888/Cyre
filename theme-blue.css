@@ -1,0 +1,15 @@
+/* CYRE electric-blue theme override — matches C7 token + new Guardian.
+   Delete this file (and its <link>) to revert to gold. */
+
+:root{
+  --gold:#d8bc66;
+}
+
+/* The three rules in index.html with hardcoded gold rgba values */
+.r1{border-color:rgba(216,188,102,.22)}
+.card:hover{border-color:rgba(216,188,102,.4)}
+.card .try:hover{border-color:rgba(216,188,102,.5)}
+
+/* New Guardian portrait — overrides the base64 avatar without touching index.html */
+.portrait img{content:url('/guardian2.jpg');object-position:50% 50%}
+.g-av img{content:url('/guardian2.jpg')}

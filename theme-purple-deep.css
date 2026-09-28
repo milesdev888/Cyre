@@ -1,0 +1,130 @@
+/* theme-purple-deep.css — forest mood (filename kept for existing cache links) */
+@import url("/theme-guardian.css?v=cy2");
+
+:root {
+  --ai-ink: #0E1622 !important;
+  --ai-ink-2: #0A111B !important;
+  --ai-panel: rgba(18,28,43, 0.88) !important;
+  --ai-panel-2: rgba(18,28,43, 0.94) !important;
+  --ai-line: rgba(143,176,222, 0.22) !important;
+  --ai-violet: #A9C4E8 !important;
+  --ai-cyan: #8FB0DE !important;
+  --ai-glow: 0 0 28px rgba(143,176,222, 0.18), 0 0 48px rgba(143,176,222, 0.08) !important;
+  --ai-glow-sm: 0 0 14px rgba(143,176,222, 0.16) !important;
+
+  --bg: #0E1622;
+  --bg2: #121C2B;
+  --panel: rgba(18,28,43, 0.86);
+  --panel-strong: rgba(18,28,43, 0.94);
+  --line: rgba(36,50,70, 0.95);
+  --text: #ECE8DF;
+  --muted: #9AA5B4;
+  --violet: #A9C4E8;
+  --cyan: #8FB0DE;
+  --teal: #6F93C8;
+  --green: #5fbf7a;
+  --cb-blue: #8FB0DE;
+}
+
+body {
+  color: var(--text) !important;
+  background: #0E1622 !important;
+}
+body::before,
+body::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+}
+
+.bg-grid::before {
+  background: radial-gradient(circle, rgba(143,176,222, 0.14), transparent 68%);
+}
+.bg-grid::after {
+  background: radial-gradient(circle, rgba(95, 191, 122, 0.08), transparent 70%);
+}
+
+.glow {
+  display: none !important;
+}
+
+.head-wrap {
+  border-color: rgba(143,176,222, 0.28);
+  box-shadow: none !important;
+  background: rgba(14,22,34, 0.55) !important;
+  filter: none !important;
+}
+.head-wrap.portrait {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 50% !important;
+}
+
+.orbit-ring.r1 {
+  inset: auto !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 84% !important;
+  height: 84% !important;
+  border-radius: 50% !important;
+  border-color: rgba(143,176,222, 0.85) !important;
+  box-shadow:
+    0 0 14px rgba(143,176,222, 0.45),
+    0 0 34px rgba(143,176,222, 0.22),
+    inset 0 0 16px rgba(169,196,232, 0.2) !important;
+  filter: none !important;
+}
+.orbit-ring.r2,
+.orbit-ring.r3 {
+  display: none !important;
+}
+
+.brand-orb,
+.pill .brand-orb {
+  border-color: rgba(143,176,222, 0.45) !important;
+  box-shadow: 0 0 16px rgba(143,176,222, 0.35) !important;
+}
+
+.req,
+.b-main,
+.btn.b-main,
+.nav-app {
+  background: #8FB0DE !important;
+  color: #0E1622 !important;
+  box-shadow: none !important;
+}
+.req:hover,
+.b-main:hover {
+  background: #A9C4E8 !important;
+}
+
+.nav a:hover,
+.nav-monitor:hover,
+.nav-am:hover {
+  color: #ECE8DF !important;
+}
+
+.status-chip.live,
+.chip.live {
+  border-color: rgba(95, 191, 122, 0.4) !important;
+}
+
+/* cortex-mesh1 — flat forest; no purple wash / no mesh chrome */
+body{
+  background:#0E1622 !important;
+  background-image:none !important;
+}
+body::before,
+body::after{
+  display:none !important;
+  content:none !important;
+  background:none !important;
+}
+.hero::before,
+.hero::after{
+  display:none !important;
+  content:none !important;
+  background:none !important;
+}
+#cy-ai-mesh{display:none !important}

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+
+<meta charset="UTF-8">
+<script src="/app-redirect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Address Check — Cyre</title>
+<meta name="description" content="Paste any address — Solana, Ethereum, Base, Arbitrum, Robinhood Chain. Cyre reads on-chain patterns with plain-English reasons. Facts, not verdicts. Free, no signup.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1622; --panel:#121C2B; --panel2:#0A111B; --line:#243246;
+  --gold:#8FB0DE; --gold-bright:#A9C4E8;
+  --low:#5FBF7A; --med:#E0B35A; --high:#D96A5E;
+  --text:#ECE8DF; --dim:#9AA5B4;
+  --display:'Cormorant Garamond',Georgia,serif; --body:Inter,system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:
+    radial-gradient(ellipse 70% 40% at 85% -5%,rgba(143,176,222,.08),transparent 55%),
+    radial-gradient(ellipse 50% 35% at 10% 20%,rgba(95,191,122,.04),transparent 50%),
+    var(--ink);
+  color:var(--text);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{width:min(680px,92vw);margin:0 auto}
+
+.head{border-bottom:1px solid var(--line)}
+.head-in{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.brand{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:1.35rem;letter-spacing:.01em}
+.brand .wm{
+  background:linear-gradient(180deg,#CFE0F5 0%,#8FB0DE 45%,#4A6FA5 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.back{font-size:13px;color:var(--dim)}
+.back:hover{color:var(--text)}
+
+.hero{padding:44px 0 28px}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,6vw,38px);line-height:1.12;letter-spacing:-.01em}
+.lede{color:var(--dim);font-size:15px;margin-top:14px;max-width:54ch}
+
+.form{display:flex;gap:10px;margin:28px 0 8px;flex-wrap:wrap}
+.form input{flex:1 1 260px;background:var(--panel2);border:1px solid rgba(143,176,222,.28);border-radius:12px;color:var(--text);font-family:var(--mono);font-size:14px;padding:14px 16px}
+.form input:focus{outline:none;border-color:var(--gold)}
+.form button{background:var(--gold);color:var(--ink);border:none;border-radius:12px;padding:14px 26px;font-family:var(--display);font-weight:600;font-size:15px;cursor:pointer}
+.form button:hover{background:var(--gold-bright)}
+.form button:disabled{opacity:.5;cursor:default}
+.hint{font-size:12px;color:var(--dim)}
+.hint b{color:var(--text);font-weight:500;cursor:pointer;border-bottom:1px dotted var(--line)}
+.hint a{color:var(--gold);border-bottom:1px solid rgba(143,176,222,.35)}
+
+.err{margin-top:16px;font-size:13.5px;color:var(--high);background:rgba(217,106,94,.07);border:1px solid rgba(217,106,94,.25);border-radius:11px;padding:12px 14px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:26px}
+.verdict{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.score{font-family:var(--display);font-weight:700;font-size:52px;line-height:1;letter-spacing:-.03em}
+.band{font-family:var(--mono);font-size:11px;letter-spacing:.14em;border:1px solid;border-radius:999px;padding:5px 13px}
+.addr{font-family:var(--mono);font-size:11.5px;color:var(--dim);word-break:break-all;margin-top:4px}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:18px;padding:20px 0;border-bottom:1px solid var(--line)}
+.fact span{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.fact b{display:block;font-family:var(--display);font-size:21px;font-weight:700;margin-top:5px}
+
+.sig{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(36,50,70,.55)}
+.sig:last-of-type{border-bottom:none}
+.mark{width:16px;flex:none;text-align:center;font-size:13px;padding-top:2px}
+.sig-b{flex:1;min-width:0}
+.sig-b b{display:block;font-size:14px;font-weight:500}
+.sig-b span{display:block;font-size:12.5px;color:var(--dim);margin-top:3px}
+.pts{font-family:var(--mono);font-size:12.5px;flex:none;padding-top:2px}
+
+.note{font-size:11.5px;color:var(--dim);line-height:1.65;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.foot{padding:34px 0 48px;font-size:12px;color:var(--dim)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* cortex-mesh1 — flat panel chrome; constellation is Cortex-only */
+html,body{background:var(--ink,#0E1622)!important}
+.hero{position:relative;background:transparent;z-index:1}
+.hero::before,.hero::after{content:none!important;display:none!important}
+#cy-ai-mesh{display:none!important}
+</style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<header class="head">
+  <div class="wrap head-in">
+    <a class="brand" href="/" aria-label="Cyre home">
+      <svg width="28" height="28" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="21.5" stroke="#8FB0DE" stroke-width="1.6"/>
+        <path d="M24 10c4.6 2.6 8.4 3.4 11 3.6v10.2c0 7.4-4.6 11.9-11 14.6-6.4-2.7-11-7.2-11-14.6V13.6c2.6-.2 6.4-1 11-3.6z" stroke="#8FB0DE" stroke-width="1.6" fill="none"/>
+        <path d="M15.5 24.5c2.6-3.4 5.4-5.1 8.5-5.1s5.9 1.7 8.5 5.1c-2.6 3.4-5.4 5.1-8.5 5.1s-5.9-1.7-8.5-5.1z" stroke="#ECE8DF" stroke-width="1.4" fill="none"/>
+        <circle cx="24" cy="24.5" r="2.4" fill="#8FB0DE"/>
+      </svg>
+      <span class="wm">Cyre</span>
+    </a>
+    <a class="back" href="/">← cyre.dev</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Free address check</div>
+    <h1>Paste any address. Read the patterns.</h1>
+    <p class="lede">Solana, Ethereum, Base, Arbitrum, Robinhood Chain — Cyre shows on-chain age, activity bursts, and failure rates with a plain-English reason for each. Facts, not verdicts. Free, no signup.</p>
+
+    <div class="form">
+      <label class="sr" for="a" style="position:absolute;width:1px;height:1px;overflow:hidden">Address</label>
+      <input id="a" type="text" placeholder="Paste any address — Solana or 0x…" autocomplete="off" spellcheck="false">
+      <button id="go">Check</button>
+    </div>
+    <p class="hint">Token contract? Open the <a href="https://scan.cyre.dev/app">multichain console</a>. Or try <b id="sample">a known exchange wallet</b>.</p>
+    <div id="err"></div>
+  </section>
+
+  <section id="out"></section>
+</main>
+
+<footer class="wrap foot">
+  Signals are computed from public chain data at the moment you check. Patterns, not verdicts — this is information, not advice, and a clean result is not a guarantee of safety.
+</footer>
+
+<script>
+var COLOR = { LOW:'var(--low)', MEDIUM:'var(--med)', HIGH:'var(--high)' };
+var SAMPLE = '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1';
+var CONSOLE = 'https://scan.cyre.dev/app';
+
+var input = document.getElementById('a'),
+    go = document.getElementById('go'),
+    out = document.getElementById('out'),
+    err = document.getElementById('err');
+
+document.getElementById('sample').addEventListener('click', function(){
+  input.value = SAMPLE; check();
+});
+
+function esc(s){ return String(s).replace(/[<>&]/g, function(c){ return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]; }); }
+
+function fact(label, value){
+  return '<div class="fact"><span>' + label + '</span><b>' + value + '</b></div>';
+}
+
+function render(d){
+  if (d.empty) {
+    out.innerHTML = '<div class="panel"><b style="font-family:var(--display);font-size:17px">Nothing on record</b>'
+      + '<p style="color:var(--dim);font-size:14px;margin-top:8px">This address has no transaction history. That is normal for a brand new wallet — and unusual for one you were told is established.</p>'
+      + '<p class="addr">' + esc(d.address) + '</p></div>';
+    return;
+  }
+
+  var p = d.profile;
+  var rows = d.signals.map(function(s){
+    return '<div class="sig">'
+      + '<div class="mark" style="color:' + (s.triggered ? 'var(--gold)' : 'var(--dim)') + '">' + (s.triggered ? '!' : '✓') + '</div>'
+      + '<div class="sig-b"><b style="color:' + (s.triggered ? 'var(--text)' : 'var(--dim)') + '">' + esc(s.name) + '</b><span>' + esc(s.detail) + '</span></div>'
+      + '<div class="pts" style="color:' + (s.triggered ? 'var(--gold)' : 'var(--dim)') + '">' + (s.points > 0 ? '+' + s.points : '–') + '</div>'
+      + '</div>';
+  }).join('');
+
+  out.innerHTML = '<div class="panel">'
+    + '<div class="verdict">'
+      + '<div class="score" style="color:' + COLOR[d.riskLevel] + '">' + d.score + '</div>'
+      + '<div><div class="band" style="color:' + COLOR[d.riskLevel] + ';border-color:' + COLOR[d.riskLevel] + '">' + d.riskLevel + ' RISK</div>'
+      + '<div class="addr">' + esc(d.address) + '</div></div>'
+    + '</div>'
+    + '<div class="facts">'
+      + fact('age', (p.ageIsMinimum && p.ageDays < 1) ? 'n/a' : (p.ageIsMinimum ? '&gt;' : '') + p.ageDays + 'd')
+      + fact('balance', p.balanceSol + ' SOL')
+      + fact('last 24h', p.last24h)
+      + fact('failed', p.failedPercent + '%')
+    + '</div>'
+    + rows
+    + '<p class="note">' + d.signalsTriggered + ' of ' + d.signalsEvaluated + ' signals fired. '
+    + 'Based on the ' + p.transactionsSeen + ' most recent transactions visible on chain. '
+    + 'Cyre does not label addresses good or bad — it shows you the pattern and lets you decide.</p>'
+    + '</div>';
+}
+
+async function check(){
+  var v = input.value.trim();
+  err.innerHTML = ''; out.innerHTML = '';
+  if (!v) return;
+  if (/^0x[a-fA-F0-9]{40}$/.test(v)) {
+    location.href = CONSOLE + '?address=' + encodeURIComponent(v);
+    return;
+  }
+  go.disabled = true; go.textContent = 'Reading…';
+  try {
+    var r = await fetch('/api/address?address=' + encodeURIComponent(v));
+    var d = await r.json();
+    if (!r.ok || d.ok === false) {
+      err.innerHTML = '<div class="err">' + esc(d.error || 'Something went wrong.') + '</div>';
+    } else {
+      render(d);
+    }
+  } catch (e) {
+    err.innerHTML = '<div class="err">Could not reach the checker. Try again in a moment.</div>';
+  }
+  go.disabled = false; go.textContent = 'Check';
+}
+
+go.addEventListener('click', check);
+input.addEventListener('keydown', function(e){ if (e.key === 'Enter') check(); });
+(function(){
+  var p = new URLSearchParams(location.search);
+  var a = (p.get('address') || p.get('q') || '').trim();
+  if (!a) return;
+  input.value = a;
+  if (/^0x[a-fA-F0-9]{40}$/.test(a)) {
+    location.replace(CONSOLE + '?address=' + encodeURIComponent(a));
+    return;
+  }
+  if (p.get('embed') === '1' || p.has('address') || p.has('q')) check();
+})();
+</script>
+<script defer src="/embed-mode.js"></script>
+<script src="/ai-vibe-loader.js?v=fab-portal1" defer></script>
+</body>
+</html>

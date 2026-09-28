@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oracle Pulse — Cyre</title>
+<meta name="description" content="Oracle Pulse monitors SPEC-seed RWA price feeds — stale, spike, divergence. Patterns, not verdicts. Not a wallet paste tool.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1622; --panel:#121C2B; --panel2:#152031; --line:#243246;
+  --ice:#8FB0DE; --violet:#6F93C8; --cyan:#8FB0DE; --red:#ff4d5e; --green:#3ddc84; --amber:#ffb454;
+  --txt:#ECE8DF; --dim:#9AA5B4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--txt);font-family:Inter,system-ui,sans-serif}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 18px 60px}
+a{color:var(--ice)}
+.wrap{width:100%;max-width:860px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+header .dot{width:10px;height:10px;border-radius:50%;background:var(--ice);box-shadow:0 0 12px var(--ice)}
+header h1{font-family:Sora,sans-serif;font-size:17px;font-weight:800;letter-spacing:.06em}
+header span{color:var(--dim);font-size:12px;margin-left:auto;font-family:'IBM Plex Mono',monospace}
+.hero{margin-bottom:22px}
+.hero h2{font-family:Sora,sans-serif;font-size:clamp(26px,7vw,34px);font-weight:800;line-height:1.12;letter-spacing:-.01em}
+.hero h2 em{font-style:normal;color:var(--ice)}
+.hero p{color:var(--dim);font-size:14.5px;margin-top:10px;line-height:1.55;max-width:62ch}
+.disclaimer{display:inline-block;margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);border:1px solid rgba(111,147,200,.35);border-radius:999px;padding:6px 12px}
+.bar{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.bar button{background:var(--ice);color:#04121c;border:0;border-radius:12px;font-family:Sora,sans-serif;
+  font-weight:700;font-size:14px;padding:14px 18px;cursor:pointer;white-space:nowrap}
+.bar button:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.hint{font-size:12px;color:var(--dim);margin-top:10px;line-height:1.5}
+.err{display:none;color:var(--red);font-size:13px;margin-top:10px;background:rgba(255,77,94,.07);border:1px solid rgba(255,77,94,.25);border-radius:11px;padding:12px 14px}
+.load{display:none;margin-top:22px;color:var(--dim);font-size:13.5px;font-family:'IBM Plex Mono',monospace}
+.load .scan{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ice);margin-right:8px;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
+.board{display:none;margin-top:26px}
+.counters{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:18px}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.fact span{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.fact b{display:block;font-family:Sora,sans-serif;font-size:22px;font-weight:700;margin-top:6px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:14px}
+.panel .lab{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;font-size:12px;border:1px solid var(--line);background:var(--panel2);font-family:'IBM Plex Mono',monospace}
+.chip b{font-family:Sora,sans-serif;font-size:12.5px;font-weight:700}
+.chip .tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.chip.fire{border-color:rgba(111,147,200,.55);color:var(--violet)}
+.chip.quiet{opacity:.7;color:var(--dim)}
+.chip.later{border-color:rgba(255,180,84,.4);color:var(--amber)}
+.feed{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px;background:var(--panel2)}
+.feed.defer{opacity:.85;border-style:dashed}
+.feed .top{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+.feed .sym{font-family:Sora,sans-serif;font-weight:700;font-size:16px}
+.feed .src{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+.feed .price{font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--ice);margin-top:8px}
+.feed .meta{font-size:12.5px;color:var(--dim);margin-top:8px;line-height:1.5;font-family:'IBM Plex Mono',monospace}
+.feed .mint{font-size:11px;color:var(--dim);margin-top:6px;word-break:break-all;font-family:'IBM Plex Mono',monospace}
+.pat{border-left:3px solid var(--line);padding:10px 0 10px 12px;margin-top:10px}
+.pat.on{border-left-color:var(--violet)}
+.pat.off{border-left-color:var(--line);opacity:.85}
+.pat.defer{border-left-color:rgba(136,146,164,.45)}
+.pat b{display:block;font-size:13.5px}
+.pat .tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;color:var(--dim)}
+.pat .tag.fire{color:var(--violet)}
+.pat .tag.quiet{color:var(--dim)}
+.pat .tag.later{color:var(--amber)}
+.pat span{display:block;font-size:12.5px;color:var(--dim);margin-top:4px;line-height:1.45}
+.links{margin-top:16px;font-size:13px;color:var(--dim)}
+.links a{color:var(--cyan);text-decoration:none}
+.fine{margin-top:34px;color:var(--dim);font-size:12px;line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){.load .scan{animation:none}}
+
+/* cortex-mesh1 — flat panel chrome; constellation is Cortex-only */
+html,body{background:var(--ink,#0E1622)!important}
+.hero{position:relative;background:transparent;z-index:1}
+.hero::before,.hero::after{content:none!important;display:none!important}
+#cy-ai-mesh{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="dot"></div>
+    <h1>CYRE</h1>
+    <span>ORACLE&nbsp;PULSE&nbsp;v1</span>
+  </header>
+
+  <section class="hero">
+    <h2>Oracle Pulse. <em>RWA feed monitor.</em></h2>
+    <p>Mint- and oracle-level watch on SPEC seed feeds (USDY, OUSG, syrupUSDC, AAPLx, TSLAx, SPYx). Cyre measures last-update age, move in a 1h window, and peer spread when an equity twin exists — stale / spike / divergence only. Not a wallet paste tool.</p>
+    <span class="disclaimer" role="note">Patterns, not verdicts.</span>
+    <div class="bar">
+      <button id="go" type="button">Refresh feeds</button>
+    </div>
+    <p class="hint" id="mode-hint">NestUSD Lazer seeds when <code>PYTH_LAZER_API_KEY</code> is set; otherwise live equity peers via Pyth Hermes. USDY / OUSG / syrupUSDC deferred. Auto-refreshes every 60s.</p>
+    <div class="err" id="err"></div>
+    <div class="load" id="load"><span class="scan"></span>Cyre is reading oracle feeds…</div>
+  </section>
+
+  <section class="board" id="board" aria-live="polite">
+    <div class="counters" id="counters"></div>
+    <div class="panel">
+      <div class="lab">Pattern chips (this run)</div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="panel">
+      <div class="lab">Feed board</div>
+      <div id="feeds"></div>
+    </div>
+    <div class="panel">
+      <div class="lab">Patterns</div>
+      <div id="patterns"></div>
+    </div>
+    <p class="links">Also: <a href="/watch">Watch</a> · <a href="/forensics">Forensics</a> · <a href="/signals">Signals</a> · <a href="/passport">Passport</a></p>
+  </section>
+
+  <p class="fine">Patterns, not verdicts. Numbers are from this measured NestUSD Lazer run only — no invented health scores. Cyre never asks you to connect a wallet. Powered by CYRE · <a href="https://cyre.dev">cyre.dev</a></p>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  function fmtPrice(n) {
+    if (n == null || !Number.isFinite(n)) return '—';
+    const abs = Math.abs(n);
+    if (abs >= 100) return n.toFixed(2);
+    if (abs >= 1) return n.toFixed(4);
+    return n.toFixed(6);
+  }
+
+  function renderCounters(c, fetchedAt) {
+    const items = [
+      ['Feeds', String((c && c.feedsConfigured) || 0)],
+      ['Evaluated', String((c && c.feedsEvaluated) || 0)],
+      ['Fired', String((c && c.patternsTriggered) || 0)]
+    ];
+    $('counters').innerHTML = items.map(([k, v]) =>
+      '<div class="fact"><span>' + k + '</span><b>' + v + '</b></div>'
+    ).join('') + '<div class="fact"><span>Fetched</span><b style="font-size:13px;font-family:IBM Plex Mono,monospace">' +
+      (fetchedAt ? new Date(fetchedAt).toLocaleString() : '—') + '</b></div>';
+  }
+
+  function renderChips(list) {
+    if (!list || !list.length) {
+      $('chips').innerHTML = '<span class="chip quiet"><b>none</b><span class="tag">this run</span></span>';
+      return;
+    }
+    const fired = list.filter((p) => p.evaluated !== false && p.triggered);
+    const deferred = list.filter((p) => p.evaluated === false);
+    const bits = [];
+    fired.forEach((p) => {
+      bits.push('<span class="chip fire"><b>' + p.pattern + '</b><span class="tag">' + (p.symbol || '') + '</span></span>');
+    });
+    if (!fired.length) {
+      bits.push('<span class="chip quiet"><b>quiet</b><span class="tag">no triggers</span></span>');
+    }
+    if (deferred.length) {
+      bits.push('<span class="chip later"><b>deferred</b><span class="tag">' + deferred.length + '</span></span>');
+    }
+    $('chips').innerHTML = bits.join('');
+  }
+
+  function renderFeeds(list) {
+    if (!list || !list.length) {
+      $('feeds').innerHTML = '<p style="color:var(--dim);font-size:13px">No feeds in this run.</p>';
+      return;
+    }
+    $('feeds').innerHTML = list.map((f) => {
+      const defer = f.evaluated === false;
+      const move = f.moveWindow && f.moveWindow.movePct != null
+        ? f.moveWindow.movePct + '% / ' + f.moveWindow.windowSec + 's'
+        : '—';
+      const spread = f.peerSpread && f.peerSpread.spreadPct != null
+        ? f.peerSpread.spreadPct + '% vs ' + f.peerSpread.peerSymbol
+        : '—';
+      const age = f.lastUpdateAgeSec != null ? f.lastUpdateAgeSec + 's' : '—';
+      return '<article class="feed' + (defer ? ' defer' : '') + '">' +
+        '<div class="top"><div class="sym">' + f.symbol + '</div>' +
+        '<div class="src">' + (f.source || '—') + (f.feedLabel ? ' · ' + f.feedLabel : '') + '</div></div>' +
+        '<div class="price">' + (defer ? 'deferred' : fmtPrice(f.price)) + '</div>' +
+        '<div class="meta">age ' + age + ' · move ' + move + ' · peer ' + spread +
+        (f.conf != null && !defer ? ' · conf ' + fmtPrice(f.conf) : '') + '</div>' +
+        (f.mint ? '<div class="mint">' + f.mint + '</div>' : '') +
+        (defer && f.detail ? '<div class="meta" style="margin-top:8px">' + f.detail + '</div>' : '') +
+        '</article>';
+    }).join('');
+  }
+
+  function renderPatterns(list) {
+    if (!list || !list.length) {
+      $('patterns').innerHTML = '<p style="color:var(--dim);font-size:13px">No patterns in this window.</p>';
+      return;
+    }
+    $('patterns').innerHTML = list.map((p) => {
+      const deferred = p.evaluated === false;
+      const on = !!p.triggered && !deferred;
+      const cls = deferred ? 'defer' : on ? 'on' : 'off';
+      const tag = deferred
+        ? '<span class="tag later">later</span>'
+        : on
+          ? '<span class="tag fire">triggered</span>'
+          : '<span class="tag quiet">quiet</span>';
+      const label = p.pattern + (p.symbol ? ' · ' + p.symbol : '');
+      return '<div class="pat ' + cls + '"><b>' + label + tag + '</b><span>' + (p.detail || '') + '</span></div>';
+    }).join('');
+  }
+
+  let inflight = false;
+  let timer = null;
+  const REFRESH_MS = 60000;
+
+  function modeLabel(mode) {
+    if (mode === 'pyth-lazer') return 'Reading via Pyth Lazer (NestUSD xStock)';
+    if (mode === 'hermes-peer-fallback') return 'Live via Pyth Hermes equity peers (Lazer key not set)';
+    return 'Deferred — waiting for verified feeds';
+  }
+
+  async function run() {
+    if (inflight) return;
+    $('err').style.display = 'none';
+    $('go').disabled = true;
+    inflight = true;
+    $('load').style.display = 'block';
+    $('board').style.display = 'none';
+    try {
+      const r = await fetch('/api/oracle', { cache: 'no-store' });
+      const d = await r.json();
+      if (!d.ok) throw new Error(d.error || 'oracle failed');
+      $('mode-hint').textContent = modeLabel(d.readingMode) + ' · auto-refresh 60s · Patterns, not verdicts.';
+      renderCounters(d.counters || {}, d.fetchedAt);
+      renderChips(d.patterns || []);
+      renderFeeds(d.feeds || []);
+      renderPatterns(d.patterns || []);
+      $('board').style.display = 'block';
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      $('board').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    } catch (e) {
+      $('err').textContent = 'Cyre couldn’t reach oracle feeds. Try again in a moment.';
+      $('err').style.display = 'block';
+    }
+    inflight = false;
+    $('go').disabled = false;
+    $('load').style.display = 'none';
+  }
+
+  $('go').addEventListener('click', run);
+  run();
+  timer = window.setInterval(function () { if (!inflight) run(); }, REFRESH_MS);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden && timer) { clearInterval(timer); timer = null; }
+    else if (!document.hidden && !timer) {
+      run();
+      timer = window.setInterval(function () { if (!inflight) run(); }, REFRESH_MS);
+    }
+  });
+})();
+</script>
+<script src="/ai-vibe-loader.js?v=fab-portal1" defer></script>
+</body>
+</html>

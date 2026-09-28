@@ -1,0 +1,142 @@
+/* theme-guardian.css — shared Guardian forest palette (homepage / app / tools) */
+:root {
+  --g-bg: #0E1622;
+  --g-panel: #121C2B;
+  --g-panel-2: #0A111B;
+  --g-line: #243246;
+  --g-cream: #ECE8DF;
+  --g-gold: #8FB0DE;
+  --g-gold-bright: #A9C4E8;
+  --g-muted: #9AA5B4;
+  --g-green: #5fbf7a;
+  --g-red: #d96a5e;
+  --g-display: "Cormorant Garamond", "Times New Roman", serif;
+  --g-body: "Inter", system-ui, sans-serif;
+  --g-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Remap legacy homepage / Coinbase-blue tokens */
+  --bg: var(--g-bg) !important;
+  --bg2: var(--g-panel) !important;
+  --panel: rgba(18,28,43, 0.92) !important;
+  --panel-strong: rgba(18,28,43, 0.96) !important;
+  --line: rgba(36,50,70, 0.95) !important;
+  --text: var(--g-cream) !important;
+  --muted: var(--g-muted) !important;
+  --cyan: var(--g-gold) !important;
+  --violet: var(--g-gold-bright) !important;
+  --teal: #6F93C8 !important;
+  --green: var(--g-green) !important;
+  --cb-blue: var(--g-gold) !important;
+  --cb-blue-2: var(--g-gold-bright) !important;
+  --display: var(--g-display) !important;
+  --body: var(--g-body) !important;
+  --mono: var(--g-mono) !important;
+
+  /* AI-vibe aliases */
+  --ai-ink: var(--g-bg) !important;
+  --ai-ink-2: var(--g-panel-2) !important;
+  --ai-panel: rgba(18,28,43, 0.88) !important;
+  --ai-panel-2: rgba(18,28,43, 0.94) !important;
+  --ai-line: rgba(143,176,222, 0.22) !important;
+  --ai-violet: var(--g-gold-bright) !important;
+  --ai-cyan: var(--g-gold) !important;
+  --ai-ice: var(--g-gold) !important;
+  --ai-frost: var(--g-cream) !important;
+  --ai-dim: var(--g-muted) !important;
+  --ai-glow: 0 0 28px rgba(143,176,222, 0.18), 0 0 48px rgba(143,176,222, 0.08) !important;
+  --ai-glow-sm: 0 0 14px rgba(143,176,222, 0.16) !important;
+  --gold: var(--g-gold) !important;
+
+  /* Standalone tool page aliases */
+  --ink: var(--g-bg) !important;
+  --panel2: var(--g-panel-2) !important;
+  --ice: var(--g-gold) !important;
+  --dim: var(--g-muted) !important;
+  --txt: var(--g-cream) !important;
+  --live: var(--g-green) !important;
+  --amber: #e0b35a !important;
+  --red: var(--g-red) !important;
+  --low: var(--g-green) !important;
+  --med: #e0b35a !important;
+  --high: var(--g-red) !important;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  color: var(--g-cream) !important;
+  background:
+    radial-gradient(ellipse 70% 40% at 85% -5%, rgba(143,176,222, 0.07), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 10% 20%, rgba(95, 191, 122, 0.04), transparent 50%),
+    linear-gradient(180deg, #0E1622 0%, #0E1622 100%) !important;
+  font-family: var(--g-body) !important;
+}
+
+body::before,
+body::after,
+.bg-grid::before,
+.bg-grid::after {
+  background: radial-gradient(circle, rgba(143,176,222, 0.1), transparent 70%) !important;
+}
+
+:focus-visible {
+  outline-color: var(--g-gold) !important;
+}
+
+/* Shared chrome often painted blue */
+.req,
+.b-main,
+.btn-main,
+button.primary,
+.btn.b-main {
+  background: var(--g-gold) !important;
+  color: var(--g-bg) !important;
+  box-shadow: none !important;
+}
+.req:hover,
+.b-main:hover,
+.btn-main:hover {
+  background: var(--g-gold-bright) !important;
+  color: var(--g-bg) !important;
+}
+
+.brand,
+.brand-r,
+h1, h2, h3,
+.display {
+  font-family: var(--g-display) !important;
+}
+
+.eyebrow,
+.kicker,
+.mono,
+code, kbd, pre {
+  font-family: var(--g-mono) !important;
+}
+
+a {
+  color: inherit;
+}
+a:hover {
+  color: var(--g-cream);
+}
+
+/* Soften leftover blue glows */
+[style*="rgba(0,82,255"],
+[style*="rgba(0, 82, 255"] {
+  /* cannot override inline; handled in JS skins where needed */
+}
+
+/* Live-type Guardian lockup — nav, headers, verify. Never the 3D hero image. */
+.guardian-wordmark {
+  display: inline-block;
+  font-family: var(--g-display);
+  font-weight: 600;
+  background-image: linear-gradient(180deg, #CFE0F5 0%, #8FB0DE 45%, #4A6FA5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}

@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+
+<meta charset="utf-8">
+<script src="/app-redirect.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Passport — Cyre</title>
+<meta name="description" content="Portable RWA profile from measured on-chain patterns. Share or download a dossier. Patterns, not verdicts.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1622; --panel:#121C2B; --panel2:#0A111B; --line:#243246;
+  --ice:#8FB0DE; --violet:#A9C4E8; --cyan:#A9C4E8; --red:#d96a5e; --green:#5fbf7a; --amber:#ffb454;
+  --txt:#e8edf5; --dim:#9AA5B4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ink);color:var(--txt);font-family:Inter,system-ui,sans-serif}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 18px 60px}
+a{color:var(--ice)}
+.wrap{width:100%;max-width:560px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+header .dot{width:10px;height:10px;border-radius:50%;background:var(--ice);box-shadow:0 0 12px var(--ice)}
+header h1{font-family:Cormorant Garamond,sans-serif;font-size:17px;font-weight:800;letter-spacing:.06em}
+header span{color:var(--dim);font-size:12px;margin-left:auto;font-family:'JetBrains Mono',monospace}
+.hero{margin-bottom:22px}
+.hero h2{font-family:Cormorant Garamond,sans-serif;font-size:clamp(26px,7vw,34px);font-weight:800;line-height:1.12;letter-spacing:-.01em}
+.hero h2 em{font-style:normal;color:var(--ice)}
+.hero p{color:var(--dim);font-size:14.5px;margin-top:10px;line-height:1.55;max-width:52ch}
+.disclaimer{display:inline-block;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);border:1px solid rgba(143,176,222,.35);border-radius:999px;padding:6px 12px}
+.bar{display:flex;gap:8px;margin-top:18px}
+.bar input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--txt);
+  font-family:'JetBrains Mono',monospace;font-size:13.5px;padding:14px;outline:none;min-width:0}
+.bar input:focus{border-color:var(--ice)}
+.bar button{background:var(--ice);color:#ECE8DF;border:0;border-radius:12px;font-family:Cormorant Garamond,sans-serif;
+  font-weight:700;font-size:14px;padding:0 18px;cursor:pointer;white-space:nowrap}
+.bar button:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.err{display:none;color:var(--red);font-size:13px;margin-top:10px;background:rgba(255,77,94,.07);border:1px solid rgba(255,77,94,.25);border-radius:11px;padding:12px 14px}
+.load{display:none;margin-top:26px;color:var(--dim);font-size:13.5px;font-family:'JetBrains Mono',monospace}
+.load .scan{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ice);margin-right:8px;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
+.result{display:none;margin-top:26px}
+.cardbox{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel)}
+.cardbox canvas{display:block;width:100%;height:auto}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:14px}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.fact span{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.fact b{display:block;font-family:Cormorant Garamond,sans-serif;font-size:18px;font-weight:700;margin-top:6px}
+.band{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em}
+.band.LOW{color:var(--green)}
+.band.MEDIUM{color:var(--amber)}
+.band.HIGH{color:var(--red)}
+.sig{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid rgba(31,38,52,.55);font-size:13px}
+.sig:last-child{border-bottom:none}
+.mark{width:16px;flex:none;text-align:center}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.actions button,.actions a{flex:1 1 140px;text-align:center;text-decoration:none;border-radius:12px;padding:14px 10px;
+  font-family:Cormorant Garamond,sans-serif;font-weight:700;font-size:14px;cursor:pointer}
+#shareBtn{background:var(--ice);color:#ECE8DF;border:0}
+#jsonBtn{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+#xBtn{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+.deep{display:block;text-align:center;margin-top:16px;font-size:13.5px;color:var(--dim)}
+.deep a{color:var(--cyan);text-decoration:none}
+.fine{margin-top:34px;color:var(--dim);font-size:12px;line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
+
+.mintbox{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.mintbox .lab{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--dim);margin-bottom:10px;text-transform:uppercase}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;font-size:12px;border:1px solid var(--line);background:var(--panel2);font-family:'JetBrains Mono',monospace}
+.chip b{font-family:Cormorant Garamond,sans-serif;font-size:12.5px;font-weight:700}
+.chip .tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.chip.hold{border-color:rgba(61,220,132,.45);color:var(--green)}
+.chip.touch{border-color:rgba(143,176,222,.4);color:var(--ice)}
+.chip.none{opacity:.55;color:var(--dim)}
+@media (prefers-reduced-motion:reduce){.load .scan{animation:none}}
+
+/* cortex-mesh1 — flat panel chrome; constellation is Cortex-only */
+html,body{background:var(--ink,#0E1622)!important}
+.hero{position:relative;background:transparent;z-index:1}
+.hero::before,.hero::after{content:none!important;display:none!important}
+#cy-ai-mesh{display:none!important}
+</style>
+  <link rel="stylesheet" href="/theme-guardian.css?v=cy2">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="dot"></div>
+    <h1>CYRE</h1>
+    <span>PASSPORT&nbsp;v1</span>
+  </header>
+
+  <section class="hero">
+    <h2>Portable profile. <em>Measured patterns only.</em></h2>
+    <p>Paste any Solana address. Cyre builds a shareable RWA passport from the same measured signals as Score — age, activity, failures, gaps, balance — nothing invented.</p>
+    <span class="disclaimer" role="note">Patterns, not verdicts.</span>
+    <div class="bar">
+      <input id="addr" inputmode="text" autocomplete="off" spellcheck="false" placeholder="Solana address…" aria-label="Solana address">
+      <button id="go">Build passport</button>
+    </div>
+    <div class="err" id="err"></div>
+    <div class="load" id="load"><span class="scan"></span>Cyre is reading the chain…</div>
+  </section>
+
+  <section class="result" id="result" aria-live="polite">
+    <div class="cardbox"><canvas id="card" width="1080" height="1350" aria-label="CYRE passport dossier"></canvas></div>
+    <div class="facts" id="facts"></div>
+    <div id="sigs" style="margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px"></div>
+    <div class="mintbox" id="mints" style="display:none"></div>
+    <div class="actions">
+      <button id="shareBtn" type="button">Share / download PNG</button>
+      <button id="jsonBtn" type="button">Download JSON</button>
+      <a id="xBtn" href="#" target="_blank" rel="noopener">Post on X</a>
+    </div>
+    <span class="deep">Need the live grade card? <a href="/score">Open Score →</a> · <a href="/watch">Open Watch →</a></span>
+  </section>
+
+  <p class="fine">Patterns, not verdicts. Passport fields are measured from the address window only — score, riskLevel, and profile counters. Cyre never asks you to connect a wallet. Powered by CYRE · <a href="https://cyre.dev">cyre.dev</a></p>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const B58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  const C = {
+    ink: '#0E1622', panel: '#0A111B', panel2: '#121C2B', line: '#243246',
+    ice: '#8FB0DE', violet: '#A9C4E8', cyan: '#6F93C8', red: '#ff4d5e',
+    green: '#3ddc84', amber: '#ffb454', txt: '#ECE8DF', dim: '#9AA5B4'
+  };
+
+  function short(a) { return a.slice(0, 4) + '\u2026' + a.slice(-4); }
+
+  function fmtAge(p) {
+    if (p.ageIsMinimum) return '1000+ tx deep';
+    const d = p.ageDays || 0;
+    if (d >= 365) return (d / 365).toFixed(1) + ' yrs';
+    return d + ' days';
+  }
+
+  function rr(x, a, b, w, h, r) {
+    x.beginPath();
+    x.moveTo(a + r, b);
+    x.arcTo(a + w, b, a + w, b + h, r);
+    x.arcTo(a + w, b + h, a, b + h, r);
+    x.arcTo(a, b + h, a, b, r);
+    x.arcTo(a, b, a + w, b, r);
+    x.closePath();
+  }
+
+  function wrap(x, t, cx, cy, maxW, lh) {
+    const words = t.split(' ');
+    let line = '', y = cy;
+    for (const w of words) {
+      const test = line ? line + ' ' + w : w;
+      if (x.measureText(test).width > maxW && line) {
+        x.fillText(line, cx, y);
+        line = w;
+        y += lh;
+      } else line = test;
+    }
+    x.fillText(line, cx, y);
+  }
+
+  function draw(data) {
+    const cv = $('card'), x = cv.getContext('2d'), W = 1080, H = 1350;
+    const p = data.profile || {};
+    const risk = data.riskLevel || '—';
+    const riskColor = risk === 'HIGH' ? C.red : risk === 'MEDIUM' ? C.amber : risk === 'LOW' ? C.green : C.dim;
+    const score = data.score == null ? '—' : String(data.score);
+
+    x.fillStyle = C.ink; x.fillRect(0, 0, W, H);
+    let rg = x.createRadialGradient(W / 2, 280, 40, W / 2, 280, 720);
+    rg.addColorStop(0, 'rgba(155,123,255,.14)');
+    rg.addColorStop(0.45, 'rgba(0,82,255,.10)');
+    rg.addColorStop(1, 'rgba(0,82,255,0)');
+    x.fillStyle = rg; x.fillRect(0, 0, W, H);
+
+    x.strokeStyle = C.line; x.lineWidth = 3; x.strokeRect(30, 30, W - 60, H - 60);
+    x.strokeStyle = 'rgba(0,82,255,.35)'; x.lineWidth = 1.5; x.strokeRect(42, 42, W - 84, H - 84);
+
+    x.fillStyle = C.ice; x.beginPath(); x.arc(88, 112, 10, 0, 7); x.fill();
+    x.font = '800 40px Cormorant Garamond'; x.fillStyle = C.txt; x.textBaseline = 'middle';
+    x.fillText('CYRE', 116, 114);
+    x.font = '600 26px "JetBrains Mono"'; x.fillStyle = C.dim; x.textAlign = 'right';
+    x.fillText('PASSPORT v1', W - 88, 114);
+    x.textAlign = 'left';
+
+    x.font = '600 34px "JetBrains Mono"'; x.fillStyle = C.cyan;
+    x.fillText(short(data.address), 88, 196);
+    x.font = '500 24px "JetBrains Mono"'; x.fillStyle = C.dim;
+    x.fillText((data.fetchedAt || '').slice(0, 10) || '—', 88, 238);
+
+    x.textAlign = 'center';
+    x.font = '800 120px Cormorant Garamond'; x.fillStyle = C.txt;
+    x.fillText(score, W / 2, 420);
+    x.font = '600 28px "JetBrains Mono"'; x.fillStyle = C.dim;
+    x.fillText('MEASURED SCORE', W / 2, 490);
+
+    x.font = '800 56px Cormorant Garamond'; x.fillStyle = riskColor;
+    x.fillText(risk, W / 2, 580);
+    x.font = '600 24px "JetBrains Mono"'; x.fillStyle = C.dim;
+    x.fillText('RISK LEVEL', W / 2, 630);
+
+    x.font = '700 36px Cormorant Garamond'; x.fillStyle = C.violet;
+    x.fillText('Patterns, not verdicts.', W / 2, 710);
+
+    const stats = [
+      ['AGE', fmtAge(p)],
+      ['BALANCE', (p.balanceSol ?? 0).toFixed(2) + ' SOL'],
+      ['24H MOVES', String(p.last24h ?? 0)],
+      ['FAIL %', String(p.failedPercent ?? 0)],
+      ['TX SEEN', String(p.transactionsSeen ?? 0)],
+      ['GAP DAYS', String(p.longestGapDays ?? 0)]
+    ];
+    const cols = 3;
+    const gap = 18;
+    const sw = (W - 176 - gap * (cols - 1)) / cols;
+    stats.forEach((s, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const sx = 88 + col * (sw + gap);
+      const sy = 780 + row * 150;
+      x.fillStyle = C.panel; x.strokeStyle = C.line; x.lineWidth = 2;
+      rr(x, sx, sy, sw, 120, 14); x.fill(); x.stroke();
+      x.font = '600 20px "JetBrains Mono"'; x.fillStyle = C.dim; x.textAlign = 'center';
+      x.fillText(s[0], sx + sw / 2, sy + 40);
+      x.font = '700 28px Cormorant Garamond'; x.fillStyle = C.txt;
+      x.fillText(s[1], sx + sw / 2, sy + 82);
+    });
+
+    x.font = '600 28px "JetBrains Mono"'; x.fillStyle = C.ice; x.textAlign = 'center';
+    x.fillText('cyre.dev/passport', W / 2, 1220);
+    x.font = '400 22px Inter'; x.fillStyle = C.dim;
+    wrap(x, 'Measured fields only · same window as /api/address · no LLM', W / 2, 1264, 880, 30);
+    x.textAlign = 'left';
+  }
+
+  function renderFacts(d) {
+    const p = d.profile || {};
+    const risk = d.riskLevel || '—';
+    const items = [
+      ['Score', d.score == null ? '—' : String(d.score)],
+      ['Risk', '<span class="band ' + risk + '">' + risk + '</span>'],
+      ['Age', fmtAge(p)],
+      ['Balance', (p.balanceSol ?? 0).toFixed(4) + ' SOL'],
+      ['24h moves', String(p.last24h ?? 0)],
+      ['Signals', (d.signalsTriggered || 0) + '/' + (d.signalsEvaluated || 0)]
+    ];
+    $('facts').innerHTML = items.map(([k, v]) =>
+      '<div class="fact"><span>' + k + '</span><b>' + v + '</b></div>'
+    ).join('');
+  }
+
+  function renderSigs(d) {
+    const sigs = d.signals || [];
+    if (!sigs.length) {
+      $('sigs').innerHTML = '<p style="color:var(--dim);font-size:13px">' + (d.message || 'No signals in this window.') + '</p>';
+      return;
+    }
+    $('sigs').innerHTML =
+      '<div style="font-family:JetBrains Mono,monospace;font-size:10px;letter-spacing:.14em;color:var(--dim);margin-bottom:6px">MEASURED SIGNALS</div>' +
+      sigs.map((s) =>
+        '<div class="sig"><div class="mark">' + (s.triggered ? '●' : '○') + '</div><div><b>' + s.name +
+        '</b><span style="display:block;color:var(--dim);font-size:12px">' + s.detail + '</span></div></div>'
+      ).join('');
+  }
+
+
+  function renderMints(d) {
+    const box = $('mints');
+    const list = Array.isArray(d.mintAffinity) ? d.mintAffinity : [];
+    if (!list.length) {
+      box.style.display = 'none';
+      box.innerHTML = '';
+      return;
+    }
+    box.style.display = 'block';
+    box.innerHTML =
+      '<div class="lab">RWA mint affinity (hold / touch · no weights)</div>' +
+      '<div class="chips">' +
+      list.map((m) => {
+        const cls = m.hold ? 'hold' : m.touch ? 'touch' : 'none';
+        const tag = m.hold ? 'hold' : m.touch ? 'touch' : 'no';
+        return '<span class="chip ' + cls + '"><b>' + m.symbol + '</b><span class="tag">' + tag + '</span></span>';
+      }).join('') +
+      '</div>';
+  }
+
+  let lastPassport = null;
+  let inflight = false;
+
+  async function run() {
+    if (inflight) return;
+    const a = $('addr').value.trim();
+    $('err').style.display = 'none';
+    if (!B58.test(a)) {
+      $('err').textContent = 'That doesn’t look like a Solana address.';
+      $('err').style.display = 'block';
+      return;
+    }
+    inflight = true;
+    $('go').disabled = true;
+    $('load').style.display = 'block';
+    $('result').style.display = 'none';
+    try {
+      const r = await fetch('/api/passport?address=' + encodeURIComponent(a), { cache: 'no-store' });
+      const d = await r.json();
+      if (!r.ok || !d.ok) throw new Error(d.error || d.message || `passport failed (${r.status})`);
+      lastPassport = d;
+      await document.fonts.load('800 120px Cormorant Garamond');
+      await document.fonts.load('600 26px "JetBrains Mono"');
+      draw(d);
+      renderFacts(d);
+      renderSigs(d);
+      renderMints(d);
+      $('xBtn').href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(
+        'CYRE Passport for ' + short(d.address) +
+        ' — score ' + (d.score == null ? '—' : d.score) +
+        ', risk ' + (d.riskLevel || '—') +
+        '\nPatterns, not verdicts.\n\nBuild yours → https://cyre.dev/passport'
+      );
+      $('result').style.display = 'block';
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      $('result').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    } catch (e) {
+      $('err').textContent = 'Cyre couldn’t reach the chain. Try again in a moment.';
+      $('err').style.display = 'block';
+    }
+    inflight = false;
+    $('go').disabled = false;
+    $('load').style.display = 'none';
+  }
+
+  $('go').addEventListener('click', run);
+  $('addr').addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
+  (function(){
+    var p = new URLSearchParams(location.search);
+    var a = p.get('address');
+    if (!a) return;
+    $('addr').value = a;
+    if (p.get('embed') === '1') run();
+  })();
+
+  $('shareBtn').addEventListener('click', () => {
+    const cv = $('card');
+    cv.toBlob(async (blob) => {
+      if (!blob) return;
+      const file = new File([blob], 'cyre-passport.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            text: 'CYRE Passport — patterns, not verdicts. cyre.dev/passport'
+          });
+        } catch (e) {}
+      } else {
+        const u = URL.createObjectURL(blob);
+        const l = document.createElement('a');
+        l.href = u;
+        l.download = 'cyre-passport.png';
+        l.click();
+        setTimeout(() => URL.revokeObjectURL(u), 4000);
+      }
+    }, 'image/png');
+  });
+
+  $('jsonBtn').addEventListener('click', () => {
+    if (!lastPassport) return;
+    const blob = new Blob([JSON.stringify(lastPassport, null, 2)], { type: 'application/json' });
+    const u = URL.createObjectURL(blob);
+    const l = document.createElement('a');
+    const shortAddr = lastPassport.address ? short(lastPassport.address).replace('\u2026', '-') : 'wallet';
+    l.href = u;
+    l.download = 'cyre-passport-' + shortAddr + '.json';
+    l.click();
+    setTimeout(() => URL.revokeObjectURL(u), 4000);
+  });
+})();
+</script>
+<script defer src="/embed-mode.js"></script>
+<script src="/ai-vibe-loader.js?v=fab-portal1" defer></script>
+</body>
+</html>

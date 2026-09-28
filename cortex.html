@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neural Cortex — Cyre</title>
+<meta name="description" content="Live view of Cyre's agent graph. Patterns, not verdicts.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<style>
+  :root{
+    /* Brand palette — match homepage; cool blue = pulses only; red = kill/risk */
+    --ink:#0E1622; --ink-2:#0a0b0d; --panel:rgba(18,28,43,.72); --line:rgba(143,176,222,.22);
+    --gold:#8FB0DE; --gold-bright:#A9C4E8; --frost:#ECE8DF;
+    --pulse:#5fd0ff; --red:#ff4d5e; --green:#3ddc84; --dim:#9AA5B4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--ink-2); color:var(--gold); overflow:hidden;
+    font:10px/1.5 ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+    letter-spacing:.06em; -webkit-font-smoothing:antialiased;
+  }
+  canvas{position:fixed; inset:0; width:100%; height:100%; display:block; cursor:crosshair}
+  .hud{position:fixed; z-index:2; pointer-events:none}
+  .hud.interactive{pointer-events:auto}
+  /* top strip */
+  .top{top:0; left:0; right:0; display:flex; gap:14px; align-items:baseline;
+       padding:calc(10px + env(safe-area-inset-top)) 14px 8px;
+       background:linear-gradient(180deg, rgba(14,22,34,.88), rgba(14,22,34,0));}
+  .top b{color:var(--frost); font-weight:600; letter-spacing:.18em}
+  .top span{color:var(--dim)}
+  .top i{font-style:normal; color:var(--gold-bright)}
+  .top a{pointer-events:auto; color:var(--gold); text-decoration:none; margin-left:auto}
+  .top a:hover{color:var(--frost)}
+  /* corner panels */
+  .panel{border:1px solid var(--line); background:var(--panel);
+         backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+         padding:9px 11px; border-radius:4px; min-width:132px}
+  .panel h2{font-size:10px; font-weight:600; color:var(--frost); letter-spacing:.2em; margin-bottom:6px}
+  .panel .row{display:flex; justify-content:space-between; gap:14px; color:var(--dim)}
+  .panel .row i{font-style:normal; color:var(--gold)}
+  .pl{left:12px; top:calc(52px + env(safe-area-inset-top))}
+  .pr{right:12px; top:calc(52px + env(safe-area-inset-top))}
+  .bar{height:3px; background:rgba(143,176,222,.14); border-radius:2px; margin:5px 0 2px; overflow:hidden}
+  .bar b{display:block; height:100%; border-radius:2px;
+         background:linear-gradient(90deg,var(--gold),var(--gold-bright));
+         transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+  /* desk dock — gold chip style (scan-card vocabulary) */
+  .dock{
+    left:12px; right:12px; bottom:calc(48px + env(safe-area-inset-bottom));
+    display:flex; flex-wrap:wrap; gap:6px; max-width:920px; margin:0 auto;
+  }
+  .dock button{
+    pointer-events:auto;
+    border:1px solid rgba(157,187,228,.4);
+    background:rgba(157,187,228,.12);
+    color:#9DBBE4;
+    font:inherit; letter-spacing:.08em; padding:6px 11px; border-radius:999px;
+    cursor:pointer; backdrop-filter:blur(6px);
+  }
+  .dock button:hover, .dock button.is-hot{
+    border-color:rgba(157,187,228,.65); color:var(--frost);
+    background:rgba(157,187,228,.18);
+  }
+  .dock button[data-state="deferred"]{opacity:.55}
+  .dock button[data-state="armed"], .dock button[data-state="paper-only"]{
+    color:var(--red); border-color:rgba(255,77,94,.45); background:rgba(255,77,94,.12);
+  }
+  .dock button[data-state="live"], .dock button[data-state="watching"], .dock button[data-state="quiet"]{
+    color:var(--gold-bright); border-color:rgba(157,187,228,.55);
+  }
+  .toast{
+    position:fixed; left:50%; bottom:calc(168px + env(safe-area-inset-bottom));
+    transform:translateX(-50%); z-index:6; pointer-events:none;
+    background:rgba(14,22,34,.92); border:1px solid var(--line); color:var(--frost);
+    padding:8px 12px; border-radius:4px; opacity:0; transition:opacity .25s;
+    max-width:min(90vw,420px); text-align:center;
+  }
+  .toast.show{opacity:1}
+  .ledger{
+    position:fixed; right:12px; top:calc(120px + env(safe-area-inset-top));
+    z-index:5; width:min(300px, calc(100vw - 24px)); max-height:min(52vh,420px); overflow:auto;
+    border:1px solid var(--line); background:rgba(14,22,34,.96); backdrop-filter:blur(10px);
+    padding:10px; border-radius:4px; display:none; box-shadow:0 12px 40px rgba(0,0,0,.45);
+  }
+  .ledger.is-open{display:block !important; pointer-events:auto}
+  .ledger h2{font-size:10px; color:var(--frost); letter-spacing:.2em; margin-bottom:8px;
+             display:flex; justify-content:space-between; align-items:center; gap:8px}
+  .ledger h2 .x{border:0; background:transparent; color:var(--dim); cursor:pointer; font:inherit; padding:0}
+  .ledger p{color:var(--dim); margin-bottom:8px}
+  .ledger input, .ledger #paperAdd{
+    width:100%; font:inherit; letter-spacing:.06em; border-radius:4px; border:1px solid var(--line);
+    background:rgba(14,22,34,.8); color:var(--frost); padding:7px 8px; margin-bottom:6px;
+  }
+  .ledger #paperAdd{cursor:pointer; background:linear-gradient(90deg,rgba(143,176,222,.22),rgba(169,196,232,.16)); color:var(--gold-bright)}
+  .ledger ul{list-style:none}
+  .ledger li{border-top:1px solid rgba(143,176,222,.12); padding:6px 0; color:var(--gold)}
+  .ledger li small{display:block; color:var(--dim)}
+  /* bottom strip */
+  .bot{bottom:0; left:0; right:0; padding:8px 14px calc(10px + env(safe-area-inset-bottom));
+       background:linear-gradient(0deg, rgba(14,22,34,.88), rgba(14,22,34,0));}
+  .bot .track{height:2px; background:rgba(143,176,222,.14); border-radius:1px; overflow:hidden; margin-bottom:6px}
+  .bot .track b{display:block; height:100%; width:0;
+       background:linear-gradient(90deg,var(--gold),var(--gold-bright),var(--frost))}
+  .bot .meta{display:flex; justify-content:space-between; color:var(--dim)}
+  .bot .meta i{font-style:normal; color:var(--gold-bright)}
+  @media (max-width:560px){ .pr{display:none} .top{gap:10px; flex-wrap:wrap} .dock{gap:4px} .dock button{padding:5px 9px} }
+  @media (prefers-reduced-motion:reduce){ .bar b{transition:none} .toast{transition:none} }
+</style>
+</head>
+<body>
+<canvas id="cx"></canvas>
+
+<div class="hud top">
+  <b>CYRE&nbsp;·&nbsp;NEURAL&nbsp;CORTEX</b>
+  <span>nodes <i id="hNodes">0</i></span>
+  <span>links <i id="hLinks">0</i></span>
+  <span>pulses <i id="hPulse">0</i></span>
+  <span>epoch <i id="hEpoch">0</i></span>
+  <a href="/app#cortex" title="Open in Cyre App">app</a>
+</div>
+
+<div class="hud panel pl">
+  <h2>LINK RESOLVE</h2>
+  <div class="row"><span>slot</span><i id="pPass">—</i></div>
+  <div class="row"><span>hot node</span><i id="pHot">—</i></div>
+  <div class="row"><span>status</span><i id="pStat" style="color:var(--green)">WATCHING</i></div>
+  <div class="row"><span>execution</span><i id="pExec" style="color:var(--dim)">paper-only</i></div>
+</div>
+
+<div class="hud panel pr">
+  <h2>SIGNAL STREAM</h2>
+  <div class="row"><span>research</span><i id="v0">—</i></div><div class="bar"><b id="b0"></b></div>
+  <div class="row"><span>signals</span><i id="v1">—</i></div><div class="bar"><b id="b1"></b></div>
+  <div class="row"><span>risk</span><i id="v2">—</i></div><div class="bar"><b id="b2"></b></div>
+</div>
+
+<div class="hud interactive dock" id="deskDock" aria-label="Open agent desks"></div>
+
+<div class="hud interactive ledger" id="paperLedger" aria-label="Paper ledger">
+  <h2>PAPER LEDGER <button type="button" class="x" id="paperClose" aria-label="Close">✕</button></h2>
+  <p>Local notes only. No keys. No orders. Kill-switch stays armed.</p>
+  <input id="paperNote" type="text" maxlength="160" placeholder="Note a pattern (not advice)…" autocomplete="off">
+  <button type="button" id="paperAdd">Log paper note</button>
+  <ul id="paperList"></ul>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="hud bot">
+  <div class="track"><b id="prog"></b></div>
+  <div class="meta">
+    <span>cyre.dev · patterns, not verdicts · kill-switch <i id="hKill">armed</i></span>
+    <span>desk sync <i id="hPct">—</i></span>
+  </div>
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('cx'), ctx = cv.getContext('2d');
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W=0,H=0,DPR=1;
+
+  function size(){
+    DPR = Math.min(devicePixelRatio||1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W*DPR; cv.height = H*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    layout();
+  }
+
+  // ---- graph definition: Cyre core + agent fleet + memory substrate ----
+  // ax/ay are anchor positions in unit space (0..1), r = core radius
+  // hue: 0 = gold, 1 = gold-bright (core); alert nodes keep red tags
+  const NODES = [
+    {id:'guardian core', ax:.50, ay:.42, r:15, hue:1, big:1},
+    {id:'research',      ax:.26, ay:.24, r:9,  hue:0},
+    {id:'signals',       ax:.72, ay:.22, r:9,  hue:0},
+    {id:'execution',     ax:.80, ay:.48, r:8,  hue:0},
+    {id:'risk',          ax:.66, ay:.66, r:9,  hue:0},
+    {id:'ops',           ax:.34, ay:.68, r:7,  hue:0},
+    {id:'watchlist',     ax:.16, ay:.46, r:7,  hue:0},
+    {id:'chain feed',    ax:.10, ay:.72, r:6,  hue:0},
+    {id:'filings',       ax:.12, ay:.12, r:6,  hue:0},
+    {id:'sentiment',     ax:.40, ay:.10, r:6,  hue:0},
+    {id:'vector store',  ax:.58, ay:.86, r:7,  hue:0},
+    {id:'embeddings',    ax:.40, ay:.90, r:6,  hue:0},
+    {id:'attestations',  ax:.86, ay:.78, r:6,  hue:0},
+    {id:'kill-switch',   ax:.90, ay:.30, r:6,  hue:0, alert:1},
+  ];
+  const LINKS = [
+    [0,1],[0,2],[0,3],[0,4],[0,5],[0,6],
+    [1,8],[1,9],[2,9],[2,3],[3,13],[4,3],[4,10],[4,13],
+    [5,10],[5,12],[6,7],[6,1],[10,11],[11,0],[12,3],[7,0],[8,9]
+  ];
+
+  // Desk → product routes (this is how Cortex "works")
+  const DESK_ACTION = {
+    'guardian core': { href: '/app', tip: 'Open Cyre App' },
+    research: { deferred: true, tip: 'Research desk deferred — filings/sentiment not wired' },
+    signals: { href: '/signals', tip: 'Open Signals feed' },
+    execution: { paper: true, tip: 'Paper ledger only — no live orders' },
+    risk: { href: '/oracle', tip: 'Open Oracle Pulse (risk)' },
+    ops: { href: '/app', tip: 'Ops via Cyre App' },
+    watchlist: { href: '/watch', tip: 'Open Watch' },
+    'chain feed': { href: '/', tip: 'Chain pulse on homepage' },
+    filings: { deferred: true, tip: 'Filings ingest deferred' },
+    sentiment: { deferred: true, tip: 'Sentiment ingest deferred' },
+    'vector store': { deferred: true, tip: 'Memory substrate deferred' },
+    embeddings: { deferred: true, tip: 'Embeddings worker deferred' },
+    attestations: { deferred: true, tip: 'Attestations deferred' },
+    'kill-switch': { tip: 'Kill-switch armed — blocks live execution' },
+  };
+
+  const PAPER_KEY = 'cyre.cortex.paper';
+  const toastEl = document.getElementById('toast');
+  const dockEl = document.getElementById('deskDock');
+  const ledgerEl = document.getElementById('paperLedger');
+  const paperList = document.getElementById('paperList');
+  const paperNote = document.getElementById('paperNote');
+  let toastTimer = 0;
+  function toast(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+  }
+  function loadPaper(){
+    try{ return JSON.parse(localStorage.getItem(PAPER_KEY) || '[]'); }
+    catch(_){ return []; }
+  }
+  function savePaper(rows){
+    try{ localStorage.setItem(PAPER_KEY, JSON.stringify(rows.slice(0,40))); }catch(_){}
+  }
+  function renderPaper(){
+    if(!paperList) return;
+    const rows = loadPaper();
+    paperList.innerHTML = rows.length
+      ? rows.map(r => '<li>' + escapeHtml(r.note) + '<small>' + escapeHtml(r.at) + ' · ' + escapeHtml(r.desk) + '</small></li>').join('')
+      : '<li><small>No paper notes yet.</small></li>';
+  }
+  function escapeHtml(s){
+    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function openPaper(){
+    if(!ledgerEl) return;
+    ledgerEl.classList.add('is-open');
+    ledgerEl.style.display = 'block';
+    renderPaper();
+    if(paperNote) setTimeout(() => paperNote.focus(), 50);
+  }
+  function closePaper(){
+    if(!ledgerEl) return;
+    ledgerEl.classList.remove('is-open');
+    ledgerEl.style.display = 'none';
+  }
+  function activateDesk(id){
+    const act = DESK_ACTION[id] || {};
+    if(act.paper){
+      if(ledgerEl && ledgerEl.classList.contains('is-open')) closePaper();
+      else openPaper();
+      toast(act.tip || 'Paper only');
+      return;
+    }
+    if(act.deferred){ toast(act.tip || (id + ' deferred')); return; }
+    if(id === 'kill-switch'){ toast(act.tip || 'Kill-switch armed'); return; }
+    if(act.href){
+      toast(act.tip || id);
+      // same-tab when embedded in app iframe; otherwise navigate
+      if(window.parent !== window && /[?&]embed=1/.test(location.search)){
+        window.top.location.href = act.href;
+      } else {
+        location.href = act.href;
+      }
+      return;
+    }
+    toast(id);
+  }
+  function buildDock(desks){
+    if(!dockEl) return;
+    const stateById = Object.create(null);
+    (desks || []).forEach(d => { stateById[d.id] = d.state; });
+    const order = ['signals','risk','watchlist','execution','chain feed','kill-switch'];
+    dockEl.innerHTML = order.map(id => {
+      const st = stateById[id] || (DESK_ACTION[id] && DESK_ACTION[id].deferred ? 'deferred' : 'live');
+      return '<button type="button" data-desk="'+id+'" data-state="'+st+'">'+id+'</button>';
+    }).join('');
+    dockEl.querySelectorAll('[data-desk]').forEach(btn => {
+      btn.addEventListener('click', () => activateDesk(btn.getAttribute('data-desk')));
+    });
+  }
+  document.getElementById('paperClose') && document.getElementById('paperClose').addEventListener('click', closePaper);
+  document.getElementById('paperAdd') && document.getElementById('paperAdd').addEventListener('click', () => {
+    const note = (paperNote && paperNote.value || '').trim();
+    if(!note){ toast('Add a pattern note first'); return; }
+    // hard filter: no advice verbs
+    if(/\b(buy|sell|invest|guaranteed|moon|pump)\b/i.test(note)){
+      toast('Paper notes are patterns only — no advice words');
+      return;
+    }
+    const rows = loadPaper();
+    rows.unshift({ note, desk: 'execution', at: new Date().toISOString() });
+    savePaper(rows);
+    if(paperNote) paperNote.value = '';
+    renderPaper();
+    toast('Paper note logged (local only)');
+  });
+
+  // runtime state
+  NODES.forEach(n=>{ n.x=0; n.y=0; n.vx=0; n.vy=0; n.ph=Math.random()*Math.PI*2; n.tag=null; n.tagT=0; });
+
+  function hitNode(mx, my){
+    let best=null, bestD=1e9;
+    for(const n of NODES){
+      const dx=mx-n.x, dy=my-n.y, d=Math.hypot(dx,dy);
+      const R = (n.r||8) * (n.big?3.2:2.6);
+      if(d < R && d < bestD){ best=n; bestD=d; }
+    }
+    return best;
+  }
+  cv.addEventListener('click', (e) => {
+    const r = cv.getBoundingClientRect();
+    const n = hitNode(e.clientX - r.left, e.clientY - r.top);
+    if(n) activateDesk(n.id);
+  });
+  buildDock([]);
+
+  function layout(){
+    const pad = Math.min(W,H)*.06;
+    NODES.forEach(n=>{
+      n.tx = pad + n.ax*(W-pad*2);
+      n.ty = H*.10 + n.ay*(H*.78);
+      if(!n.x){ n.x=n.tx; n.y=n.ty; }
+    });
+  }
+
+  // traveling pulses along links
+  const pulses = [];
+  let pulseCount = 0;
+  function spawnPulse(){
+    const L = LINKS[(Math.random()*LINKS.length)|0];
+    pulses.push({l:L, t:0, sp:.004+Math.random()*.006, fwd:Math.random()<.5});
+    pulseCount++;
+  }
+
+  // Measured tags only (no invented risk scores). Decorative motion stays separate.
+  function tagNode(id, tag){
+    const n = NODES.find(x => x.id === id);
+    if(!n || !tag) return;
+    n.tag = tag;
+    n.tagT = 1;
+  }
+  function applyMeasuredTags(data){
+    if(!data) return;
+    if(data.chain && data.chain.ok) tagNode('chain feed', {w:'SETTLED', c:'#3ddc84'});
+    if(data.killSwitch === 'armed') tagNode('kill-switch', {w:'HOLD', c:'#ff4d5e'});
+    if(data.execution === 'paper-only') tagNode('execution', {w:'HOLD', c:'#ff4d5e'});
+    if(data.oracle && data.oracle.ok && data.oracle.patternsTriggered > 0){
+      tagNode('risk', {w:'FLAG', c:'#ff4d5e'});
+    } else if(data.oracle && data.oracle.ok && data.oracle.feedsEvaluated > 0){
+      tagNode('risk', {w:'SIG VALID', c:'#3ddc84'});
+    }
+    if(data.signals && data.signals.policy === 'empty-default-list'){
+      tagNode('signals', {w:'ATTEST', c:'#3ddc84'});
+    }
+  }
+
+  // No soft glow sprites — sharp markers only (pulses keep a tiny cool tip).
+  function tipSprite(rgb){
+    const s = document.createElement('canvas'); s.width=s.height=32;
+    const g = s.getContext('2d');
+    const gr = g.createRadialGradient(16,16,0,16,16,14);
+    gr.addColorStop(0, `rgba(${rgb},.9)`);
+    gr.addColorStop(.55,`rgba(${rgb},.2)`);
+    gr.addColorStop(1, `rgba(${rgb},0)`);
+    g.fillStyle=gr; g.fillRect(0,0,32,32);
+    return s;
+  }
+  const PULSE_GLOW = tipSprite('95,208,255');
+
+  // HUD refs
+  const $ = id => document.getElementById(id);
+  const hNodes=$('hNodes'), hLinks=$('hLinks'), hPulse=$('hPulse'), hEpoch=$('hEpoch'),
+        pPass=$('pPass'), pHot=$('pHot'), pStat=$('pStat'), pExec=$('pExec'),
+        prog=$('prog'), hPct=$('hPct'), hKill=$('hKill');
+  hNodes.textContent = NODES.length;
+  hLinks.textContent = LINKS.length;
+
+  let t=0, syncCount=0, live=null;
+  function setStreamRow(i, row){
+    const label = $('v'+i), bar = $('b'+i);
+    if(!row){ label.textContent='—'; bar.style.width='0%'; return; }
+    if(row.mode === 'deferred' || row.pct == null){
+      label.textContent = 'deferred';
+      bar.style.width = '0%';
+      return;
+    }
+    if(row.mode === 'quiet'){
+      label.textContent = 'quiet';
+      bar.style.width = '0%';
+      return;
+    }
+    const pct = Math.max(0, Math.min(100, Number(row.pct)||0));
+    label.textContent = pct + '%';
+    bar.style.width = pct + '%';
+  }
+  function hudFromLive(){
+    hPulse.textContent = pulseCount.toLocaleString();
+    hEpoch.textContent = syncCount.toLocaleString();
+    if(!live){
+      pPass.textContent = '—';
+      pHot.textContent = '—';
+      hPct.textContent = '—';
+      prog.style.width = '0%';
+      return;
+    }
+    pStat.textContent = live.status || 'WATCHING';
+    pExec.textContent = live.execution || 'paper-only';
+    hKill.textContent = live.killSwitch || 'armed';
+    pHot.textContent = live.hotNode || '—';
+    if(live.pass != null) pPass.textContent = Number(live.pass).toLocaleString();
+    else if(live.chain && live.chain.slot != null) pPass.textContent = Number(live.chain.slot).toLocaleString();
+    else pPass.textContent = '—';
+    const s = live.stream || {};
+    setStreamRow(0, s.research);
+    setStreamRow(1, s.signals);
+    setStreamRow(2, s.risk);
+    const liveDesks = (live.desks || []).filter(d => d.state === 'live' || d.state === 'watching' || d.state === 'quiet' || d.state === 'armed' || d.state === 'paper-only').length;
+    const total = (live.desks && live.desks.length) || NODES.length;
+    const pc = total ? Math.round(100 * liveDesks / total) : 0;
+    prog.style.width = pc + '%';
+    hPct.textContent = pc + '%';
+  }
+
+  async function pullCortex(){
+    try{
+      const r = await fetch('/api/cortex', { cache: 'no-store' });
+      if(!r.ok) throw new Error('cortex ' + r.status);
+      const data = await r.json();
+      if(!data || data.ok === false) throw new Error('cortex payload');
+      live = data;
+      syncCount++;
+      applyMeasuredTags(data);
+      buildDock(data.desks);
+      hudFromLive();
+    }catch(e){
+      // keep last-good HUD; decorative graph continues
+      console.warn('cortex sync', e && e.message);
+      hudFromLive();
+    }
+  }
+
+  function step(){
+    t += 1;
+    // gentle spring toward anchor + neighbor repulsion + drift
+    for(const n of NODES){
+      n.ph += .008;
+      const dx = n.tx - n.x, dy = n.ty - n.y;
+      n.vx += dx*.0012; n.vy += dy*.0012;
+      n.vx += Math.cos(n.ph)*.012; n.vy += Math.sin(n.ph*.9)*.012;
+      for(const m of NODES){
+        if(m===n) continue;
+        const rx=n.x-m.x, ry=n.y-m.y, d2=rx*rx+ry*ry;
+        if(d2 < 5200 && d2>1){ const f=14/d2; n.vx+=rx*f; n.vy+=ry*f; }
+      }
+      n.vx*=.94; n.vy*=.94;
+      n.x+=n.vx; n.y+=n.vy;
+      if(n.tagT>0) n.tagT -= .006;
+    }
+    for(let i=pulses.length-1;i>=0;i--){
+      const p=pulses[i]; p.t+=p.sp;
+      if(p.t>=1) pulses.splice(i,1);
+    }
+    if(!RM){
+      if(Math.random()<.14) spawnPulse();
+    }
+    if(t % 30 === 0) hudFromLive();
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // Flat field — no soft radial haze behind the graph
+    ctx.fillStyle = 'rgba(10,11,13,0)';
+    ctx.fillRect(0,0,W,H);
+
+    // links — thin gold hairlines, low opacity
+    ctx.lineWidth = 1;
+    for(const [a,b] of LINKS){
+      const A=NODES[a], B=NODES[b];
+      const g = ctx.createLinearGradient(A.x,A.y,B.x,B.y);
+      g.addColorStop(0,'rgba(143,176,222,.16)');
+      g.addColorStop(1,'rgba(169,196,232,.10)');
+      ctx.strokeStyle=g;
+      ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+    }
+    // pulses — cool blue tip only (small)
+    for(const p of pulses){
+      const A=NODES[p.l[0]], B=NODES[p.l[1]];
+      const k = p.fwd ? p.t : 1-p.t;
+      const x = A.x+(B.x-A.x)*k, y = A.y+(B.y-A.y)*k;
+      ctx.drawImage(PULSE_GLOW, x-5, y-5, 10, 10);
+      ctx.fillStyle='rgba(238,250,255,.95)';
+      ctx.beginPath(); ctx.arc(x,y,1.4,0,7); ctx.fill();
+    }
+    // nodes — sharp dots, no blur shadow / halo
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    for(const n of NODES){
+      const breathe = 1 + Math.sin(n.ph*2)*.10;
+      const R = n.r*breathe;
+      ctx.fillStyle = n.big ? '#DCE7F5' : (n.alert ? '#ff8a95' : '#BCD2EE');
+      ctx.beginPath(); ctx.arc(n.x, n.y, Math.max(1.8,R*.32), 0, 7); ctx.fill();
+      // label — gold accent
+      ctx.font = (n.big?'600 11px':'500 9px')+' ui-monospace,Menlo,monospace';
+      ctx.fillStyle = n.big ? 'rgba(246,228,150,.95)' : (n.alert ? 'rgba(255,140,150,.88)' : 'rgba(143,176,222,.82)');
+      const lx = n.x + R*2.4, ly = n.y - R*.4;
+      ctx.fillText(n.id, lx, ly);
+      // status tag
+      if(n.tag && n.tagT>0){
+        ctx.font='600 9px ui-monospace,Menlo,monospace';
+        const w = ctx.measureText(n.tag.w).width;
+        ctx.globalAlpha = Math.min(1, n.tagT*3);
+        ctx.fillStyle='rgba(14,22,34,.78)';
+        ctx.fillRect(lx-3, ly+7, w+8, 13);
+        ctx.strokeStyle=n.tag.c; ctx.globalAlpha*=.9;
+        ctx.strokeRect(lx-3, ly+7, w+8, 13);
+        ctx.fillStyle=n.tag.c;
+        ctx.fillText(n.tag.w, lx+1, ly+14);
+        ctx.globalAlpha=1;
+      }
+    }
+  }
+
+  let running = true;
+  function loop(){
+    if(running){ if(!RM) step(); draw(); }
+    requestAnimationFrame(loop);
+  }
+  document.addEventListener('visibilitychange', ()=>{ running = !document.hidden; });
+
+  addEventListener('resize', size);
+  size();
+  // settle + first paint
+  for(let i=0;i<90;i++) step();
+  hudFromLive(); draw();
+  loop();
+  pullCortex();
+  setInterval(pullCortex, 30000);
+})();
+</script>
+</body>
+</html>

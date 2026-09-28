@@ -1,0 +1,21 @@
+{
+  "name": "cyre-guardian",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4",
+    "redis": "^4.7.1",
+    "viem": "^2.56.5"
+  },
+  "scripts": {
+    "test:seal": "node api/_seal.test.js",
+    "test:badge": "node api/_badge-registry.test.js && node api/_badge-seal-qr.test.js",
+    "test:badge-order": "node api/_badge-order.test.js && node scripts/badge-order-forbidden-words.test.js",
+    "test:badge-name-screen": "node api/_badge-name-screen.test.js",
+    "test:cert": "node api/_cert-registry.test.js"
+  }
+}

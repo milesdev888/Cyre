@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic Market Index — Cyre</title>
+  <meta name="description" content="Live Agentic Market index snapshot for cyre.dev — which Cyre x402 endpoints are listed, pricing, and L30D call stats.">
+  
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/homepage.css?v=cy3">
+  <link rel="stylesheet" href="/theme-purple-deep.css?v=cy3">
+  <link rel="stylesheet" href="/am.css?v=cy3">
+  <link rel="stylesheet" href="/theme-guardian.css?v=cy2">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="masthead shell">
+    <div class="pill">
+      <a class="brand" href="/" aria-label="CYRE home">
+        <span class="brand-orb" aria-hidden="true"></span>
+        <span>CY<span class="brand-r">R</span>E</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle menu">
+        <span class="nav-toggle-line" aria-hidden="true"></span>
+      </button>
+      <nav id="site-nav" class="nav nav-links" aria-label="Primary">
+        <a href="/builders" class="nav-builders">Builders</a>
+        <a href="/app" class="nav-app">Cyre App</a>
+        <a href="/monitor" class="nav-monitor">Monitor</a>
+        <a href="/am" class="nav-am">Agentic Market</a>
+        <a href="/docs">Docs</a>
+        <a href="/app#tokenomics" class="nav-token"><img src="/c7-cobra-256.png?v=c7g2" alt="" width="18" height="18">$C7</a>
+        <a href="/#access" class="req">Request access</a>
+      </nav>
+    </div>
+  </header>
+  <div id="am-root">
+    <div class="am-shell">
+      <header class="am-top">
+        <div class="am-kicker">Cyre · agentic market</div>
+        <h1><span>cyre.dev</span> on Agentic Market</h1>
+        <p class="am-sub">How the Coinbase Agentic Market indexes Cyre right now — live from their API.</p>
+        <p class="am-links">
+          <a href="/monitor">Settlement patch bay</a>
+          <a href="/SKILL.md">SKILL.md</a>
+          <a href="https://agentic.market" target="_blank" rel="noopener noreferrer">agentic.market</a>
+        </p>
+        <div class="am-meta" id="am-service-meta"></div>
+        <p class="am-updated" id="am-updated"></p>
+      </header>
+
+      <div class="am-err" id="am-err" hidden role="alert"></div>
+      <p class="am-loading" id="am-loading">Loading Agentic Market index…</p>
+
+      <div id="am-stats" class="am-stats" aria-label="Summary stats"></div>
+      <div id="am-cats" class="am-cats" aria-label="Category progress"></div>
+
+      <div class="am-panel">
+        <div class="am-panel-h">
+          <h2>All 36 paid product endpoints</h2>
+          <div class="am-pills" id="am-pills"></div>
+        </div>
+        <div class="am-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>AM</th>
+                <th>Category</th>
+                <th>Route</th>
+                <th>Price</th>
+                <th>L30D</th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <tbody id="am-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="am-foot">Pending rows = settled on cyre.dev but not yet visible in Agentic Market search. <a href="/monitor">← patch bay</a> · <a href="/">cyre.dev</a></p>
+    </div>
+  </div>
+  <script defer src="/am.js?v=am2"></script>
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var nav = document.getElementById('site-nav');
+      if (!navToggle || !nav) return;
+      navToggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('is-open');
+        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        document.body.classList.toggle('menu-open', open);
+      });
+    })();
+  </script>
+</body>
+</html>

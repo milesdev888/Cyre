@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Docs — Cyre</title>
+  <meta name="description" content="Human-readable Cyre API catalog — x402 paid endpoints, Agent Trinity, middleware skills. Machine-readable version at /SKILL.md.">
+  <meta property="og:title" content="API Docs — Cyre">
+  <meta property="og:description" content="Full Cyre x402 endpoint catalog for agents and developers. Patterns, not verdicts.">
+  <meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Cyre — The $C7 Loop">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+  <meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+  <link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+  <link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/homepage.css?v=cy3">
+  <link rel="stylesheet" href="/theme-purple-deep.css?v=cy3">
+  <link rel="stylesheet" href="/docs.css?v=cy3">
+  <link rel="stylesheet" href="/theme-guardian.css?v=cy2">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <header class="masthead shell">
+    <div class="pill">
+      <a class="brand" href="/" aria-label="CYRE home">
+        <span class="brand-orb" aria-hidden="true"></span>
+        <span>CY<span class="brand-r">R</span>E</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle menu">
+        <span class="nav-toggle-line" aria-hidden="true"></span>
+      </button>
+      <nav id="site-nav" class="nav nav-links" aria-label="Primary">
+        <a href="/builders" class="nav-builders">Builders</a>
+        <a href="/app" class="nav-app">Cyre App</a>
+        <a href="/monitor" class="nav-monitor">Monitor</a>
+        <a href="/am" class="nav-am">Agentic Market</a>
+        <a href="/docs" class="nav-docs">Docs</a>
+        <a href="/app#tokenomics" class="nav-token"><img src="/c7-cobra-256.png?v=c7g2" alt="" width="18" height="18">$C7</a>
+        <a href="/#access" class="req">Request access</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell docs-main">
+    <header class="docs-intro">
+      <h1>Cyre API docs</h1>
+      <p>Machine-readable version: <a href="/SKILL.md">/SKILL.md</a> · MCP + A2A discovery live.</p>
+    </header>
+    <div id="docs-fallback" class="docs-fallback" hidden></div>
+    <article id="docs-body" class="docs-body" aria-live="polite"></article>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script defer src="/docs.js?v=doc1"></script>
+  <script>
+    (function () {
+      var navToggle = document.querySelector('.nav-toggle');
+      var nav = document.getElementById('site-nav');
+      if (!navToggle || !nav) return;
+      navToggle.addEventListener('click', function () {
+        var open = nav.classList.toggle('is-open');
+        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        document.body.classList.toggle('menu-open', open);
+      });
+    })();
+  </script>
+</body>
+</html>

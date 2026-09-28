@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="/app-redirect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$C7 Community &amp; Growth — CYRE</title>
+<meta name="description" content="5,000,000 $C7 (5% of supply) reserved and locked for community &amp; growth. No campaign is active — programs are announced post-launch.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+<style>
+  :root{
+    --ice:#8FB0DE; --teal:#4fe3d0; --bg:#04070c;
+    --glass:rgba(13,22,34,.55); --line:rgba(143,176,222,.18);
+    --txt:#dbe9f4; --dim:#8fa6b8; --red:#ff5f6b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+    background:radial-gradient(1200px 800px at 70% -10%, #0a1a2c 0%, var(--bg) 55%);
+    color:var(--txt); min-height:100vh; overflow-x:hidden;
+  }
+  body::before,body::after{
+    content:""; position:fixed; border-radius:50%; filter:blur(90px); z-index:0; pointer-events:none;
+  }
+  body::before{width:420px;height:420px;background:rgba(143,176,222,.10);top:-120px;left:-120px}
+  body::after{width:380px;height:380px;background:rgba(79,227,208,.08);bottom:-100px;right:-100px}
+  .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 20px 80px}
+
+  /* nav */
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:18px 0 46px;padding:12px 20px;border:1px solid var(--line);
+    border-radius:999px;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  }
+  .nav a{color:var(--dim);text-decoration:none;font-size:14px;margin-left:18px}
+  .nav a:hover,.nav a:focus-visible{color:var(--ice)}
+  .brand{font-weight:800;letter-spacing:.14em;color:var(--txt)!important;margin:0!important;font-size:15px!important}
+  .brand b{color:var(--ice)}
+
+  /* hero */
+  .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:.22em;color:var(--teal);
+    border:1px solid rgba(79,227,208,.3);border-radius:999px;padding:6px 14px;margin-bottom:18px;
+  }
+  h1{
+    font-size:clamp(44px,9vw,76px);font-weight:800;letter-spacing:-.02em;line-height:1.02;
+    background:linear-gradient(120deg,#fff 15%,#A9C4E8 55%,#8FB0DE);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .h-sub{margin-top:14px;color:var(--dim);font-size:17px;line-height:1.6}
+  .split-line{
+    display:flex;gap:0;margin:26px 0 8px;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .split-seg{padding:14px 16px;flex:2;border-right:1px solid var(--line)}
+  .split-seg:last-child{flex:1;border-right:none}
+  .split-seg .n{font-weight:800;font-size:19px;color:var(--ice)}
+  .split-seg:last-child .n{color:var(--teal)}
+  .split-seg .l{font-size:12px;color:var(--dim);letter-spacing:.08em;margin-top:2px}
+
+  /* tabs */
+  .tabs{display:flex;gap:10px;margin:40px 0 22px}
+  .tab{
+    flex:1;padding:14px 10px;border-radius:999px;border:1px solid var(--line);
+    background:var(--glass);color:var(--dim);font-size:15px;font-weight:700;cursor:pointer;
+    letter-spacing:.04em;transition:all .25s;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .tab:hover{color:var(--txt)}
+  .tab[aria-selected="true"]{
+    color:#ECE8DF;background:linear-gradient(120deg,#8FB0DE,#A9C4E8);
+    border-color:transparent;box-shadow:0 0 24px rgba(143,176,222,.35);
+  }
+  .tab:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+  .panel{display:none}
+  .panel.on{display:block;animation:rise .35s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.panel.on{animation:none}}
+
+  /* cards */
+  .card{
+    border:1px solid var(--line);border-radius:18px;background:var(--glass);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    padding:22px;margin-bottom:14px;
+  }
+  .card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+  .idx{
+    width:26px;height:26px;flex:0 0 26px;border-radius:50%;font-size:13px;font-weight:800;color:#ECE8DF;
+    background:linear-gradient(120deg,#8FB0DE,#A9C4E8);display:flex;align-items:center;justify-content:center;
+  }
+  .card p{color:var(--dim);font-size:14.5px;line-height:1.65}
+  .card a{color:var(--ice);text-decoration:none}
+  .card a:hover{text-decoration:underline}
+  .pool-tag{font-size:12px;letter-spacing:.14em;color:var(--teal);margin:0 0 14px}
+
+  ul.rules{list-style:none;margin-top:4px}
+  ul.rules li{color:var(--dim);font-size:14.5px;line-height:1.7;padding-left:20px;position:relative}
+  ul.rules li::before{content:"◆";position:absolute;left:0;top:0;color:var(--ice);font-size:9px;line-height:2.4}
+
+  .cta{
+    display:inline-block;margin-top:10px;padding:14px 28px;border-radius:999px;font-weight:800;font-size:15px;
+    color:#ECE8DF;background:linear-gradient(120deg,#8FB0DE,#A9C4E8);text-decoration:none;
+    box-shadow:0 0 24px rgba(143,176,222,.3);transition:transform .2s;
+  }
+  .cta:hover{transform:translateY(-2px)}
+
+  /* warning */
+  .warn{
+    border:1px solid rgba(255,95,107,.4);border-radius:18px;padding:22px;margin-top:34px;
+    background:rgba(40,10,14,.45);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .warn h3{color:var(--red);font-size:15px;letter-spacing:.1em;margin-bottom:10px}
+  .warn p{color:#d9b9bd;font-size:14px;line-height:1.7}
+
+  .foot{margin-top:44px;border-top:1px solid var(--line);padding-top:20px;color:#5f7486;font-size:12.5px;line-height:1.7}
+  @media(max-width:560px){
+    .split-line{flex-direction:column}
+    .split-seg{border-right:none;border-bottom:1px solid var(--line)}
+    .split-seg:last-child{border-bottom:none}
+  }
+
+/* cortex-mesh1 — flat panel chrome; constellation is Cortex-only */
+html,body{background:var(--ink,#0E1622)!important}
+.hero{position:relative;background:transparent;z-index:1}
+.hero::before,.hero::after{content:none!important;display:none!important}
+#cy-ai-mesh{display:none!important}
+</style>
+  <link rel="stylesheet" href="/theme-guardian.css?v=cy2">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="nav">
+    <a class="brand" href="/">CYRE <b>7</b></a>
+    <span>
+      <a href="/tokenomics">Tokenomics</a>
+      <a href="/roadmap">Roadmap</a>
+    </span>
+  </nav>
+
+  <span class="eyebrow">COMMUNITY &amp; GROWTH — 5% OF TOTAL SUPPLY</span>
+  <h1>5,000,000 $C7</h1>
+  <p class="h-sub">Reserved and locked for the people who make CYRE real — airdrops, creator rewards, exchange listings, and growth. Programs are announced after launch to reward real participation, not follow-farming.</p>
+
+  <div class="split-line" aria-hidden="true">
+    <div class="split-seg"><div class="n">LOCKED</div><div class="l">UNUSED SUPPLY STAYS LOCKED</div></div>
+    <div class="split-seg"><div class="n">DISCLOSED</div><div class="l">EVERY MOVEMENT PUBLISHED</div></div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Airdrop pools">
+    <button class="tab" id="tab-comm" role="tab" aria-selected="true" aria-controls="panel-comm">Community</button>
+    <button class="tab" id="tab-cre" role="tab" aria-selected="false" aria-controls="panel-cre">Creators</button>
+  </div>
+
+  <!-- COMMUNITY -->
+  <section class="panel on" id="panel-comm" role="tabpanel" aria-labelledby="tab-comm">
+    <p class="pool-tag">COMMUNITY PROGRAMS — ANNOUNCED POST-LAUNCH</p>
+
+    <div class="card"><h3><span class="idx">1</span>No campaign is live right now</h3>
+      <p>The pre-launch entry campaign is closed. No snapshot is pending and entries are not being collected. If someone tells you otherwise, it’s a scam.</p></div>
+
+    <div class="card"><h3><span class="idx">2</span>How future drops work</h3>
+      <p>Programs are announced first on <a href="https://x.com/Cyredev888" rel="noopener">@Cyredev888</a> and on this page — nowhere else. They reward real participation: using Cyre, contributing, showing up. Not bot entries.</p></div>
+
+    <div class="card"><h3><span class="idx">3</span>There is never anything to claim</h3>
+      <p>No claim sites, no wallet connects, no signatures — ever. Distributions, when they happen, are direct transfers to announced recipients.</p></div>
+
+    <a class="cta" href="https://x.com/Cyredev888" rel="noopener">Follow @Cyredev888 for announcements</a>
+
+    <div class="card" style="margin-top:22px"><h3>The pool</h3>
+      <ul class="rules">
+        <li>5,000,000 $C7 — 5% of total supply, detailed on <a href="/tokenomics">cyre.dev/tokenomics</a>.</li>
+        <li>Covers airdrops, creator rewards, exchange listings, and marketing.</li>
+        <li>Unused supply stays locked. Every movement is disclosed.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CREATORS -->
+  <section class="panel" id="panel-cre" role="tabpanel" aria-labelledby="tab-cre">
+    <p class="pool-tag">CREATOR PROGRAM — FUNDED FROM THE 5% POOL</p>
+
+    <div class="card"><h3><span class="idx">1</span>Make one original post</h3>
+      <p>A thread or video about Cyre — confirmed with us before you post. The angle is yours — but it must be accurate. Try the live tool first at <a href="/check">cyre.dev/check</a>. No price predictions, no guarantees of any kind.</p></div>
+
+    <div class="card"><h3><span class="idx">2</span>Disclose the deal</h3>
+      <p>Your post must clearly state you're receiving $C7 for it — "#ad" or "I'm receiving $C7 tokens for this post." This is a legal requirement and it is not negotiable.</p></div>
+
+    <div class="card"><h3><span class="idx">3</span>Tokens unlock after graduation</h3>
+      <p>Creator allocations transfer 14 days after the $C7 pool graduates. No early unlocks, for anyone. You can tell your audience your tokens are locked — because they are.</p></div>
+
+    <div class="card"><h3>Conduct</h3>
+      <ul class="rules">
+        <li>No fake giveaways and no DMing followers about $C7.</li>
+        <li>Never post a contract address before it appears on <a href="/tokenomics">cyre.dev/tokenomics</a> and @Cyredev888.</li>
+        <li>Allocations are confirmed individually based on the deliverable and audience quality — reply quality beats follower count.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3>Apply</h3>
+      <p>DM <a href="https://x.com/Cyredev888" rel="noopener">@Cyredev888</a> with your handle, your SOL wallet, and the format you're planning (thread or video). We confirm your allocation before you post.</p></div>
+
+    <a class="cta" href="https://x.com/Cyredev888" rel="noopener">Apply on X</a>
+  </section>
+
+  <div class="warn">
+    <h3>CYRE'S WARNING</h3>
+    <p>We will never message you first. We will never ask you to connect a wallet, sign a transaction, or send funds to qualify. The $C7 contract address will be published only on <a href="/tokenomics" style="color:var(--red)">cyre.dev/tokenomics</a> and @Cyredev888 — any address posted anywhere else is fake.</p>
+  </div>
+
+  <p class="foot">Community &amp; growth distributions are promotional, not an offer or sale of securities, and carry no promise of value. Program sizes, eligibility, and timing may be adjusted for compliance. Void where prohibited.</p>
+
+</div>
+
+<script>
+(function(){
+  var tabs=[document.getElementById('tab-comm'),document.getElementById('tab-cre')];
+  var panels=[document.getElementById('panel-comm'),document.getElementById('panel-cre')];
+  function pick(i){
+    tabs.forEach(function(t,j){t.setAttribute('aria-selected', j===i ? 'true':'false');});
+    panels.forEach(function(p,j){p.classList.toggle('on', j===i);});
+  }
+  tabs.forEach(function(t,i){ t.addEventListener('click',function(){ pick(i); history.replaceState(null,'', i===1?'#creators':'#community'); }); });
+  tabs.forEach(function(t,i){ t.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ var n=(i+1)%2; tabs[n].focus(); pick(n); }
+  });});
+  if(location.hash==='#creators') pick(1);
+})();
+</script>
+<script defer src="/embed-mode.js"></script>
+<script src="/ai-vibe-loader.js?v=fab-portal1" defer></script>
+</body>
+</html>

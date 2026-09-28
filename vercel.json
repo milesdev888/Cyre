@@ -1,0 +1,572 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "functions": {
+    "api/badge-og.js": {
+      "includeFiles": "brand/seals/**"
+    },
+    "api/badge-seal.js": {
+      "includeFiles": "brand/seals/**"
+    },
+    "api/verify-og.js": {
+      "includeFiles": "brand/seals/**"
+    },
+    "api/cert-image.js": {
+      "memory": 1024
+    },
+    "api/cert-blend.js": {
+      "memory": 1024
+    }
+  },
+  "headers": [
+    {
+      "source": "/token-metadata.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, HEAD, OPTIONS" },
+        { "key": "Cache-Control", "value": "public, max-age=60, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/c7-cobra-:size.png",
+      "headers": [
+        { "key": "Content-Type", "value": "image/png" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/c7-cobra-:size-transparent.png",
+      "headers": [
+        { "key": "Content-Type", "value": "image/png" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/(cyre-token-icon|cyre-token-ticker|cyre-token|guardian-c7-cobra)-:size.png",
+      "headers": [
+        { "key": "Content-Type", "value": "image/png" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(homepage|theme-purple-deep|theme-guardian).css",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(vortex|hero-meteors|guardian-head|guardian-cortex|guardian-net|guardian-home-report).js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/app",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/app.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/scan",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/scan.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/check",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/check.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/app-redirect.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/guardian-app.(js|css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(scan-swap|swap-config|embed-mode).(js|css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/monitor",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/monitor.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/monitor.(css|js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/am",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/am.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/am.(css|js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(openapi.json|robots.txt)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/scan-evm.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/verify/:serial",
+      "destination": "/verify?serial=:serial",
+      "permanent": false
+    },
+    {
+      "source": "/v/:serial",
+      "destination": "/verify?serial=:serial",
+      "permanent": false
+    },
+    {
+      "source": "/scan",
+      "missing": [
+        {
+          "type": "query",
+          "key": "embed",
+          "value": "1"
+        }
+      ],
+      "destination": "https://scan.cyre.dev/app",
+      "permanent": false
+    },
+    {
+      "source": "/scan.html",
+      "missing": [
+        {
+          "type": "query",
+          "key": "embed",
+          "value": "1"
+        }
+      ],
+      "destination": "https://scan.cyre.dev/app",
+      "permanent": false
+    },
+    {
+      "source": "/apps",
+      "destination": "/app",
+      "permanent": true
+    },
+    {
+      "source": "/community",
+      "destination": "/airdrop",
+      "permanent": true
+    },
+    {
+      "source": "/.well-known/agent-card.json",
+      "destination": "https://cyre-fraud-prediction.onrender.com/.well-known/agent-card.json",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/brand/guardian-wordmark.jpg",
+      "destination": "/api/brand-asset?file=guardian-wordmark.jpg"
+    },
+    {
+      "source": "/brand/guardian-wordmark@2x.jpg",
+      "destination": "/api/brand-asset?file=guardian-wordmark@2x.jpg"
+    },
+    {
+      "source": "/brand/guardian-wordmark-og.jpg",
+      "destination": "/api/brand-asset?file=guardian-wordmark-og.jpg"
+    },
+    {
+      "source": "/brand/guardian-x-banner.jpg",
+      "destination": "/api/brand-asset?file=guardian-x-banner.jpg"
+    },
+    {
+      "source": "/brand/guardian-x-banner@2x.jpg",
+      "destination": "/api/brand-asset?file=guardian-x-banner@2x.jpg"
+    },
+    {
+      "source": "/api/multichain-scan",
+      "destination": "https://scan.cyre.dev/api/scan"
+    },
+    {
+      "source": "/api/card/:mint.png",
+      "destination": "https://scan.cyre.dev/api/card/:mint.png"
+    },
+    {
+      "source": "/api/card/:mint/og.png",
+      "destination": "https://scan.cyre.dev/api/card/:mint/og.png"
+    },
+    {
+      "source": "/api/card/:mint/og",
+      "destination": "https://scan.cyre.dev/api/card/:mint/og.png"
+    },
+    {
+      "source": "/api/card/:mint",
+      "destination": "https://scan.cyre.dev/api/card/:mint.png"
+    },
+    {
+      "source": "/api/supply/circulating",
+      "destination": "/api/supply-circulating"
+    },
+    {
+      "source": "/api/passport/verify",
+      "destination": "/api/passport-verify"
+    },
+    {
+      "source": "/api/cert/nonce",
+      "destination": "/api/cert-nonce"
+    },
+    {
+      "source": "/api/cert/claim",
+      "destination": "/api/cert-claim"
+    },
+    {
+      "source": "/api/cert/dissolve",
+      "destination": "/api/cert-dissolve"
+    },
+    {
+      "source": "/api/cert/proof",
+      "destination": "/api/cert-proof"
+    },
+    {
+      "source": "/api/cert/recheck",
+      "destination": "/api/cert-recheck"
+    },
+    {
+      "source": "/api/cert/blend",
+      "destination": "/api/cert-blend"
+    },
+    {
+      "source": "/api/cert/:serial.png",
+      "destination": "/api/cert-image?serial=:serial"
+    },
+    {
+      "source": "/api/cert/:serial",
+      "destination": "/api/cert-get?serial=:serial"
+    },
+    {
+      "source": "/api/cert",
+      "destination": "/api/cert-get"
+    },
+    {
+      "source": "/api/badge/verify",
+      "destination": "/api/badge-verify"
+    },
+    {
+      "source": "/api/badge/register",
+      "destination": "/api/badge-register"
+    },
+    {
+      "source": "/api/badge/order/watch",
+      "destination": "/api/badge-order?watch=1"
+    },
+    {
+      "source": "/api/badge/order",
+      "destination": "/api/badge-order"
+    },
+    {
+      "source": "/api/badge/founder",
+      "destination": "/api/badge-founder"
+    },
+    {
+      "source": "/founder",
+      "destination": "/api/founder-page"
+    },
+    {
+      "source": "/api/badge/burn-ledger",
+      "destination": "/api/badge-burn-ledger"
+    },
+    {
+      "source": "/api/badge/qualify",
+      "destination": "/api/badge-qualify"
+    },
+    {
+      "source": "/seal",
+      "destination": "/api/seal-app"
+    },
+    {
+      "source": "/api/seal-api",
+      "destination": "/api/seal-api"
+    },
+    {
+      "source": "/api/seal-image",
+      "destination": "/api/seal-image"
+    },
+    {
+      "source": "/s/:serial",
+      "destination": "/api/seal-check?serial=:serial"
+    },
+    {
+      "source": "/seal-sw.js",
+      "destination": "/seal-sw.js"
+    },
+    {
+      "source": "/seal-manifest.webmanifest",
+      "destination": "/seal-manifest.webmanifest"
+    },
+    {
+      "source": "/order/:id",
+      "destination": "/api/order-page?id=:id"
+    },
+    {
+      "source": "/order",
+      "destination": "/api/order-page"
+    },
+    {
+      "source": "/api/badge/og",
+      "destination": "/api/badge-og"
+    },
+    {
+      "source": "/api/seal/:serial/og.png",
+      "destination": "/api/badge-seal?serial=:serial&og=1"
+    },
+    {
+      "source": "/api/seal/:serial/og",
+      "destination": "/api/badge-seal?serial=:serial&og=1"
+    },
+    {
+      "source": "/api/seal/:serial/ui.png",
+      "destination": "/api/badge-seal?serial=:serial&ui=1"
+    },
+    {
+      "source": "/api/seal/:serial/ui",
+      "destination": "/api/badge-seal?serial=:serial&ui=1"
+    },
+    {
+      "source": "/api/seal/:serial",
+      "destination": "/api/badge-seal?serial=:serial"
+    },
+    {
+      "source": "/api/seal",
+      "destination": "/api/badge-seal"
+    },
+    {
+      "source": "/api/verify/:serial/og.png",
+      "destination": "/api/verify-og?serial=:serial"
+    },
+    {
+      "source": "/api/verify/:serial/og",
+      "destination": "/api/verify-og?serial=:serial"
+    },
+    {
+      "source": "/verify",
+      "destination": "/api/verify-page"
+    },
+    {
+      "source": "/api/receipt/verify",
+      "destination": "/api/receipt-verify"
+    },
+    {
+      "source": "/api/policy/verify",
+      "destination": "/api/policy-verify"
+    },
+    {
+      "source": "/api/policy/check",
+      "destination": "/api/policy-check"
+    },
+    {
+      "source": "/api/intent/verify",
+      "destination": "/api/intent-verify"
+    },
+    {
+      "source": "/api/cron-receipt/verify",
+      "destination": "/api/cron-receipt-verify"
+    },
+    {
+      "source": "/api/lockbox/verify",
+      "destination": "/api/lockbox-verify"
+    },
+    {
+      "source": "/api/lockbox/match",
+      "destination": "/api/lockbox-match"
+    },
+    {
+      "source": "/api/stream/subscribe",
+      "destination": "/api/stream-subscribe"
+    },
+    {
+      "source": "/api/stream/events",
+      "destination": "/api/stream-events"
+    },
+    {
+      "source": "/api/stream/verify",
+      "destination": "/api/stream-verify"
+    },
+    {
+      "source": "/api/exchange/post",
+      "destination": "/api/exchange-post"
+    },
+    {
+      "source": "/api/exchange/match",
+      "destination": "/api/exchange-match"
+    },
+    {
+      "source": "/api/exchange/feed",
+      "destination": "/api/exchange-feed"
+    },
+    {
+      "source": "/api/exchange/verify",
+      "destination": "/api/exchange-verify"
+    },
+    {
+      "source": "/api/circuit/seal",
+      "destination": "/api/circuit-seal"
+    },
+    {
+      "source": "/api/circuit/heartbeat",
+      "destination": "/api/circuit-heartbeat"
+    },
+    {
+      "source": "/api/circuit/check",
+      "destination": "/api/circuit-check"
+    },
+    {
+      "source": "/api/circuit/verify",
+      "destination": "/api/circuit-verify"
+    },
+    {
+      "source": "/api/monitor/feed",
+      "destination": "/api/monitor-feed"
+    },
+    {
+      "source": "/api/am",
+      "destination": "/api/am"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cert/recheck",
+      "schedule": "0 6 */3 * *"
+    }
+  ]
+}

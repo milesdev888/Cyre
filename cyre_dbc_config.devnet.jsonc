@@ -1,0 +1,99 @@
+{
+  /* ============================================================
+   * $C7 — Meteora DBC DEVNET REHEARSAL config
+   * Tiny graduation (2 SOL) so you can buy through the curve with
+   * faucet SOL and verify leftover / LP lock / team vest math.
+   * Copy into meteora-invent/studio/config/ as dbc_config.jsonc
+   * Replace ALL PASTE_YOUR_DEVNET_WALLET_PUBKEY with your keygen pubkey.
+   * ============================================================ */
+
+  "rpcUrl": "https://api.devnet.solana.com",
+
+  "dryRun": true,
+
+  "keypairFilePath": "./keypair.json",
+
+  "computeUnitPriceMicroLamports": 100000,
+
+  "quoteMint": "So11111111111111111111111111111111111111112",
+
+  "dbcConfig": {
+    /* Tiny curve on purpose — graduate with ~2 SOL of faucet buys. */
+    "buildCurveMode": 1,
+    "initialMarketCap": 0.5,
+    "migrationMarketCap": 2,
+
+    "token": {
+      "totalTokenSupply": 100000000,
+      "tokenBaseDecimal": 6,
+      "tokenQuoteDecimal": 9,
+      "tokenType": 0,
+      "tokenAuthorityOption": 1,
+      /* 65M off-curve = 60M treasury + 5M community/growth — must land
+       * in leftoverReceiver after migration. */
+      "leftover": 65000000
+    },
+
+    "fee": {
+      "baseFeeParams": {
+        "baseFeeMode": 0,
+        "feeSchedulerParam": {
+          "startingFeeBps": 5000,
+          "endingFeeBps": 100,
+          "numberOfPeriod": 60,
+          "totalDuration": 60
+        }
+      },
+      "dynamicFeeEnabled": true,
+      "collectFeeMode": 0,
+      "creatorTradingFeePercentage": 50,
+      "poolCreationFee": 0,
+      "enableFirstSwapWithMinFee": false
+    },
+
+    "migration": {
+      "migrationOption": 1,
+      "migrationFeeOption": 2,
+      "migrationFee": {
+        "feePercentage": 0,
+        "creatorFeePercentage": 0
+      }
+    },
+
+    "liquidityDistribution": {
+      "partnerLiquidityPercentage": 0,
+      "creatorLiquidityPercentage": 0,
+      "partnerPermanentLockedLiquidityPercentage": 50,
+      "creatorPermanentLockedLiquidityPercentage": 50
+    },
+
+    "lockedVesting": {
+      "totalLockedVestingAmount": 10000000,
+      "numberOfVestingPeriod": 365,
+      "cliffUnlockAmount": 0,
+      "totalVestingDuration": 31536000,
+      "cliffDurationFromMigrationTime": 15552000
+    },
+
+    "activationType": 1,
+
+    "leftoverReceiver": "PASTE_YOUR_DEVNET_WALLET_PUBKEY",
+    "feeClaimer": "PASTE_YOUR_DEVNET_WALLET_PUBKEY"
+  },
+
+  "dbcPool": {
+    "creator": "PASTE_YOUR_DEVNET_WALLET_PUBKEY",
+    "name": "CYRE",
+    "symbol": "C7",
+    "metadata": {
+      "uri": "https://cyre.dev/token-metadata.json"
+    }
+  }
+,
+  "dbcSwap": {
+    "amountIn": 0.05,
+    "slippageBps": 5000,
+    "swapBaseForQuote": false,
+    "referralTokenAccount": null
+  }
+}

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Guardian badge mint</title>
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Guardian — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Guardian — The $C7 Loop">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#07080b; --panel:#0d130d; --line:#1f2634;
+    --ice:#d8bc66; --live:#3ddc84; --bad:#d96a5e;
+    --text:#e8eef6; --dim:#8892a4;
+  }
+  *{box-sizing:border-box; margin:0}
+  body{background:var(--ink); color:var(--text); font:400 16px/1.55 Inter,-apple-system,sans-serif;
+       padding:28px 20px 60px; max-width:560px; margin:0 auto}
+  h1{font:700 26px/1.2 Cormorant Garamond,Inter,sans-serif; letter-spacing:-.01em}
+  .sub{color:var(--dim); margin:8px 0 30px}
+  .step{border-top:1px solid var(--line); padding:20px 0 22px}
+  .step:last-of-type{border-bottom:1px solid var(--line)}
+  .head{display:flex; align-items:center; gap:10px}
+  .dot{width:10px; height:10px; border-radius:50%; background:var(--line); flex:none; transition:background .3s}
+  .dot.on{background:var(--live); box-shadow:0 0 10px rgba(61,220,132,.55)}
+  .dot.err{background:var(--bad); box-shadow:0 0 10px rgba(255,77,94,.5)}
+  .dot.busy{background:var(--ice); animation:pulse 1.2s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  @media (prefers-reduced-motion:reduce){.dot.busy{animation:none}}
+  .head b{font-weight:600}
+  .body{margin:10px 0 0 20px; color:var(--dim); font-size:15px}
+  .body strong{color:var(--text); font-weight:600}
+  button{margin:14px 0 0 20px; background:none; border:1px solid var(--ice); color:var(--ice);
+         font:600 15px Inter,sans-serif; padding:11px 20px; border-radius:8px; cursor:pointer}
+  button:disabled{border-color:var(--line); color:var(--dim); cursor:default}
+  button.pay{background:var(--ice); color:var(--ink)}
+  button.pay:disabled{background:none}
+  button:focus-visible{outline:2px solid var(--live); outline-offset:2px}
+  .mono{font-family:ui-monospace,Menlo,monospace; font-size:13px; word-break:break-all; color:var(--text)}
+  .box{margin:12px 0 0 20px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px}
+  .warn{color:var(--bad)} .ok{color:var(--live)}
+  a{color:var(--ice)}
+  #log{white-space:pre-wrap}
+  .badgeimg{margin-top:10px; height:24px}
+  .tiny{font-size:13px; color:var(--dim); margin-top:26px}
+</style>
+  <link rel="stylesheet" href="/theme-guardian.css?v=gf1">
+</head>
+<body>
+<h1>Guardian badge mint</h1>
+<p class="sub">Pays x402station from this phone — their servers refuse cloud IPs, so this runs from yours. Money only moves when a button says so.</p>
+
+<div class="step" id="s1">
+  <div class="head"><span class="dot busy" id="d1"></span><b>1 · Reach their server</b></div>
+  <div class="body" id="b1">Testing whether x402station accepts calls from this browser. Free — nothing is signed or sent from any wallet.</div>
+</div>
+
+<div class="step" id="s2">
+  <div class="head"><span class="dot" id="d2"></span><b>2 · Fund the burner wallet</b></div>
+  <div class="body" id="b2">
+    A fresh wallet lives only in this page (saved in this browser so a reload doesn't lose it). Send it
+    <strong>1.06 USDC on Base</strong> from Trust Wallet — that's its entire spending power, so nothing can take more.
+    <div class="box"><div>Address</div><div class="mono" id="addr">—</div></div>
+    <div class="box"><div>Balance</div><div class="mono" id="bal">checking…</div></div>
+  </div>
+  <button id="copyAddr">Copy address</button>
+  <button id="showKey">Show recovery key</button>
+  <div class="box" id="keyBox" style="display:none">
+    <div class="warn">Private key — screenshot or copy it. Import into Trust Wallet later to sweep any leftover USDC back.</div>
+    <div class="mono" id="pk"></div>
+  </div>
+</div>
+
+<div class="step" id="s3">
+  <div class="head"><span class="dot" id="d3"></span><b>3 · Preflight — pays $0.001</b></div>
+  <div class="body">Asks their oracle how it rates <span class="mono">cyre.dev/api/address</span>. If it answers <span class="mono">unknown_endpoint</span> or <span class="mono">no_history</span>, the $1 mint would fail — stop there.</div>
+  <button class="pay" id="preflight" disabled>Run preflight · $0.001</button>
+  <div class="box" style="display:none" id="preBox"><div class="mono" id="preOut"></div></div>
+</div>
+
+<div class="step" id="s4">
+  <div class="head"><span class="dot" id="d4"></span><b>4 · Mint the badge — pays $1</b></div>
+  <div class="body">Charged whether or not the audit passes. Unlocks when preflight looks clean; <a href="#" id="force">mint anyway</a> overrides.</div>
+  <button class="pay" id="mint" disabled>Mint badge · $1.00</button>
+  <div class="box" style="display:none" id="mintBox"><div class="mono" id="mintOut"></div><img class="badgeimg" id="badgeImg" style="display:none" alt="Verified by x402station"></div>
+</div>
+
+<p class="tiny" id="log"></p>
+
+<script type="module">
+const ST = 'https://x402station.io/api/v1';
+const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+const RPC = 'https://mainnet.base.org';
+const TARGET = { url: 'https://cyre.dev/api/address' };
+const $ = (id) => document.getElementById(id);
+const log = (m) => { $('log').textContent += m + '\n'; };
+const dot = (n, cls) => { const d = $('d'+n); d.className = 'dot' + (cls ? ' '+cls : ''); };
+
+let account, payFetch;
+
+// ---------- Step 1: reachability + CORS ----------
+async function testReach(){
+  try {
+    const r = await fetch(ST + '/preflight', {
+      method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(TARGET)
+    });
+    if (r.status !== 402) { dot(1,'err'); $('b1').innerHTML = '<span class="warn">Unexpected reply (HTTP '+r.status+'). Their paid endpoint should answer 402 — stopping here.</span>'; return false; }
+    const hdr = r.headers.get('payment-required');
+    let offer = null;
+    if (hdr) offer = 'header';
+    else { try { const j = await r.json(); if (j && j.accepts) offer = 'body'; } catch(e){} }
+    if (!offer) { dot(1,'err'); $('b1').innerHTML = '<span class="warn">Their server answered 402 but hides the payment offer from browsers (CORS). A page can\'t pay it — this one needs the computer tonight.</span>'; return false; }
+    dot(1,'on'); $('b1').innerHTML = '<span class="ok">Reachable — 402 received, payment offer readable ('+offer+'). Their block doesn\'t apply to this connection.</span>';
+    return true;
+  } catch (e) {
+    dot(1,'err');
+    $('b1').innerHTML = '<span class="warn">Couldn\'t connect from this browser ('+ (e.message||'network error') +'). Either they block browser calls (CORS) or this network too. No money moved — fall back to the computer tonight.</span>';
+    return false;
+  }
+}
+
+// ---------- Step 2: burner wallet + balance ----------
+async function initWallet(){
+  const { privateKeyToAccount, generatePrivateKey } = await import('https://esm.sh/viem/accounts');
+  let pk = localStorage.getItem('mint_pk');
+  if (!pk) { pk = generatePrivateKey(); localStorage.setItem('mint_pk', pk); }
+  account = privateKeyToAccount(pk);
+  $('addr').textContent = account.address;
+  $('pk').textContent = pk;
+  $('copyAddr').onclick = () => navigator.clipboard.writeText(account.address).then(()=>{ $('copyAddr').textContent='Copied'; setTimeout(()=>$('copyAddr').textContent='Copy address',1500); });
+  $('showKey').onclick = () => { $('keyBox').style.display='block'; };
+  pollBalance();
+}
+
+async function usdcBalance(){
+  const data = '0x70a08231000000000000000000000000' + account.address.slice(2).toLowerCase();
+  const r = await fetch(RPC, { method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({jsonrpc:'2.0', id:1, method:'eth_call', params:[{to:USDC, data}, 'latest']}) });
+  const j = await r.json();
+  return Number(BigInt(j.result || '0x0')) / 1e6;
+}
+
+let funded = false;
+async function pollBalance(){
+  try {
+    const b = await usdcBalance();
+    $('bal').textContent = b.toFixed(4) + ' USDC';
+    if (b >= 1.001 && !funded) { funded = true; dot(2,'on'); $('preflight').disabled = false; }
+    else if (!funded) dot(2,'busy');
+  } catch(e){ $('bal').textContent = 'balance check failed — retrying'; }
+  if (!funded) setTimeout(pollBalance, 10000);
+}
+
+// ---------- Payment client ----------
+async function payerFetch(){
+  if (payFetch) return payFetch;
+  const { wrapFetchWithPaymentFromConfig } = await import('https://esm.sh/@x402/fetch');
+  const { ExactEvmScheme } = await import('https://esm.sh/@x402/evm');
+  payFetch = wrapFetchWithPaymentFromConfig(fetch.bind(globalThis), {
+    schemes: [{ network: 'eip155:8453', client: new ExactEvmScheme(account) }]
+  });
+  return payFetch;
+}
+
+// ---------- Step 3: preflight ----------
+const BLOCKERS = ['unknown_endpoint','no_history','dead','zombie','dead_7d','mostly_dead'];
+$('preflight').onclick = async () => {
+  $('preflight').disabled = true; dot(3,'busy');
+  try {
+    const f = await payerFetch();
+    const r = await f(ST + '/preflight', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(TARGET) });
+    const j = await r.json();
+    $('preBox').style.display = 'block';
+    $('preOut').textContent = JSON.stringify(j, null, 1);
+    const warns = (j.warnings || []);
+    const blocked = warns.filter(w => BLOCKERS.includes(w));
+    if (r.ok && blocked.length === 0) {
+      dot(3,'on'); $('mint').disabled = false; dot(4,'busy');
+      log('Preflight clean — mint unlocked.');
+    } else {
+      dot(3,'err');
+      log('Preflight says: ' + (blocked.join(', ') || 'HTTP '+r.status) + ' — a $1 mint would likely fail. Hold.');
+    }
+  } catch (e) { dot(3,'err'); $('preflight').disabled = false; log('Preflight failed before payment completed: ' + (e.message||e)); }
+};
+
+// ---------- Step 4: mint ----------
+$('force').onclick = (e) => { e.preventDefault(); $('mint').disabled = false; dot(4,'busy'); log('Override: mint enabled without a clean preflight.'); };
+$('mint').onclick = async () => {
+  $('mint').disabled = true; dot(4,'busy');
+  try {
+    const f = await payerFetch();
+    const r = await f(ST + '/verified', { method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({ url: TARGET.url, name: 'CYRE Guardian' }) });
+    const j = await r.json();
+    $('mintBox').style.display = 'block';
+    $('mintOut').textContent = JSON.stringify(j, null, 1);
+    if (j.verified) {
+      dot(4,'on');
+      if (j.badgeUrl) { $('badgeImg').src = j.badgeUrl; $('badgeImg').style.display='inline'; }
+      log('Verified' + (j.tier ? ' ('+j.tier+')' : '') + '. Badge and page URLs are in the result above — screenshot this.');
+    } else {
+      dot(4,'err');
+      log('Mint completed but audit did not pass — the $1 bought the diagnostic above. Failing criteria are listed in it.');
+    }
+  } catch (e) { dot(4,'err'); $('mint').disabled = false; log('Mint failed: ' + (e.message||e)); }
+};
+
+// ---------- boot ----------
+(async () => {
+  const ok = await testReach();
+  await initWallet();
+  if (!ok) { $('preflight').disabled = true; $('mint').disabled = true; }
+})();
+</script>
+</body>
+</html>

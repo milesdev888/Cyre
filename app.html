@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>App — Cyre</title>
+  <meta name="description" content="Cyre Console — scan, check, watch, oracle, passport, and every product in one modern workspace. Patterns, not verdicts.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cyre.dev/app">
+  <meta property="og:title" content="App — Cyre">
+  <meta property="og:description" content="Every Cyre product in one workspace. Scan, check, watch, and more — patterns, not verdicts.">
+  <meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Cyredev888">
+  <meta name="twitter:title" content="App — Cyre">
+  <meta name="twitter:description" content="Every Cyre product in one workspace. Scan, check, watch, and more.">
+  <meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+  <link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+  <link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/guardian-app.css?v=cy2">
+  <script defer src="/guardian-app.js?v=fab-portal1"></script>
+</head>
+<body class="ga-app">
+  <div class="ga-shell">
+    <aside class="ga-brandbar" aria-label="Cyre navigation">
+      <a class="ga-brand" href="/app">
+        <span class="ga-brand-orb" aria-hidden="true"></span>
+        <span>
+          <strong>CYRE</strong>
+          <small>CYRE APP</small>
+        </span>
+      </a>
+
+      <nav class="ga-nav" aria-label="Products">
+        <div class="ga-nav-group">
+          <div class="ga-nav-label">Workspace</div>
+          <button type="button" class="ga-nav-item is-active" data-view="home">
+            <span class="ga-nav-icon" aria-hidden="true">⌂</span> Home
+          </button>
+        </div>
+
+        <div class="ga-nav-group">
+          <div class="ga-nav-label">Trade</div>
+          <button type="button" class="ga-nav-item" data-view="scan">
+            <span class="ga-nav-icon" aria-hidden="true">◎</span> Scan &amp; Swap
+          </button>
+        </div>
+
+        <div class="ga-nav-group">
+          <div class="ga-nav-label">Analyze</div>
+          <button type="button" class="ga-nav-item" data-view="check">
+            <span class="ga-nav-icon" aria-hidden="true">⎔</span> Check
+          </button>
+          <button type="button" class="ga-nav-item" data-view="score">
+            <span class="ga-nav-icon" aria-hidden="true">★</span> Score
+          </button>
+          <button type="button" class="ga-nav-item" data-view="passport">
+            <span class="ga-nav-icon" aria-hidden="true">▣</span> Passport
+          </button>
+          <button type="button" class="ga-nav-item" data-view="forensics">
+            <span class="ga-nav-icon" aria-hidden="true">◈</span> Forensics
+          </button>
+        </div>
+
+        <div class="ga-nav-group">
+          <div class="ga-nav-label">Monitor</div>
+          <button type="button" class="ga-nav-item" data-view="cortex">
+            <span class="ga-nav-icon" aria-hidden="true">⬡</span> Neural Cortex
+          </button>
+          <button type="button" class="ga-nav-item" data-view="watch">
+            <span class="ga-nav-icon" aria-hidden="true">◉</span> Watch
+          </button>
+          <button type="button" class="ga-nav-item" data-view="oracle">
+            <span class="ga-nav-icon" aria-hidden="true">↗</span> Oracle Pulse
+          </button>
+          <button type="button" class="ga-nav-item" data-view="signals">
+            <span class="ga-nav-icon" aria-hidden="true">≡</span> Signals
+          </button>
+        </div>
+
+        <div class="ga-nav-group">
+          <div class="ga-nav-label">Project</div>
+          <a class="ga-nav-item" href="/builders" style="text-decoration:none">
+            <span class="ga-nav-icon" aria-hidden="true">◇</span> Builders
+          </a>
+          <button type="button" class="ga-nav-item" data-view="tokenomics">
+            <span class="ga-nav-icon" aria-hidden="true">$</span> Tokenomics
+          </button>
+          <button type="button" class="ga-nav-item" data-view="roadmap">
+            <span class="ga-nav-icon" aria-hidden="true">→</span> Roadmap
+          </button>
+          <button type="button" class="ga-nav-item" data-view="airdrop">
+            <span class="ga-nav-icon" aria-hidden="true">✦</span> Airdrop
+          </button>
+          <button type="button" class="ga-nav-item" data-view="guardian">
+            <span class="ga-nav-icon" aria-hidden="true">◐</span> Talk to Cyre
+          </button>
+        </div>
+      </nav>
+
+      <p class="ga-sidebar-foot">Patterns, not verdicts. CYRE never DMs first. $C7 not swappable until mainnet.</p>
+    </aside>
+
+    <header class="ga-topbar">
+      <div>
+        <h1 id="ga-title">Cyre Console</h1>
+        <p id="ga-subtitle">All products in one workspace</p>
+      </div>
+      <div class="ga-live" id="ga-live" aria-live="polite">Connecting…</div>
+    </header>
+
+    <main class="ga-main">
+      <section class="ga-view ga-dashboard is-active" id="ga-home" aria-label="Dashboard">
+        <div class="ga-hero-card">
+          <div class="kicker">CYRE CONSOLE</div>
+          <h2>Every product. <span>One app.</span></h2>
+          <p>Scan before you swap, check any address, watch wallets, read oracle feeds, and carry explainable context — without jumping between pages.</p>
+          <div class="ga-quick">
+            <input id="ga-quick-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="Paste any address — Solana or 0x…" aria-label="Quick lookup">
+            <button type="button" id="ga-quick-go">Go</button>
+          </div>
+          <p class="ga-quick-hint" id="ga-quick-hint">Paste any address — Solana, Ethereum, Base, Arbitrum, Robinhood Chain. Opens the Cyre console.</p>
+        </div>
+
+        <div class="ga-grid" id="ga-card-grid" aria-label="Quick open products"></div>
+      </section>
+
+      <div id="ga-frames" style="display:none;position:absolute;inset:0;" aria-live="polite"></div>
+
+      <section class="ga-view ga-dashboard" id="ga-guardian" aria-label="Cyre chat">
+        <div class="ga-hero-card" style="max-width:520px;margin:22px">
+          <div class="kicker">CYRE CHAT</div>
+          <h2>Talk to <span>Cyre</span></h2>
+          <p>The full chat experience lives on the homepage — origin-locked API, patterns not verdicts, no wallet required to ask questions.</p>
+          <p style="margin-top:16px"><a class="btn-jup" href="/" target="_blank" rel="noopener" style="display:inline-flex;padding:14px 24px;border-radius:999px;font-weight:700;color:#061018;background:linear-gradient(90deg,#5fd0ff,#4fe3d0);text-decoration:none;font-family:var(--ga-display)">Open Cyre on homepage ↗</a></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="ga-bottom-nav" aria-label="Mobile navigation">
+    <button type="button" data-view="home" class="is-active"><span class="icon" aria-hidden="true">⌂</span>Home</button>
+    <button type="button" data-view="scan"><span class="icon" aria-hidden="true">◎</span>Scan</button>
+    <button type="button" data-view="check"><span class="icon" aria-hidden="true">⎔</span>Check</button>
+    <button type="button" data-view="watch"><span class="icon" aria-hidden="true">◉</span>Watch</button>
+    <button type="button" data-view="more"><span class="icon" aria-hidden="true">⋯</span>More</button>
+  </nav>
+
+  <div class="ga-more-sheet" id="ga-more-sheet" role="dialog" aria-modal="true" aria-label="More products">
+    <div class="ga-more-panel">
+      <h3>More products</h3>
+      <div class="ga-more-grid" id="ga-more-grid"></div>
+      <button type="button" id="ga-more-close" style="margin-top:14px;width:100%;padding:12px;border-radius:12px;border:1px solid rgba(95,208,255,.2);background:transparent;color:#94a3c4;cursor:pointer;">Close</button>
+    </div>
+  </div>
+</body>
+</html>

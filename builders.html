@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Builders · Cyre Verified</title>
+<meta name="description" content="Builder Hub — scan your mint, get Cyre Verified ($25 USDC / $20 $C7), verify serials, and share your seal. One place for token teams.">
+<link rel="canonical" href="https://cyre.dev/builders">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cyre.dev/builders">
+<meta property="og:title" content="Builders · Cyre Verified">
+<meta property="og:description" content="Scan, get verified, verify serials, and share your seal — one hub for token teams.">
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Builders · Cyre Verified">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<link rel="icon" href="/c7-cobra-256.png?v=c7g1" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1622;
+  --panel:#121C2B;
+  --line:#243246;
+  --cream:#ECE8DF;
+  --gold:#8FB0DE;
+  --gold-bright:#A9C4E8;
+  --muted:#9AA5B4;
+  --live:#5FBF7A;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  background:
+    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(143,176,222,.08), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 30%, rgba(95,191,122,.04), transparent 50%),
+    var(--bg);
+  color:var(--cream);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+.shell{max-width:720px;margin:0 auto;padding:0 20px}
+
+.masthead{position:sticky;top:0;z-index:50;background:rgba(14,22,34,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.masthead .shell{display:flex;align-items:center;justify-content:space-between;gap:12px;height:60px;max-width:1060px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600}
+.brand svg{flex:none}
+.nav{display:flex;align-items:center;gap:18px;font-size:.86rem;color:var(--muted)}
+.nav a:hover,.nav a[aria-current="page"]{color:var(--cream)}
+.nav a[aria-current="page"]{color:var(--gold)}
+.nav-toggle{display:none;background:none;border:1px solid var(--line);border-radius:8px;width:40px;height:36px;color:var(--cream);font-size:1.05rem;cursor:pointer}
+@media(max-width:760px){
+  .nav-toggle{display:block}
+  .nav{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;align-items:stretch;background:var(--panel);border-bottom:1px solid var(--line);padding:14px 20px;gap:14px}
+  .nav.open{display:flex}
+}
+
+.hero{padding:48px 0 36px;text-align:center}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;font-weight:600;
+  font-size:clamp(2.4rem,8vw,3.6rem);line-height:1.05;letter-spacing:-.01em;
+  background-image:linear-gradient(180deg,#CFE0F5 0%,#8FB0DE 48%,#4A6FA5 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+}
+.hero .lede{margin:16px auto 0;max-width:34em;color:var(--muted);font-size:1.02rem}
+.hero .lede b{color:var(--cream);font-weight:600}
+.hero-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  font:600 14px/1 'Inter',system-ui,sans-serif;padding:13px 20px;border-radius:8px;
+  border:1px solid transparent;cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+}
+.btn-primary{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.btn-primary:hover{background:var(--gold-bright)}
+.btn-ghost{background:transparent;color:var(--gold);border-color:rgba(143,176,222,.4)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--cream);background:rgba(143,176,222,.06)}
+
+.hub{padding:8px 0 56px}
+.block{padding:36px 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:0;padding-top:12px}
+.block h2{
+  font-family:'Cormorant Garamond',serif;font-weight:600;
+  font-size:clamp(1.55rem,4vw,2rem);line-height:1.15;margin-bottom:8px;
+}
+.block .sub{color:var(--muted);font-size:.95rem;margin-bottom:18px;max-width:36em}
+.mono-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+
+.scanbar{display:flex;gap:8px;flex-wrap:wrap}
+.scanbar input{
+  flex:1 1 200px;min-width:0;padding:14px 16px;border-radius:8px;border:1px solid var(--line);
+  background:#0E1622;color:var(--cream);font:500 15px/1.3 'JetBrains Mono',monospace;
+}
+.scanbar button{flex:0 0 auto;padding:14px 22px;border:0;border-radius:8px;background:var(--gold);color:var(--bg);font:600 14px/1 'Inter',sans-serif;cursor:pointer}
+.scanbar button:hover{background:var(--gold-bright)}
+.hint{margin-top:10px;font-size:.8rem;color:var(--muted)}
+
+.paths{display:grid;gap:14px}
+@media(min-width:560px){.paths{grid-template-columns:1fr 1fr}}
+.path{
+  padding:18px 16px;border-radius:10px;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(143,176,222,.05),transparent 70%);
+}
+.path h3{font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;color:var(--gold);margin-bottom:6px}
+.path p{font-size:.9rem;color:var(--muted);line-height:1.55}
+.equal{display:inline-block;margin-bottom:8px;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.06em;color:var(--live);border:1px solid rgba(95,191,122,.4);border-radius:4px;padding:4px 8px}
+
+.price-row{display:grid;gap:10px;margin:18px 0 16px}
+@media(min-width:480px){.price-row{grid-template-columns:1fr 1fr}}
+.price{
+  padding:16px;border:1px solid var(--line);border-radius:10px;background:rgba(18,28,43,.8);
+}
+.price .amt{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.85rem;line-height:1.1}
+.price .amt span{font-size:.95rem;color:var(--muted);font-weight:600}
+.price p{margin-top:6px;font-size:.82rem;color:var(--muted)}
+.burn-note{font-size:.82rem;color:var(--muted);margin-bottom:16px}
+.burn-note strong{color:var(--cream);font-weight:600}
+
+.verify-row{display:flex;gap:8px;flex-wrap:wrap}
+.verify-row input{
+  flex:1 1 180px;min-width:0;padding:14px 16px;border-radius:8px;border:1px solid var(--line);
+  background:#0E1622;color:var(--cream);font:500 14px/1.3 'JetBrains Mono',monospace;text-transform:uppercase;
+}
+.verify-row button{flex:0 0 auto;padding:14px 20px;border:0;border-radius:8px;background:var(--gold);color:var(--bg);font:600 14px/1 'Inter',sans-serif;cursor:pointer}
+
+.seal-list{list-style:none;margin-top:4px}
+.seal-list li{
+  padding:12px 0;border-bottom:1px solid var(--line);font-size:.92rem;color:var(--muted);
+  display:flex;flex-direction:column;gap:4px;
+}
+.seal-list li:last-child{border-bottom:0}
+.seal-list strong{color:var(--cream);font-weight:600;font-size:.88rem}
+.seal-list a{color:var(--gold)}
+.seal-list a:hover{text-decoration:underline}
+
+.docs-links{display:flex;flex-direction:column;gap:10px}
+.docs-links a{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:14px 16px;border:1px solid var(--line);border-radius:8px;
+  background:rgba(18,28,43,.65);color:var(--cream);font-size:.92rem;
+}
+.docs-links a:hover{border-color:rgba(143,176,222,.45);background:rgba(143,176,222,.06)}
+.docs-links a span{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--gold);letter-spacing:.04em}
+
+footer{
+  border-top:1px solid var(--line);padding:22px 0 40px;color:var(--muted);font-size:.78rem;line-height:1.65;
+}
+footer .shell{max-width:1060px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{color:var(--gold)}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="shell">
+    <a class="brand" href="/" aria-label="Cyre home">
+      <svg width="30" height="30" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="21.5" stroke="#8FB0DE" stroke-width="1.6"/>
+        <path d="M24 10c4.6 2.6 8.4 3.4 11 3.6v10.2c0 7.4-4.6 11.9-11 14.6-6.4-2.7-11-7.2-11-14.6V13.6c2.6-.2 6.4-1 11-3.6z" stroke="#8FB0DE" stroke-width="1.6" fill="none"/>
+        <path d="M15.5 24.5c2.6-3.4 5.4-5.1 8.5-5.1s5.9 1.7 8.5 5.1c-2.6 3.4-5.4 5.1-8.5 5.1s-5.9-1.7-8.5-5.1z" stroke="#ECE8DF" stroke-width="1.4" fill="none"/>
+        <circle cx="24" cy="24.5" r="2.4" fill="#8FB0DE"/>
+      </svg>
+      Cyre
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle menu">☰</button>
+    <nav id="site-nav" class="nav" aria-label="Primary">
+      <a href="/builders" aria-current="page">Builders</a>
+      <a href="/app">App</a>
+      <a href="/monitor">Monitor</a>
+      <a href="/am">Agentic Market</a>
+      <a href="/docs">Docs</a>
+      <a href="/verify">Verify</a>
+      <a href="/app#tokenomics">$C7</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="shell">
+      <p class="kicker">Builder Hub</p>
+      <h1>Cyre</h1>
+      <p class="lede">One place for token teams: <b>scan</b>, <b>get verified</b>, <b>check a serial</b>, and <b>share your seal</b>.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#get-verified">Get Verified</a>
+        <a class="btn btn-ghost" href="#scan">Scan a mint</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="hub shell">
+    <section class="block" id="scan" aria-labelledby="scan-title">
+      <p class="mono-label">01 · Scan</p>
+      <h2 id="scan-title">Read your mint on-chain</h2>
+      <p class="sub">Paste any Solana or EVM mint. Cyre finds the chain and returns the qualifying-path read — patterns, not verdicts.</p>
+      <form class="scanbar" action="https://scan.cyre.dev/" method="get">
+        <input type="text" name="address" inputmode="text" autocomplete="off" spellcheck="false"
+          placeholder="Mint or contract address" aria-label="Mint address to scan" required>
+        <button type="submit">Open scanner</button>
+      </form>
+      <p class="hint">Opens scan.cyre.dev with your address. No new API — same scanner builders already use.</p>
+    </section>
+
+    <section class="block" id="get-verified" aria-labelledby="verify-path-title">
+      <p class="mono-label">02 · Get Verified</p>
+      <h2 id="verify-path-title">Two equal paths. Same seal.</h2>
+      <p class="sub">Qualification is earned on-chain first. Payment never buys a non-qualifying badge.</p>
+      <div class="paths">
+        <div class="path">
+          <span class="equal">EQUAL PRESTIGE</span>
+          <h3>SECURED</h3>
+          <p>Lifetime or Timed lock evidence — LP burned or locked long enough to clear the bar.</p>
+        </div>
+        <div class="path">
+          <span class="equal">EQUAL PRESTIGE</span>
+          <h3>ESTABLISHED</h3>
+          <p>Battle-Tested — age, pools, and decentralization. Age alone never qualifies.</p>
+        </div>
+      </div>
+      <div class="price-row">
+        <div class="price">
+          <div class="amt">$25 <span>USDC</span></div>
+          <p>Ethereum · Base · Arbitrum (Solana USDC held until treasury confirmed)</p>
+        </div>
+        <div class="price">
+          <div class="amt">$20 <span>$C7</span></div>
+          <p>Solana · amount locked 30 minutes at order time</p>
+        </div>
+      </div>
+      <p class="burn-note"><strong>$C7 payments</strong> are recorded in the burn ledger and burned weekly. Founder brand-safety approval may still hold flagged names.</p>
+      <a class="btn btn-primary" href="/order">Continue to checkout →</a>
+    </section>
+
+    <section class="block" id="verify-serial" aria-labelledby="serial-title">
+      <p class="mono-label">03 · Verify a serial</p>
+      <h2 id="serial-title">Live re-check any badge</h2>
+      <p class="sub">Enter a Cyre serial. Failed live checks mark the badge REVOKED.</p>
+      <form class="verify-row" id="serialForm" action="/verify" method="get">
+        <input id="serialInput" name="serial" spellcheck="false" autocomplete="off"
+          placeholder="GRD-2026-00001" aria-label="Badge serial" required>
+        <button type="submit">Verify</button>
+      </form>
+      <p class="hint">Example: <a href="/verify/GRD-2026-00001" style="color:var(--gold)">GRD-2026-00001</a> · <a href="/verify/GRD-2026-00002" style="color:var(--gold)">GRD-2026-00002</a></p>
+    </section>
+
+    <section class="block" id="your-seal" aria-labelledby="seal-title">
+      <p class="mono-label">04 · Your seal</p>
+      <h2 id="seal-title">What buyers receive</h2>
+      <p class="sub">After issuance, the seal is public and checkable — no private dashboard required.</p>
+      <ul class="seal-list">
+        <li>
+          <strong>Seal PNG</strong>
+          Full-res gold seal with scannable QR → <code style="font-family:JetBrains Mono,monospace;font-size:.8rem;color:var(--gold)">/api/seal/&lt;serial&gt;.png</code>
+        </li>
+        <li>
+          <strong>Verify page</strong>
+          Live status + path + re-check → <a href="/verify">cyre.dev/verify</a>
+        </li>
+        <li>
+          <strong>Share card</strong>
+          Open Graph / X unfurl from the verify URL — name, ticker, and seal art for social.
+        </li>
+      </ul>
+      <div class="hero-cta" style="justify-content:flex-start;margin-top:18px">
+        <a class="btn btn-ghost" href="/api/seal/GRD-2026-00001.png" target="_blank" rel="noopener">Sample seal PNG</a>
+        <a class="btn btn-ghost" href="/verify/GRD-2026-00002">Sample verify page</a>
+      </div>
+    </section>
+
+    <section class="block" id="docs" aria-labelledby="docs-title">
+      <p class="mono-label">05 · Docs &amp; API</p>
+      <h2 id="docs-title">Build on Cyre</h2>
+      <p class="sub">Human docs and machine-readable catalogs — no new routes tonight.</p>
+      <div class="docs-links">
+        <a href="/docs"><span>DOCS</span> Cyre API catalog</a>
+        <a href="/SKILL.md"><span>SKILL.md</span> Agent / machine skill file</a>
+        <a href="/badges"><span>BADGES</span> Path &amp; pricing overview</a>
+        <a href="/api/badge/order"><span>GET</span> Order API how-to JSON</a>
+        <a href="/api/badge/verify"><span>GET</span> Verify API how-to JSON</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="shell">
+    <span>© 2026 CYRE · Cyre Verified is a measured qualifying-path seal — patterns, not investment advice.</span>
+    <span><a href="https://x.com/Cyredev888">X</a> · <a href="/">Home</a> · <a href="/docs">Docs</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var t=document.querySelector('.nav-toggle'),n=document.getElementById('site-nav');
+  if(t&&n){t.addEventListener('click',function(){var o=n.classList.toggle('open');t.setAttribute('aria-expanded',o?'true':'false');});}
+  var form=document.getElementById('serialForm');
+  var input=document.getElementById('serialInput');
+  if(form&&input){
+    form.addEventListener('submit',function(ev){
+      var s=String(input.value||'').trim().toUpperCase();
+      if(!s){ev.preventDefault();return;}
+      ev.preventDefault();
+      location.href='/verify?serial='+encodeURIComponent(s);
+    });
+  }
+})();
+</script>
+</body>
+</html>

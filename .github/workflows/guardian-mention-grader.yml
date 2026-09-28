@@ -1,0 +1,17 @@
+# KILLED 2026-09-10 — X account suspension / appeal.
+# Render cron deleted. Do NOT re-enable schedule or live posting.
+# Manual dispatch only runs a no-op so nothing can write to X.
+name: Guardian mention grader (DISABLED)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  grade-mentions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse — X automation disabled
+        run: |
+          echo "DISABLED 2026-09-10: X write automation killed for @Cyredev888 appeal."
+          echo "Render cron guardian-mention-grader deleted."
+          exit 0

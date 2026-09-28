@@ -1,0 +1,206 @@
+/* CYRE glass theme — Hedra's glassmorphism redesign, recolored to the
+   crystal palette (#d8bc66 ice / #e6cc7e cyan) and applied as an override.
+   Delete this file (and its loader line) to revert instantly. */
+
+:root{
+  --gold:#d8bc66;
+  --glass-panel:rgba(11,20,32,.55);
+  --glass-border:rgba(216,188,102,.18);
+}
+
+/* Deep-space background + ambient glow blobs */
+body{
+  background:radial-gradient(circle at 50% 0%, #0a1626 0%, #07080b 72%) fixed;
+}
+body::before,body::after{
+  content:'';position:fixed;pointer-events:none;z-index:0;border-radius:50%;
+}
+body::before{
+  top:-200px;right:-120px;width:700px;height:700px;
+  background:radial-gradient(circle, rgba(216,188,102,.12) 0%, rgba(230,204,126,.05) 50%, transparent 70%);
+  filter:blur(80px);
+}
+body::after{
+  top:45%;left:-220px;width:800px;height:800px;
+  background:radial-gradient(circle, rgba(230,204,126,.08) 0%, rgba(216,188,102,.03) 50%, transparent 70%);
+  filter:blur(90px);
+}
+
+/* Frosted pill navigation */
+header.head{
+  position:sticky;top:14px;z-index:100;margin:0 auto;width:min(1200px,94vw);
+  background:transparent;border:0;
+}
+header.head .head-in,header.head .wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 26px;
+  background:rgba(9,14,24,.65);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);
+  border-radius:999px;
+  box-shadow:0 10px 35px -10px rgba(0,0,0,.6), inset 0 1px 1px rgba(255,255,255,.08);
+}
+.nav a{transition:color .2s, text-shadow .2s}
+.nav a:hover{color:#e8ecf3;text-shadow:0 0 12px rgba(216,188,102,.6)}
+.nav .req{
+  color:#07080b !important;
+  background:linear-gradient(135deg,#d8bc66 0%,#e6cc7e 100%);
+  padding:10px 22px;border-radius:999px;font-weight:700;
+  box-shadow:0 0 25px rgba(216,188,102,.35);
+  transition:transform .2s, box-shadow .2s;
+}
+.nav .req:hover{transform:translateY(-1px);box-shadow:0 0 35px rgba(216,188,102,.6)}
+
+/* Hero: gradient headline */
+.hero h1 span, .hero h1 em{
+  background:linear-gradient(120deg,#ffffff 10%,#d8bc66 60%,#e6cc7e 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* Pill buttons with glow */
+.btn{
+  border-radius:999px !important;
+  transition:all .25s ease;
+}
+.btn.b-main{
+  color:#07080b;
+  background:linear-gradient(135deg,#d8bc66 0%,#e6cc7e 100%);
+  border:1px solid transparent;
+  box-shadow:0 0 25px rgba(216,188,102,.3);
+}
+.btn.b-main:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(216,188,102,.55)}
+.btn.b-ghost{
+  background:rgba(9,16,28,.5);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--glass-border);
+}
+.btn.b-ghost:hover{border-color:rgba(216,188,102,.5);box-shadow:0 0 22px rgba(216,188,102,.22)}
+
+/* Glass cards */
+.card{
+  background:var(--glass-panel) !important;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border) !important;
+  border-radius:16px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.06);
+  transition:transform .25s, border-color .25s, box-shadow .25s;
+}
+.card:hover{
+  transform:translateY(-3px);
+  background:rgba(16,28,46,.7) !important;
+  box-shadow:0 14px 40px -14px rgba(0,0,0,.7), 0 0 28px rgba(216,188,102,.14);
+}
+
+/* Section panels breathe on the deep background */
+.sec{position:relative;z-index:1}
+
+/* Banner + use-case strip pick up the glass border */
+#cy-banner{border-color:var(--glass-border)}
+#cy-usecase{border-color:var(--glass-border);backdrop-filter:blur(8px)}
+
+/* ===== Sections from the second batch of Hedra screenshots ===== */
+
+/* Kicker labels */
+.eyebrow{
+  background:linear-gradient(90deg,#d8bc66,#e6cc7e);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  letter-spacing:.14em;
+}
+
+/* Status badges — LIVE pulses */
+.badge{
+  border-radius:999px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid var(--glass-border);
+}
+@keyframes cy-pulse{0%,100%{box-shadow:0 0 8px rgba(61,220,132,.35)}50%{box-shadow:0 0 18px rgba(61,220,132,.65)}}
+.badge.live,.badge[data-live]{animation:cy-pulse 2.4s ease-in-out infinite}
+
+/* How-it-works steps */
+.step{
+  background:var(--glass-panel);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);border-radius:16px;
+  transition:transform .25s, box-shadow .25s;
+}
+.step:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(216,188,102,.14)}
+.step .idx{
+  background:linear-gradient(135deg,#d8bc66,#e6cc7e);
+  color:#07080b;border-radius:12px;font-weight:700;
+  box-shadow:0 0 18px rgba(216,188,102,.35);
+}
+
+/* Pricing tiers */
+.tier{
+  background:var(--glass-panel) !important;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border) !important;
+  border-radius:18px;
+  transition:transform .25s, box-shadow .25s, border-color .25s;
+}
+.tier:hover{transform:translateY(-4px);box-shadow:0 16px 44px -16px rgba(0,0,0,.7), 0 0 26px rgba(216,188,102,.15)}
+.tier.hot{
+  border-color:rgba(216,188,102,.5) !important;
+  background:linear-gradient(180deg,rgba(216,188,102,.10),rgba(11,20,32,.6)) !important;
+  box-shadow:0 0 34px rgba(216,188,102,.22);
+}
+.tier .price{color:#e8ecf3}
+
+/* Guardian chat panel */
+.g-log,.g-form{
+  background:rgba(9,16,28,.55);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);
+}
+.g-log{border-radius:16px}
+.g-form{border-radius:999px}
+.g-send{
+  background:linear-gradient(135deg,#d8bc66,#e6cc7e) !important;
+  color:#07080b !important;border-radius:999px !important;
+  box-shadow:0 0 18px rgba(216,188,102,.35);
+}
+.msg{border-radius:14px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.msg.m-bot{background:rgba(13,24,38,.6);border:1px solid var(--glass-border)}
+
+/* Footer */
+.foot-in{border-top:1px solid var(--glass-border)}
+
+/* ===== Batch 3: animated orbit, portrait glow, HUD bar ===== */
+
+/* Orbit rings come alive */
+@keyframes cy-spin{to{transform:rotate(360deg)}}
+@keyframes cy-pulse-ring{
+  0%,100%{box-shadow:0 0 35px rgba(216,188,102,.25), inset 0 0 20px rgba(216,188,102,.1)}
+  50%{box-shadow:0 0 65px rgba(216,188,102,.5), inset 0 0 35px rgba(216,188,102,.25)}
+}
+.ring.r1{border:1px dashed rgba(216,188,102,.28) !important;animation:cy-spin 50s linear infinite}
+.ring.r2{border:1px solid rgba(230,204,126,.3) !important;animation:cy-spin 36s linear infinite reverse}
+.ring.r3{border:2px solid rgba(216,188,102,.6) !important;animation:cy-pulse-ring 5s ease-in-out infinite}
+.ring.r1::after{
+  content:'';position:absolute;top:-5px;left:50%;width:10px;height:10px;border-radius:50%;
+  background:#d8bc66;box-shadow:0 0 15px #d8bc66;
+}
+.ring.r2::after{
+  content:'';position:absolute;bottom:-5px;left:30%;width:8px;height:8px;border-radius:50%;
+  background:#e6cc7e;box-shadow:0 0 15px #e6cc7e;
+}
+.portrait{
+  border:2px solid rgba(216,188,102,.4) !important;
+  box-shadow:0 0 40px rgba(216,188,102,.3) !important;
+}
+.cap{color:#d8bc66}
+
+/* Telemetry HUD bar (injected by launch-banner.js) */
+.hud-bar{
+  margin:30px 0 50px;padding:16px 28px;
+  background:rgba(10,18,30,.45);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);border-radius:18px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  position:relative;z-index:1;
+}
+.hud-item{display:flex;flex-direction:column}
+.hud-label{font-family:'JetBrains Mono',Menlo,monospace;font-size:11px;color:#8892a4;text-transform:uppercase;letter-spacing:.1em}
+.hud-val{font-family:Sora,system-ui,sans-serif;font-size:17px;font-weight:700;color:#e8ecf3;margin-top:2px;display:flex;align-items:center;gap:8px}
+.hud-val .up{color:#3ddc84;font-size:12px;font-family:'JetBrains Mono',Menlo,monospace}

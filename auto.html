@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Use Case 01 — Auto · CYRE 7</title>
+<meta name="description" content="Cyre watches a tokenized dealer lot. 40 vehicles as on-chain collateral — Cyre flags the ones that are lying. Demo with synthetic data.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E1622;--panel:#121C2B;--panel2:#0A111B;--line:#243246;--text:#ECE8DF;--dim:#9AA5B4;--gold:#8FB0DE;--cyan:#A9C4E8;--live:#5fbf7a;--red:#d96a5e;--amber:#ffbe50}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.logo{font-family:Cormorant Garamond,sans-serif;font-weight:700;font-size:18px;letter-spacing:.5px;color:var(--text)}
+.logo span{color:var(--gold)}
+.back{font-size:14px}
+header{position:relative;padding:44px 0 10px;overflow:hidden}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--cyan);letter-spacing:.12em;margin-bottom:12px}
+h1{font-family:Cormorant Garamond,sans-serif;font-weight:700;font-size:clamp(26px,4.6vw,40px);line-height:1.22}
+h1 span{color:var(--gold)}
+.sub{color:var(--dim);font-size:16px;margin-top:12px;max-width:640px;line-height:1.6}
+.demo-note{font-size:12px;color:#6c7891;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:26px 0 8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stat b{font-family:Cormorant Garamond,sans-serif;font-size:24px;font-weight:700;display:block}
+.stat i{font-style:normal;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.08em}
+.s-ok b{color:var(--live)}.s-flag b{color:var(--red)}.s-rev b{color:var(--amber)}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:.1em;margin:30px 0 12px}
+.lot{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.car{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;transition:border-color .15s}
+.car.flag{border-color:rgba(255,77,94,.55)}
+.car.review{border-color:rgba(255,190,80,.5)}
+.car h3{font-size:14px;font-weight:600;letter-spacing:.01em}
+.vin{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--dim);margin:6px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px}
+.chip::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.c-ok{color:var(--live)}.c-flag{color:var(--red)}.c-rev{color:var(--amber)}
+.note{font-size:12px;color:#96a1b6;margin-top:8px;line-height:1.4}
+.more{color:var(--dim);font-size:13px;margin-top:14px}
+.detail{background:linear-gradient(180deg,rgba(255,77,94,.06),rgba(255,77,94,.02));border:1px solid rgba(255,77,94,.55);border-radius:12px;padding:22px;margin-top:34px}
+.detail.amber{background:linear-gradient(180deg,rgba(255,190,80,.06),rgba(255,190,80,.02));border-color:rgba(255,190,80,.5)}
+.d-kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;display:flex;align-items:center;gap:8px}
+.d-kicker::before{content:'';width:9px;height:9px;border-radius:50%;background:currentColor}
+.detail h2{font-family:Cormorant Garamond,sans-serif;font-size:19px;font-weight:700;margin:12px 0 16px}
+.tl{display:grid;gap:9px}
+.tl div{display:grid;grid-template-columns:76px 1fr;gap:14px;font-size:14px;line-height:1.45}
+.tl time{font-family:'JetBrains Mono',monospace;font-size:12px;color:#6c7891;padding-top:2px}
+.tl .hl{color:var(--gold)}
+.tl .bad{color:var(--red)}
+.tl .warn{color:var(--amber)}
+.punch{color:var(--dim);font-size:13.5px;margin-top:16px;line-height:1.65;max-width:640px}
+.ctas{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:38px 0 60px}
+.btn{display:inline-block;font-weight:600;font-size:15px;color:var(--ink);background:var(--gold);border-radius:8px;padding:13px 24px}
+footer{border-top:1px solid var(--line);padding:22px 0 40px;color:#6c7891;font-size:12.5px;line-height:1.6}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+.archive{margin:18px 0 0;padding:12px 14px;border-radius:10px;border:1px solid rgba(143,176,222,.4);background:rgba(143,176,222,.08);font-size:13.5px;line-height:1.5;color:#c8cde0}
+.archive strong{color:#e8ecf3;font-weight:600}
+.archive a{color:#8FB0DE;font-weight:600}
+
+/* cortex-mesh1 — flat panel chrome; constellation is Cortex-only */
+html,body{background:var(--ink,#0E1622)!important}
+.hero{position:relative;background:transparent;z-index:1}
+.hero::before,.hero::after{content:none!important;display:none!important}
+#cy-ai-mesh{display:none!important}
+</style>
+  <link rel="stylesheet" href="/theme-guardian.css?v=cy2">
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="logo" href="/">CY<span>R</span>E 7</a>
+  <a class="back" href="/">← All products</a>
+</nav>
+
+<div class="archive" role="note"><strong>Demo archived.</strong> Auto is a synthetic dealer-lot use-case kept for reference. Product feed monitoring lives at <a href="/oracle">Oracle Pulse → /oracle</a>.</div>
+
+<header>
+  <div class="kicker">USE CASE 01 — AUTO · ARCHIVED DEMO</div>
+  <h1>Cyre watches a <span>tokenized dealer lot.</span></h1>
+  <p class="sub">40 vehicles tokenized as inventory collateral. Two of them are lying. Cyre reads every pledge, lien and title event as it lands — and flags the pattern before the loss.</p>
+  <p class="demo-note">Demo environment · every VIN, lender and event below is synthetic.</p>
+
+  <div class="stats">
+    <div class="stat"><b id="n-all">40</b><i>VEHICLES ON LOT</i></div>
+    <div class="stat s-ok"><b id="n-ok">37</b><i>SETTLED</i></div>
+    <div class="stat s-flag"><b id="n-flag">2</b><i>FLAGGED</i></div>
+    <div class="stat s-rev"><b id="n-rev">1</b><i>REVIEW</i></div>
+  </div>
+</header>
+
+<div class="sec-label">THE LOT</div>
+<div class="lot" id="lot"></div>
+<p class="more" id="more"></p>
+
+<section class="detail">
+  <div class="d-kicker c-flag">HOW CYRE CAUGHT IT</div>
+  <h2>2024 F-150 Lariat — double pledge</h2>
+  <div class="tl">
+    <div><time>14:02:11</time><span>VIN tokenized by Lender A — inventory pledge recorded on-chain</span></div>
+    <div><time>14:02:38</time><span>The same VIN hash appears inside a second pledge — Lender B</span></div>
+    <div><time>14:02:38</time><span class="hl">Cyre: identical collateral now backing two open positions</span></div>
+    <div><time>14:02:39</time><span class="bad">RISK 0.97 — FLAG raised on both positions</span></div>
+  </div>
+  <p class="punch">In the paper world, a double-floored vehicle surfaces at the next audit — weeks or months after the money moved. On-chain, both pledges are public the moment the second one lands. Cyre just has to be watching. It always is.</p>
+</section>
+
+<section class="detail amber" style="margin-top:14px">
+  <div class="d-kicker c-rev">WHY THE ACCORD IS AMBER</div>
+  <h2>2023 Accord Sport — sold, still pledged</h2>
+  <div class="tl">
+    <div><time>09:14:03</time><span>Retail sale event recorded for the VIN — buyer financing settled</span></div>
+    <div><time>09:14:04</time><span class="hl">Cyre: pledge against the same VIN remains open</span></div>
+    <div><time>09:14:04</time><span class="warn">REVIEW — normal for ~48h after sale; escalates to FLAG if the pledge isn't released</span></div>
+  </div>
+  <p class="punch">Sold-out-of-trust is the quiet one: the car leaves the lot, the payoff never happens. Cyre doesn't accuse — it starts a clock.</p>
+</section>
+
+<div class="ctas">
+  <a class="btn" href="/#guardian">Request early access</a>
+  <a href="/#guardian">Ask Cyre about this demo →</a>
+</div>
+</div>
+
+<footer><div class="wrap">
+  CYRE 7 · Use Case 01. Demonstration only — all vehicles, VINs, lenders, timestamps and risk scores on this page are synthetic and generated for illustration. Nothing here is an offer of financing, securities, or lending services.
+</div></footer>
+
+<script>
+(function(){
+  var cars=[
+    ['2024 Silverado 1500','1GC4YLE7XRF2','ok','Lien matches pledge'],
+    ['2023 Camry XSE','4T1K61AK5PU8','ok','Lien matches pledge'],
+    ['2024 F-150 Lariat','1FTFW1E85RKD','flag','VIN pledged to 2 lenders'],
+    ['2023 Model Y LR','7SAYGDEE9PF1','ok','Lien matches pledge'],
+    ['2022 Wrangler 4xe','1C4JJXP68NW1','flag','Title holder ≠ lien holder'],
+    ['2024 Tahoe RST','1GNSKRKD1RR2','ok','Lien matches pledge'],
+    ['2023 Accord Sport','1HGCY2F58PA0','review','Sale event, pledge still open'],
+    ['2024 Sierra Denali','3GTUUGEL5RG1','ok','Lien matches pledge'],
+    ['2023 Grand Cherokee','1C4RJKBG3P86','ok','Lien matches pledge'],
+    ['2024 Model 3 LR','5YJ3E1EB8RF4','ok','Lien matches pledge'],
+    ['2023 RAV4 XLE','2T3W1RFV3PW2','ok','Lien matches pledge'],
+    ['2024 Explorer ST','1FM5K8GC5RGA','ok','Lien matches pledge']
+  ];
+  var lot=document.getElementById('lot');
+  var cls={ok:'c-ok',flag:'c-flag',review:'c-rev'};
+  var lbl={ok:'SETTLED',flag:'FLAG',review:'REVIEW'};
+  cars.forEach(function(c){
+    var d=document.createElement('div');
+    d.className='car '+(c[2]!=='ok'?c[2]:'');
+    d.innerHTML='<h3>'+c[0]+'</h3><div class="vin">'+c[1]+'\u2022\u2022\u2022\u2022</div>'+
+      '<span class="chip '+cls[c[2]]+'">'+lbl[c[2]]+'</span><div class="note">'+c[3]+'</div>';
+    lot.appendChild(d);
+  });
+  document.getElementById('more').textContent='\u2026 28 more vehicles, all settled. Cyre re-scores the lot on every new on-chain event.';
+})();
+</script>
+<script src="/ai-vibe-loader.js?v=fab-portal1" defer></script>
+</body>
+</html>

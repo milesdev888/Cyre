@@ -1,0 +1,16 @@
+# KILLED 2026-09-10 — X account suspension / appeal.
+# Render cron deleted. Do NOT re-enable schedule or live posting.
+name: Guardian watcher (DISABLED)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  watch-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse — X automation disabled
+        run: |
+          echo "DISABLED 2026-09-10: X write automation killed for @Cyredev888 appeal."
+          echo "Render cron guardian-watcher deleted."
+          exit 0

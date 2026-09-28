@@ -1,0 +1,103 @@
+{
+  /* ============================================================
+   * MAINNET — real funds. Rehearsed on devnet 2026-08-31, all
+   * checks PASS (see C7-REHEARSAL-REPORT.md). Fill both
+   * placeholders before use.
+   *
+   * Schema-identical to docs/c7_dbc_config.devnet.jsonc (PR #122).
+   * Only rpcUrl / keypair / caps / leftoverReceiver differ.
+   * ============================================================ */
+
+  /* Optional: swap this in for a dedicated RPC (never commit a real key).
+   * "rpcUrl": "https://mainnet.helius-rpc.com/?api-key=<HELIUS_KEY>",
+   */
+  "rpcUrl": "https://api.mainnet-beta.solana.com",
+
+  "dryRun": false,
+
+  "keypairFilePath": "<DEPLOY_KEYPAIR_PATH>",
+
+  "computeUnitPriceMicroLamports": 100000,
+
+  "quoteMint": "So11111111111111111111111111111111111111112",
+
+  "dbcConfig": {
+    "buildCurveMode": 1,
+    "initialMarketCap": 25,
+    "migrationMarketCap": 300,
+
+    "token": {
+      "totalTokenSupply": 100000000,
+      "tokenBaseDecimal": 6,
+      "tokenQuoteDecimal": 9,
+      "tokenType": 0,
+      "tokenAuthorityOption": 1,
+      "leftover": 65000000
+    },
+
+    "fee": {
+      "baseFeeParams": {
+        "baseFeeMode": 0,
+        "feeSchedulerParam": {
+          "startingFeeBps": 100,
+          "endingFeeBps": 100,
+          "numberOfPeriod": 0,
+          "totalDuration": 0
+        }
+      },
+      "dynamicFeeEnabled": true,
+      "collectFeeMode": 0,
+      "creatorTradingFeePercentage": 100,
+      "poolCreationFee": 0,
+      "enableFirstSwapWithMinFee": false
+    },
+
+    "migration": {
+      "migrationOption": 1,
+      "migrationFeeOption": 2,
+      "migrationFee": {
+        "feePercentage": 0,
+        "creatorFeePercentage": 0
+      }
+    },
+
+    "liquidityDistribution": {
+      "partnerLiquidityPercentage": 0,
+      "creatorLiquidityPercentage": 0,
+      "partnerPermanentLockedLiquidityPercentage": 0,
+      "creatorPermanentLockedLiquidityPercentage": 100
+    },
+
+    "lockedVesting": {
+      "totalLockedVestingAmount": 10000000,
+      "numberOfVestingPeriod": 182,
+      "cliffUnlockAmount": 0,
+      "totalVestingDuration": 15724800,
+      "cliffDurationFromMigrationTime": 15552000
+    },
+
+    "activationType": 1,
+
+    /* = the wallet that receives 65,000,000 $C7 — MUST be a wallet the founder controls; verify before running */
+    "leftoverReceiver": "<TREASURY_WALLET>",
+    "feeClaimer": "<DEPLOY_WALLET>"
+  },
+
+  "dbcPool": {
+    "creator": "<DEPLOY_WALLET>",
+    "name": "CYRE",
+    "symbol": "C7",
+    "metadata": {
+      /* Metaplex metadata JSON; image inside → cyre-token-512.png
+       * (https://raw.githubusercontent.com/milesdev888/-Cyre-Guardian/main/cyre-token-512.png) */
+      "uri": "https://cyre.dev/token-metadata.json"
+    }
+  },
+
+  "dbcSwap": {
+    "amountIn": 0.01,
+    "slippageBps": 5000,
+    "swapBaseForQuote": false,
+    "referralTokenAccount": null
+  }
+}

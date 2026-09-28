@@ -1,0 +1,113 @@
+{
+  /* ============================================================
+   * $CYRE — Meteora DBC launch config (DEVNET REHEARSAL DRAFT)
+   * Built against MeteoraAg/meteora-invent studio/config schema.
+   * Every line marked DECISION is a choice you can change.
+   * Before mainnet: change rpcUrl, re-check every DECISION line.
+   * ============================================================ */
+
+  "rpcUrl": "https://api.devnet.solana.com", // mainnet later: https://api.mainnet-beta.solana.com
+
+  "dryRun": true, // first runs simulate only; set false to execute on devnet
+
+  "keypairFilePath": "./keypair.json", // fresh deploy-only wallet
+
+  "computeUnitPriceMicroLamports": 100000,
+
+  /* DECISION #2 — quote token: SOL */
+  "quoteMint": "So11111111111111111111111111111111111111112",
+
+  "dbcConfig": {
+    /* DECISION #3 — curve set by market caps (mode 1): most intuitive.
+     * Values are in SOL (quoteMint terms), NOT dollars.
+     * initialMarketCap = where price starts; migrationMarketCap = where it graduates.
+     * Draft: start ~25 SOL mcap, graduate at ~300 SOL mcap.
+     * At SOL ≈ $200 that's ≈ $5K start → ≈ $60K graduation — the mid-tier zone.
+     * Tune these two numbers to your honest week-one buying estimate. */
+    /* COMMUNITY: the remaining 25M (25%) is what trades on the curve and
+     * seeds the graduated pool. Devnet rehearsal verifies this split math. */
+    "buildCurveMode": 1,
+    "initialMarketCap": 25,
+    "migrationMarketCap": 300,
+
+    "token": {
+      "totalTokenSupply": 100000000, // DECIDED — 100M "serious" supply
+      "tokenBaseDecimal": 6,
+      "tokenQuoteDecimal": 9,
+      "tokenType": 0, // SPL token
+      "tokenAuthorityOption": 1, // Immutable — metadata & mint locked forever; top trust signal
+      /* 65M reserved OFF the curve = 60M dev treasury + 5M airdrop.
+       * Claimable by leftoverReceiver after migration; treasury then goes
+       * straight into a 2-YEAR LINEAR on-chain vesting lock (e.g. Streamflow),
+       * airdrop slice held for the 30-day campaign payout. Both disclosed. */
+      "leftover": 65000000
+    },
+
+    "fee": {
+      "baseFeeParams": {
+        /* DECISION #4 — anti-sniper: fee starts at 50% and decays linearly
+         * to 1% over the first 60 seconds. Bots eat the toll; your thread
+         * tells humans to wait one minute. */
+        "baseFeeMode": 0,
+        "feeSchedulerParam": {
+          "startingFeeBps": 5000,
+          "endingFeeBps": 100,   // settles at 1% — the standard launch fee
+          "numberOfPeriod": 60,
+          "totalDuration": 60
+        }
+      },
+      "dynamicFeeEnabled": true,
+      "collectFeeMode": 0, // fees collected in SOL
+      "creatorTradingFeePercentage": 50, // you are both partner & creator — all fees route to you either way
+      "poolCreationFee": 0,
+      "enableFirstSwapWithMinFee": false // set true ONLY if you bundle a disclosed creator buy as tx #1
+    },
+
+    "migration": {
+      "migrationOption": 1, // DAMM v2 — DECISION #6
+      "migrationFeeOption": 2, // graduated pool trades at 1% LP fee
+      "migrationFee": {
+        "feePercentage": 0,  // you take 0% skim of the raised liquidity — all of it goes into the pool
+        "creatorFeePercentage": 0
+      }
+    },
+
+    /* DECISION #5 — LP lock: 100% permanently locked (50 partner + 50 creator,
+     * both wallets = you). You can never withdraw the liquidity — the loudest
+     * possible anti-rug signal — but you claim trading fees on it forever.
+     * Softer alternative: 60 permanent + 40 claimable. */
+    "liquidityDistribution": {
+      "partnerLiquidityPercentage": 0,
+      "creatorLiquidityPercentage": 0,
+      "partnerPermanentLockedLiquidityPercentage": 50,
+      "creatorPermanentLockedLiquidityPercentage": 50
+    },
+
+    /* DECIDED — TEAM: 10M (10%), 12-month vesting, 6-month cliff.
+     * Nothing sellable for 6 months, then daily release over the rest. */
+    "lockedVesting": {
+      "totalLockedVestingAmount": 10000000,
+      "numberOfVestingPeriod": 365,
+      "cliffUnlockAmount": 0,
+      "totalVestingDuration": 31536000,
+      "cliffDurationFromMigrationTime": 15552000
+    },
+
+    "activationType": 1, // timestamp-based
+
+    "leftoverReceiver": "YOUR_DEPLOY_WALLET_ADDRESS",
+    "feeClaimer": "YOUR_DEPLOY_WALLET_ADDRESS"
+  },
+
+  "dbcPool": {
+    "creator": "YOUR_DEPLOY_WALLET_ADDRESS",
+    "name": "CYRE",
+    "symbol": "C7",
+    "metadata": {
+      /* Option A (simplest): point at metadata you host.
+       * Option B: let the toolkit upload cyre-token-512.png + metadata to Irys —
+       * fill the image path fields per the example config instead of uri. */
+      "uri": "REPLACE — or use the toolkit's image-upload fields with cyre-token-512.png"
+    }
+  }
+}

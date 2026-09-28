@@ -1,0 +1,352 @@
+{
+  "artifact": {
+    "base": {
+      "network": "eip155:8453",
+      "specialist": "CYRE Guardian",
+      "mode": "unpaid-demo",
+      "riskLevel": null,
+      "signals": [],
+      "rawStatus": 402,
+      "offer": {
+        "x402Version": 2,
+        "error": "Payment required",
+        "resource": {
+          "url": "https://cyre.dev/api/gate",
+          "description": "Guardian Gate — before your agent pays ANY other x402 service, grade the payTo counterparty + spend shape in one cheap call. Patterns, not verdicts. Agent guide: use before non-Guardian awal x402 pay. Agent guide: https://cyre.dev/SKILL.md",
+          "mimeType": "application/json",
+          "serviceName": "CYRE Guardian",
+          "tags": [
+            "gate",
+            "before-pay",
+            "x402",
+            "spend",
+            "checkout",
+            "counterparty",
+            "agents",
+            "risk",
+            "base",
+            "solana"
+          ],
+          "iconUrl": "https://cyre.dev/c7-cobra-256.png"
+        },
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+            "amount": "1000",
+            "asset": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+            "payTo": "9iubApKktcxphCVgBg9CPRPhSH8nkzVRSapxhYwxfCVS",
+            "maxTimeoutSeconds": 60,
+            "extra": {}
+          },
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "amount": "1000",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "payTo": "0x9Ff25C4acf1DcDDf15fD2702C127A285f1dFa712",
+            "maxTimeoutSeconds": 60,
+            "extra": {
+              "name": "USD Coin",
+              "version": "2"
+            }
+          }
+        ],
+        "extensions": {
+          "bazaar": {
+            "info": {
+              "input": {
+                "type": "http",
+                "method": "GET",
+                "queryParams": {
+                  "payTo": "0x9Ff25C4acf1DcDDf15fD2702C127A285f1dFa712",
+                  "amount": "10000",
+                  "resourceUrl": "https://example.com/api/paid",
+                  "chain": "base"
+                }
+              },
+              "output": {
+                "type": "json",
+                "example": {
+                  "ok": true,
+                  "kind": "cyre-gate",
+                  "version": 1,
+                  "payTo": "0x9Ff25C4acf1DcDDf15fD2702C127A285f1dFa712",
+                  "chain": "base",
+                  "score": 18,
+                  "riskLevel": "LOW",
+                  "brief": "Counterparty looks like a contract on Base. Review before you pay.",
+                  "next": [
+                    "If Solana settle: /api/handshake",
+                    "Seal decision: /api/receipt"
+                  ],
+                  "disclaimer": "Patterns, not verdicts."
+                }
+              }
+            },
+            "schema": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "http"
+                    },
+                    "method": {
+                      "type": "string",
+                      "enum": [
+                        "GET",
+                        "HEAD",
+                        "DELETE"
+                      ]
+                    },
+                    "queryParams": {
+                      "type": "object",
+                      "properties": {
+                        "payTo": {
+                          "type": "string",
+                          "description": "Treasury / payTo address (0x… on Base or Solana base58)"
+                        },
+                        "amount": {
+                          "type": "string",
+                          "description": "Optional USDC atomic units (6 decimals)"
+                        },
+                        "resourceUrl": {
+                          "type": "string",
+                          "description": "Optional URL the agent is about to pay"
+                        },
+                        "chain": {
+                          "type": "string",
+                          "description": "Optional: base | solana | eip155:8453"
+                        },
+                        "from": {
+                          "type": "string",
+                          "description": "Optional payer address for context"
+                        }
+                      },
+                      "required": [
+                        "payTo"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "method"
+                  ],
+                  "additionalProperties": false
+                },
+                "output": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              },
+              "required": [
+                "input"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "xrpl": {
+      "network": "xrpl",
+      "specialist": "cloudpayX",
+      "skill": "xrpl-stablecoin-route",
+      "mode": "unpaid-demo",
+      "destination": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+      "amount": "10",
+      "currency": "RLUSD",
+      "offer": {
+        "x402Version": 2,
+        "error": "Payment required",
+        "resource": {
+          "url": "https://api.cloudpayxagent.xyz/agent/v3/stablecoin-route",
+          "description": "cloudpayX agent_stablecoin_route_v3",
+          "mimeType": "application/json"
+        },
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "xrpl:0",
+            "amount": "7300",
+            "asset": "XRP",
+            "payTo": "rsnHPZjBSastxz1BE38WqKBR3sgpATvreL",
+            "maxTimeoutSeconds": 120,
+            "extra": {
+              "invoiceId": "cpayx_reqwf1uzyvdc",
+              "sourceTag": 804681468
+            }
+          }
+        ]
+      },
+      "data": null
+    },
+    "generatedAt": "2026-08-31T13:41:59.522Z"
+  },
+  "intentHash": "07f3bbef37103787c0b568df418359bc916f00d52ea3b90dbdf1ca5fd6b50381",
+  "riskLevel": "LOW",
+  "receipt": {
+    "mode": "unpaid-demo",
+    "offer": {
+      "x402Version": 2,
+      "error": "Payment required",
+      "resource": {
+        "url": "https://cyre.dev/api/receipt",
+        "description": "Guardian Decision Receipt — seal an intent hash, the signals you saw, and the action you took into a signed audit receipt. Verify free at /api/receipt/verify. Patterns, not verdicts. Agent guide: https://cyre.dev/SKILL.md",
+        "mimeType": "application/json",
+        "serviceName": "CYRE Guardian",
+        "tags": [
+          "risk",
+          "solana",
+          "receipt",
+          "audit",
+          "agents",
+          "attestation",
+          "forensics"
+        ],
+        "iconUrl": "https://cyre.dev/c7-cobra-256.png"
+      },
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+          "amount": "5000",
+          "asset": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+          "payTo": "9iubApKktcxphCVgBg9CPRPhSH8nkzVRSapxhYwxfCVS",
+          "maxTimeoutSeconds": 60,
+          "extra": {}
+        },
+        {
+          "scheme": "exact",
+          "network": "eip155:8453",
+          "amount": "5000",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "payTo": "0x9Ff25C4acf1DcDDf15fD2702C127A285f1dFa712",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ],
+      "extensions": {
+        "bazaar": {
+          "info": {
+            "input": {
+              "type": "http",
+              "method": "GET",
+              "queryParams": {
+                "actor": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+                "intentHash": "sha256:abcdef0123456789abcdef0123456789",
+                "action": "transfer",
+                "score": "24",
+                "riskLevel": "LOW"
+              }
+            },
+            "output": {
+              "type": "json",
+              "example": {
+                "ok": true,
+                "kind": "cyre-receipt",
+                "attestation": {
+                  "claims": {
+                    "kind": "cyre-decision-receipt",
+                    "actor": "9WzD…",
+                    "intentHash": "sha256:…",
+                    "action": "transfer"
+                  },
+                  "token": "<base64url-claims>.<base64url-signature>"
+                },
+                "disclaimer": "Patterns, not verdicts."
+              }
+            }
+          },
+          "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "http"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "GET",
+                      "HEAD",
+                      "DELETE"
+                    ]
+                  },
+                  "queryParams": {
+                    "type": "object",
+                    "properties": {
+                      "actor": {
+                        "type": "string"
+                      },
+                      "intentHash": {
+                        "type": "string"
+                      },
+                      "action": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "actor",
+                      "intentHash"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "method"
+                ],
+                "additionalProperties": false
+              },
+              "output": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            },
+            "required": [
+              "input"
+            ]
+          }
+        }
+      }
+    },
+    "status": 402
+  },
+  "config": {
+    "base": {
+      "payTo": "0x9Ff25C4acf1DcDDf15fD2702C127A285f1dFa712",
+      "amountAtomic": "10000",
+      "resourceUrl": "https://example.com/api/paid"
+    },
+    "xrpl": {
+      "destination": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+      "amount": "10",
+      "currency": "RLUSD"
+    },
+    "actor": "demo-agent"
+  }
+}

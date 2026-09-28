@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyre — Know what you're buying into</title>
+<meta name="description" content="Cyre reads contracts and the chains they live on. Paste any address and see what the chain already knows about it. Patterns, not verdicts.">
+<meta property="og:title" content="Cyre — Know what you're buying into">
+<meta property="og:description" content="Paste any address and read what the chain already knows about it. Patterns, not verdicts.">
+<meta property="og:image" content="https://cyre.dev/cyre-coin-512.png">
+<meta property="og:url" content="https://cyre.dev">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#0E1622">
+<link rel="icon" type="image/png" href="/cyre-coin-512.png">
+<link rel="apple-touch-icon" href="/cyre-coin-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1622; --bg-2:#121C2B; --bg-3:#0A111B; --bg-4:#070D15;
+  --field:#152031; --line:#243246; --line-2:#2A3A51; --edge:#3A4B63;
+  --text:#ECE8DF; --text-2:#B8C0CC; --muted:#9AA5B4;
+  --accent:#2F62A8; --accent-hover:#3A72BD; --accent-soft:#8FB0DE; --live:#4FB37A;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:var(--text);text-decoration:none}
+a:hover{color:#9DBBE3}
+img{max-width:100%}
+.shell{max-width:1200px;margin:0 auto;padding:0 40px}
+h1,h2{font-family:var(--serif);font-weight:400;margin:0;letter-spacing:-.015em}
+p{margin:0}
+:focus-visible{outline:2px solid var(--accent-soft);outline-offset:3px}
+
+/* header */
+.masthead{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;background:rgba(14,22,34,.94);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.masthead .shell{height:84px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:52px;height:52px;display:block}
+.brand span{font-family:var(--serif);font-size:28px;font-weight:500;letter-spacing:.01em}
+.nav{display:flex;align-items:center;gap:32px;font-size:14px;font-weight:500}
+.nav .req{background:var(--text);color:var(--bg);padding:12px 20px;border-radius:2px;font-weight:600}
+.nav .req:hover{background:#fff;color:var(--bg)}
+.nav-toggle{display:none;width:44px;height:44px;border:1px solid var(--edge);background:transparent;color:var(--text);
+  align-items:center;justify-content:center;cursor:pointer;border-radius:2px}
+
+/* hero */
+.hero{border-bottom:1px solid var(--line)}
+.hero .shell{padding-top:120px;padding-bottom:128px;display:flex;flex-direction:column;gap:32px}
+.kicker{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:12px}
+.kicker i{width:8px;height:8px;border-radius:50%;background:var(--live);display:inline-block}
+.hero h1{font-size:96px;line-height:1.02;letter-spacing:-.02em;max-width:980px}
+.lede{font-size:21px;line-height:1.55;color:var(--text-2);max-width:720px}
+.lede b{color:var(--text);font-weight:600}
+.scan{display:flex;flex-direction:column;gap:12px;max-width:880px;margin-top:16px}
+.scan label{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.scan .field{display:flex;border:1px solid var(--edge);background:var(--field)}
+.scan input{flex:1;min-width:0;border:0;padding:0 20px;height:60px;font-family:var(--mono);font-size:15px;
+  color:var(--text);background:transparent;outline:none}
+.scan input::placeholder{color:#7F8A99}
+.scan button{border:0;background:var(--accent);color:#fff;font-family:var(--sans);font-weight:600;font-size:16px;
+  padding:0 36px;cursor:pointer}
+.scan button:hover{background:var(--accent-hover)}
+.scan .hint{font-size:14px;color:var(--muted)}
+
+/* loop */
+.loop{background:var(--bg-2);border-bottom:1px solid var(--line)}
+.loop .shell{padding-top:112px;padding-bottom:112px;display:flex;flex-direction:column;gap:48px}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.sec-head h2{font-size:52px}
+.sec-head p{font-size:17px;color:var(--muted);max-width:380px;line-height:1.55}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--text)}
+.cell{padding:32px 28px 8px;display:flex;flex-direction:column;gap:16px;border-left:1px solid var(--line-2)}
+.cell:first-child{padding-left:0;border-left:0}
+.cell:last-child{padding-right:0}
+.cell .n{font-family:var(--mono);font-size:13px;color:var(--accent-soft)}
+.cell h3{margin:0;font-size:18px;font-weight:600;letter-spacing:.08em}
+.cell p{font-size:15px;line-height:1.6;color:var(--text-2)}
+
+/* report */
+.report{border-bottom:1px solid var(--line)}
+.report .shell{padding-top:112px;padding-bottom:112px;display:flex;flex-direction:column;gap:40px}
+.report h2{font-size:52px}
+.report .sub{font-size:17px;color:var(--muted)}
+.card{display:grid;grid-template-columns:2fr 1fr;border:1px solid var(--edge);background:var(--field)}
+.card-body{padding:36px 40px;display:flex;flex-direction:column;gap:24px}
+.card-body .what{font-size:15px;color:var(--text-2);line-height:1.6;max-width:560px}
+.rows{display:flex;flex-direction:column;font-size:15px}
+.row{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+.row:last-child{border-bottom:1px solid var(--line)}
+.row span{color:var(--muted)}
+.row b{font-family:var(--mono);font-weight:500;color:var(--text-2)}
+.card-cta{background:var(--text);color:var(--bg);padding:36px 40px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+.card-cta p{font-family:var(--serif);font-size:26px;line-height:1.3}
+.btn{display:inline-block;padding:16px 26px;font-weight:600;font-size:15px;text-align:center;border-radius:2px;
+  font-family:var(--sans);cursor:pointer}
+.btn-dark{background:var(--bg);color:var(--text)}
+.btn-dark:hover{background:#1A2638;color:var(--text)}
+
+/* access */
+.access{background:var(--bg-3)}
+.access .shell{padding-top:120px;padding-bottom:120px;display:flex;flex-direction:column;gap:24px}
+.access h2{font-size:64px}
+.access p{font-size:18px;color:var(--text-2);max-width:640px;line-height:1.55}
+.cta-row{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap}
+.btn-light{background:var(--text);color:var(--bg);border:0}
+.btn-light:hover{background:#fff;color:var(--bg)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid #6B788A}
+.btn-ghost:hover{border-color:var(--text);color:var(--text)}
+
+/* footer */
+footer{background:var(--bg-4);color:var(--muted);border-top:1px solid #1B2738}
+footer .shell{padding-top:36px;padding-bottom:36px;display:flex;justify-content:space-between;gap:32px;font-size:13px;line-height:1.6}
+footer .links{display:flex;gap:20px;white-space:nowrap}
+footer .links a{color:#DCE1E8}
+
+
+/* live pulses */
+@keyframes cy-logo-glow{0%,100%{filter:drop-shadow(0 0 0 rgba(143,176,222,0))}50%{filter:drop-shadow(0 0 10px rgba(143,176,222,.75))}}
+@keyframes cy-dot-pulse{0%{box-shadow:0 0 0 0 rgba(79,179,122,.7)}70%{box-shadow:0 0 0 9px rgba(79,179,122,0)}100%{box-shadow:0 0 0 0 rgba(79,179,122,0)}}
+@keyframes cy-dot-blink{0%,100%{opacity:1}50%{opacity:.35}}
+.brand img{animation:cy-logo-glow 2.8s ease-in-out infinite}
+.kicker i{animation:cy-dot-pulse 1.8s ease-out infinite,cy-dot-blink 1.8s ease-in-out infinite}
+
+/* tablet */
+@media (max-width:1100px){
+  .nav{gap:22px}
+  .hero h1{font-size:76px}
+}
+/* mobile */
+@media (max-width:860px){
+  .shell{padding:0 20px}
+  .masthead .shell{height:68px}
+  .brand img{width:44px;height:44px}
+  .brand span{font-size:24px}
+  .nav-toggle{display:flex}
+  .nav{display:none;position:absolute;top:68px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;
+    background:var(--bg);border-bottom:1px solid var(--line);padding:8px 20px 20px}
+  .nav.open{display:flex}
+  .nav a{padding:14px 0;border-bottom:1px solid var(--line);font-size:16px}
+  .nav .req{margin-top:14px;text-align:center;border-bottom:0}
+  .hero .shell{padding-top:56px;padding-bottom:64px;gap:22px}
+  .kicker{font-size:11px;gap:10px}
+  .hero h1{font-size:50px;line-height:1.04}
+  .lede{font-size:17px}
+  .scan{margin-top:8px}
+  .scan .field{flex-direction:column;border:0;background:transparent;gap:10px}
+  .scan input{border:1px solid var(--edge);background:var(--field);height:54px;padding:0 16px}
+  .scan button{height:54px}
+  .scan .hint{font-size:13px;line-height:1.5}
+  .loop .shell,.report .shell{padding-top:64px;padding-bottom:64px;gap:24px}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:12px}
+  .sec-head h2,.report h2{font-size:34px}
+  .sec-head p,.report .sub{font-size:15px}
+  .grid4{grid-template-columns:1fr}
+  .cell{padding:22px 0;border-left:0;border-bottom:1px solid var(--line-2)}
+  .cell:last-child{border-bottom:0}
+  .card{grid-template-columns:1fr}
+  .card-body{padding:24px 20px}
+  .card-cta{padding:24px 20px}
+  .card-cta p{font-size:22px}
+  .access .shell{padding-top:72px;padding-bottom:72px;gap:18px}
+  .access h2{font-size:40px;line-height:1.08}
+  .access p{font-size:16px}
+  .cta-row{flex-direction:column}
+  .cta-row .btn{width:100%}
+  footer .shell{flex-direction:column;gap:16px}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="shell">
+    <a class="brand" href="/" aria-label="Cyre home">
+      <img src="/cyre-mark.png" alt="" width="52" height="52">
+      <span>Cyre.dev</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" stroke-width="1.6"/></svg>
+    </button>
+    <nav id="site-nav" class="nav" aria-label="Primary">
+      <a href="/builders">Builders</a>
+      <a href="/app">App</a>
+      <a href="/monitor">Monitor</a>
+      <a href="/am">Agentic Market</a>
+      <a href="/docs">Docs</a>
+      <a href="#access" class="req">Request access</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="shell">
+      <div class="kicker"><i aria-hidden="true"></i>Synthetic Intelligence · Fraud-watch</div>
+      <h1>Know what you're buying into.</h1>
+      <p class="lede">Cyre watches contracts and the chains they live on — <b>patterns, not verdicts</b>. Paste any address and read what the chain already knows about it.</p>
+      <form class="scan" action="https://scan.cyre.dev/app" method="get">
+        <label for="scan-address">Contract address</label>
+        <div class="field">
+          <input id="scan-address" type="text" name="address" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+                 placeholder="Paste any address — Solana, Ethereum, Base, Arbitrum, Robinhood Chain" required>
+          <button type="submit">Scan</button>
+        </div>
+        <p class="hint">No chain dropdown. <em>Base58</em> is Solana · <em>0x + 40 hex</em> is EVM — Cyre finds every chain where it exists.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="loop" aria-labelledby="loop-title">
+    <div class="shell">
+      <div class="sec-head">
+        <h2 id="loop-title">Four things, done constantly.</h2>
+        <p>Cyre runs the same loop on every asset it covers, on-chain and off.</p>
+      </div>
+      <div class="grid4">
+        <div class="cell"><div class="n">01</div><h3>SCAN</h3><p>Read a contract's structure — mint authority, holders, liquidity, deployer history.</p></div>
+        <div class="cell"><div class="n">02</div><h3>WATCH</h3><p>Stay on the address after the scan. New patterns surface as they happen, not after.</p></div>
+        <div class="cell"><div class="n">03</div><h3>SCORE</h3><p>Turn what's observed into a risk read that a person or an agent can act on.</p></div>
+        <div class="cell"><div class="n">04</div><h3>GATE</h3><p>Let agents pay per query and gate their own actions on Cyre's read.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="report" aria-labelledby="report-title">
+    <div class="shell">
+      <h2 id="report-title">Every scan, one clear report.</h2>
+      <p class="sub">Public, generated live by the same scanner anyone can use.</p>
+      <div class="card">
+        <div class="card-body">
+          <p class="what">Each report reads the facts that matter before you buy — the same checks, on every chain, for every token.</p>
+          <div class="rows">
+            <div class="row"><span>Mint authority</span><b>Active or revoked</b></div>
+            <div class="row"><span>Freeze authority</span><b>Active or revoked</b></div>
+            <div class="row"><span>Liquidity</span><b>Locked, burned, or open</b></div>
+            <div class="row"><span>Top holders</span><b>Concentration, adjusted</b></div>
+          </div>
+        </div>
+        <div class="card-cta">
+          <p>Read a full report, generated live.</p>
+          <a class="btn btn-dark" href="https://scan.cyre.dev/app">Open the scanner</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="access" id="access" aria-labelledby="access-title">
+    <div class="shell">
+      <h2 id="access-title">Put Cyre on your assets.</h2>
+      <p>Early access is open for teams and agents that want Cyre watching their assets.</p>
+      <div class="cta-row">
+        <a class="btn btn-light" href="#access">Request early access</a>
+        <button class="btn btn-ghost" type="button" id="talk-to-guardian">Talk to Cyre</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="shell">
+    <span>© 2026 CYRE · Cyre is early-access software. Nothing here is investment advice.</span>
+    <span class="links"><a href="https://x.com/Cyredev888">X</a><a href="/builders">Builders</a><a href="/docs">Docs</a><a href="/monitor">Monitor</a></span>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var t=document.querySelector('.nav-toggle'),n=document.getElementById('site-nav');
+    if(!t||!n)return;
+    t.addEventListener('click',function(){var o=n.classList.toggle('open');t.setAttribute('aria-expanded',o?'true':'false');});
+    n.addEventListener('click',function(e){if(e.target.tagName==='A'){n.classList.remove('open');t.setAttribute('aria-expanded','false');}});
+  })();
+</script>
+<!-- existing site machinery: access modal + chat popout -->
+<script defer src="/access-form.js?v=cy1"></script>
+<script defer src="/guardian-popout.js?v=cy1"></script>
+</body>
+</html>

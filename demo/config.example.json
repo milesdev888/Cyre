@@ -1,0 +1,13 @@
+{
+  "base": {
+    "payTo": "0x9Ff25C4acf1DcDDf15fD2702C127A285f1dFa712",
+    "amountAtomic": "10000",
+    "resourceUrl": "https://example.com/api/paid"
+  },
+  "xrpl": {
+    "destination": "rN7n7otQDd6FczFgLdSqtcsAUxDkw6fzRH",
+    "amount": "10",
+    "currency": "RLUSD"
+  },
+  "actor": "demo-agent"
+}

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/app-redirect.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roadmap · CYRE 7</title>
+<meta name="description" content="CYRE roadmap — what's shipped, what's happening now ($C7 launch on Meteora), what's next, and what Cyre is exploring for the agent economy.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E1622;--panel:#121C2B;--line:#243246;--text:#ECE8DF;--dim:#9AA5B4;--gold:#8FB0DE;--cyan:#A9C4E8;--live:#5fbf7a;--amber:#ffbe50;--violet:#A9C4E8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.logo{font-family:Cormorant Garamond,sans-serif;font-weight:700;font-size:18px;letter-spacing:.5px;color:var(--text)}
+.logo span{color:var(--gold)}
+header{padding:44px 0 26px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--cyan);letter-spacing:.12em;margin-bottom:12px}
+h1{font-family:Cormorant Garamond,sans-serif;font-weight:700;font-size:clamp(26px,4.6vw,40px);line-height:1.22}
+h1 span{color:var(--gold)}
+.sub{color:var(--dim);font-size:16px;margin-top:12px;max-width:620px;line-height:1.65}
+.phase{position:relative;padding:0 0 8px 34px;margin-bottom:34px;border-left:2px solid var(--line)}
+.phase::before{content:'';position:absolute;left:-8px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--ink);border:3px solid var(--dot,#8FB0DE)}
+.phase h2{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.14em;color:var(--dot,#8FB0DE);margin-bottom:6px}
+.phase h3{font-family:Cormorant Garamond,sans-serif;font-size:21px;font-weight:700;margin-bottom:14px}
+.items{display:grid;gap:9px}
+.item{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.item b{font-size:14.5px;font-weight:600;display:block}
+.item p{font-size:13.5px;color:var(--dim);line-height:1.6;margin-top:4px}
+.item .tag{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:2px}
+.t-live{color:var(--live);border:1px solid rgba(61,220,132,.4)}
+.t-now{color:var(--amber);border:1px solid rgba(255,190,80,.4)}
+.p-done{--dot:#3ddc84}
+.p-now{--dot:#ffbe50}
+.p-next{--dot:#8FB0DE}
+.p-explore{--dot:#9d8cff}
+footer{border-top:1px solid var(--line);padding:22px 0 44px;color:#6c7891;font-size:12.5px;line-height:1.65;margin-top:20px}
+
+/* cortex-mesh1 — flat panel chrome; constellation is Cortex-only */
+html,body{background:var(--ink,#0E1622)!important}
+.hero{position:relative;background:transparent;z-index:1}
+.hero::before,.hero::after{content:none!important;display:none!important}
+#cy-ai-mesh{display:none!important}
+</style>
+  <link rel="stylesheet" href="/theme-guardian.css?v=cy2">
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="logo" href="/">CY<span>R</span>E 7</a>
+  <a href="/" style="font-size:14px">← All products</a>
+</nav>
+
+<header>
+  <div class="kicker">ROADMAP</div>
+  <h1>Where Cyre is, <span>and where she's going.</span></h1>
+  <p class="sub">Built in public. Everything under "Shipped" is live and clickable today — the rest is the plan, in the order we intend to do it.</p>
+</header>
+
+<section class="phase p-done">
+  <h2>SHIPPED — AUGUST 2026</h2>
+  <h3>The foundation is live</h3>
+  <div class="items">
+    <div class="item"><b>CYRE 7 platform &amp; Cyre AI <span class="tag t-live">LIVE</span></b><p>Seven products, one model. Cyre speaks, answers questions, and fronts the system at cyre.dev.</p></div>
+    <div class="item"><b>Fraud Prediction — live demo <span class="tag t-live">LIVE</span></b><p>Working detection demo with Solana payments, API and docs.</p></div>
+    <div class="item"><b>Free Solana address checker <span class="tag t-live">LIVE</span></b><p>Paste any address, get Cyre's read — free, no signup.</p></div>
+    <div class="item"><b>$C7 tokenomics published</b><p>100M fixed supply, locks and vesting disclosed before launch — not after. <a href="/tokenomics">Read it →</a></p></div>
+  </div>
+</section>
+
+<section class="phase p-now">
+  <h2>NOW — IN PROGRESS</h2>
+  <h3>The $C7 launch</h3>
+  <div class="items">
+    <div class="item"><b>$C7 on Meteora <span class="tag t-now">TARGETING AUGUST</span></b><p>Launching via Meteora's Dynamic Bonding Curve on Solana — on-chain price discovery, liquidity migrates automatically at graduation, 100% of LP permanently locked.</p></div>
+    <div class="item"><b>Community &amp; growth pool</b><p>5% of supply reserved and locked — airdrops, creator rewards, listings, marketing. Programs announced post-launch on <a href="https://x.com/Cyredev888">@Cyredev888</a>; unused supply stays locked, movements disclosed.</p></div>
+    <div class="item"><b>Cyre's voice</b><p>Cyre now speaks with a real voice on the homepage — same voice on every device.</p></div>
+  </div>
+</section>
+
+<section class="phase p-next">
+  <h2>NEXT — POST-LAUNCH</h2>
+  <h3>Deepen the products</h3>
+  <div class="items">
+    <div class="item"><b>Pool graduation &amp; locks executed</b><p>Treasury into its 2-year linear vesting contract, team vesting on-chain, community pool locked — every step verifiable at the published addresses.</p></div>
+    <div class="item"><b>Cyre Token Scan + protected swap</b><p>Scan any token before you trade — mint authority, freeze authority, LP locks, holder concentration — then swap through an embedded, non-custodial router. Patterns, not verdicts: Cyre informs, you decide.</p></div>
+    <div class="item"><b>Agent Handshake + Intent Preflight (x402)</b><p>Two new Agentic Market skills: bilateral Passport Handshake (two passports → compatibility brief) and Solana Intent Preflight (grade from/to/mint/programs before an agent signs). Patterns, not verdicts.</p></div>
+    <div class="item"><b>Agent skill suite (x402)</b><p>Decision Receipt, Passport Delta, Settlement Batch, Program Brief, Counterparty Alerts, and Oracle Pulse as paid agent endpoints — audit trail + watch loops for the agent economy.</p></div>
+    <div class="item"><b>Cyre Gate (x402)</b><p>The checkout skill: before an agent pays any other Agentic Market service, one $0.001 call grades the payTo counterparty. Default rule in SKILL.md — habit loop for ranking.</p></div>
+    <div class="item"><b>Cyre API early access</b><p>The scoring behind the demos, opened to early partners via the existing access program.</p></div>
+    <div class="item"><b>Aggregator &amp; exchange presence</b><p>Verification on the major trackers, then centralized-exchange conversations — funded by the disclosed 2% ops reserve.</p></div>
+  </div>
+</section>
+
+<section class="phase p-explore">
+  <h2>EXPLORING — RESEARCH</h2>
+  <h3>Cyre for the agent economy</h3>
+  <div class="items">
+    <div class="item"><b>Know Your Agent (KYA) scoring</b><p>AI agents are becoming economic actors — trading, paying, coordinating. Cyre watches actors. We're researching portable trust scores for autonomous agents, built on the same behavioral model that powers fraud prediction today.</p></div>
+    <div class="item"><b>Agent decision forensics</b><p>When an agent moves funds, "why did it do that" matters as much as "where did it go." Early research into decision-level attribution as an evolution of Cyre's forensics.</p></div>
+    <div class="item"><b>Model-driven risk pricing for agent activity</b><p>The longer arc: pricing agent-specific risk directly from Cyre's live behavioral signals.</p></div>
+  </div>
+</section>
+
+<footer>
+  CYRE 7 · Roadmap. "Shipped" items are live today. Everything else describes current intentions and areas of research — timing, scope and features may change as we build, and nothing here is a commitment, an offer of securities, or a promise of token value or performance.
+</footer>
+</div>
+<script defer src="/embed-mode.js"></script>
+<script src="/ai-vibe-loader.js?v=fab-portal1" defer></script>
+</body>
+</html>

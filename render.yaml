@@ -1,0 +1,33 @@
+# CYRE Guardian — Render Blueprint (reference IaC)
+# X AUTOMATION KILLED 2026-09-10 (account suspension / appeal):
+#   - guardian-mention-grader cron DELETED on Render
+#   - guardian-watcher cron DELETED on Render
+#   - cyre-x-bridge remains UP in READ-ONLY posture (X_WRITE_ENABLED=false)
+# Do NOT re-add cronJobs that post/reply/like/follow/DM on X without founder sign-off.
+
+services:
+  - type: web
+    name: cyre-x-bridge
+    runtime: node
+    plan: free
+    region: oregon
+    repo: https://github.com/milesdev888/-Cyre-Guardian
+    branch: main
+    buildCommand: "true"
+    startCommand: node x-connector.cjs
+    healthCheckPath: /
+    envVars:
+      - key: CONNECT_SECRET
+        sync: false
+      - key: X_API_KEY
+        sync: false
+      - key: X_API_SECRET
+        sync: false
+      - key: X_ACCESS_TOKEN
+        sync: false
+      - key: X_ACCESS_SECRET
+        sync: false
+      - key: X_WRITE_ENABLED
+        value: "false"
+
+# No cronJobs. Automated X writers are prohibited.

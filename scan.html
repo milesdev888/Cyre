@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="icon" href="/c7-cobra-256.png?v=c7g2" type="image/png">
+<link rel="apple-touch-icon" href="/c7-cobra-512.png?v=c7g2">
+
+<meta charset="utf-8">
+<script src="/app-redirect.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyre Scan — facts, not verdicts</title>
+<meta name="description" content="Paste any address — Solana, Ethereum, Base, Arbitrum, Robinhood Chain. Cyre reads on-chain patterns. Facts, not verdicts. Free scan; nothing to sign until you choose to swap.">
+
+<meta property="og:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cyre — The $C7 Loop">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cyre.dev/brand/guardian-og-1200x630.jpg?r=2">
+<meta name="twitter:image:alt" content="Cyre — The $C7 Loop">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script defer src="/swap-config.js"></script>
+<script defer src="/scan-swap.js"></script>
+<script defer src="/embed-mode.js"></script>
+<link rel="preload" href="https://plugin.jup.ag/plugin-v1.js" as="script">
+<style>
+:root{
+  --ink:#0E1622;--panel:#121C2B;--line:#243246;--text:#ECE8DF;--dim:#9AA5B4;
+  --gold:#8FB0DE;--gold-bright:#A9C4E8;--live:#5FBF7A;--red:#D96A5E;--amber:#E0B35A;
+  --display:'Cormorant Garamond',Georgia,serif;--body:Inter,system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0}
+body{
+  background:
+    radial-gradient(ellipse 70% 40% at 85% -5%,rgba(143,176,222,.08),transparent 55%),
+    radial-gradient(ellipse 50% 35% at 10% 20%,rgba(95,191,122,.04),transparent 50%),
+    var(--ink);
+  color:var(--text);font-family:var(--body);min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:680px;margin:0 auto;padding:40px 20px 80px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);margin-bottom:28px}
+.wordmark{font-family:var(--display);font-size:1.45rem;font-weight:600;letter-spacing:.01em;
+  background:linear-gradient(180deg,#CFE0F5 0%,#8FB0DE 45%,#4A6FA5 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+h1{font-family:var(--display);font-size:clamp(28px,6vw,40px);font-weight:700;margin:10px 0 8px;letter-spacing:-.01em;color:var(--text)}
+h1 span{color:var(--gold)}
+.sub{color:var(--dim);line-height:1.7;margin-bottom:28px}
+.scanbox{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+input{flex:1 1 220px;background:rgba(10,17,27,.85);border:1px solid rgba(143,176,222,.28);border-radius:12px;padding:14px 18px;color:var(--text);font-size:15px;font-family:var(--mono);outline:none}
+input:focus{border-color:var(--gold)}
+button{background:var(--gold);border:0;border-radius:12px;padding:14px 26px;font-weight:600;font-size:15px;color:var(--ink);cursor:pointer;font-family:var(--display)}
+button:hover{background:var(--gold-bright)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.ghost{background:transparent;border:1px solid rgba(143,176,222,.35);color:var(--text);font-family:var(--body)}
+.hint{color:var(--dim);font-size:13px;margin-bottom:10px}
+.token-note{color:var(--dim);font-size:12px;line-height:1.6;margin-bottom:26px;padding:10px 14px;border:1px solid rgba(143,176,222,.18);border-radius:12px;background:rgba(18,28,43,.55)}
+#report{display:none}
+.risk-banner{border-radius:16px;padding:20px 22px;margin-bottom:16px;border:1px solid var(--line);background:rgba(18,28,43,.85)}
+.risk-banner b{font-family:var(--display);font-size:22px}
+.r-LOW b{color:var(--live)} .r-MEDIUM b{color:var(--amber)} .r-HIGH b{color:var(--red)}
+.risk-banner small{display:block;color:var(--dim);margin-top:4px}
+.token-id{display:none;border-radius:16px;padding:18px 20px;margin-bottom:14px;border:1px solid rgba(143,176,222,.28);background:linear-gradient(135deg,rgba(143,176,222,.08),rgba(18,28,43,.9))}
+.token-id small{color:var(--dim);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:8px}
+.token-id .token-id-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px}
+.token-id .token-name{font-family:var(--display);font-size:22px;font-weight:700;color:var(--text);line-height:1.15}
+.token-id .token-symbol{font-size:15px;font-weight:600;color:var(--gold)}
+.token-id .token-mint{display:block;margin-top:10px;font-size:12px;color:var(--dim);word-break:break-all;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+.sig{display:flex;gap:12px;align-items:flex-start;background:rgba(18,28,43,.85);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.sig i{flex:none;width:10px;height:10px;border-radius:50%;margin-top:5px}
+.i-good{background:var(--live)} .i-info{background:var(--gold)} .i-med{background:var(--amber)} .i-high{background:var(--red)}
+.sig p{color:var(--text);font-size:14px;line-height:1.6}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.fact{background:rgba(18,28,43,.85);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.fact small{color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:4px}
+.fact b{font-size:15px}
+.disclaim{color:var(--dim);font-size:12px;line-height:1.7;margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.err{color:var(--red);font-size:14px;margin-bottom:20px;display:none}
+.notice{color:var(--amber);font-size:13px;line-height:1.55;margin:14px 0;padding:12px 14px;border:1px solid rgba(224,179,90,.25);border-radius:12px;background:rgba(224,179,90,.06);display:none}
+a{color:var(--gold)}
+.back{font-size:13px;color:var(--dim);text-decoration:none;display:inline-block;margin-bottom:22px}
+.swap-teaser{margin-top:28px;padding:18px 20px;border-radius:16px;border:1px dashed rgba(143,176,222,.28);background:rgba(18,28,43,.55)}
+.swap-teaser h2{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:6px}
+.swap-teaser p{color:var(--dim);font-size:13px;line-height:1.6}
+.swap-teaser ol{margin:10px 0 0 18px;color:var(--dim);font-size:13px;line-height:1.7}
+.swap-teaser.is-unlocked{display:none}
+.proceed-block{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);display:none}
+.proceed-block p{color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:14px}
+.high-confirm{display:none;margin-bottom:14px;padding:14px 16px;border-radius:14px;border:1px solid rgba(217,106,94,.35);background:rgba(217,106,94,.07)}
+.high-confirm label{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.55;color:var(--text);cursor:pointer}
+.high-confirm input{margin-top:3px;accent-color:var(--red)}
+.swap-panel{margin-top:28px;padding-top:22px;border-top:1px solid var(--line);display:none}
+.swap-panel h2{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:8px}
+.swap-panel .swap-lede{color:var(--dim);font-size:13px;line-height:1.6;margin-bottom:16px}
+#jup{min-height:520px;height:520px;border-radius:16px;overflow:hidden}
+.proceed-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.proceed-actions a.btn-jup{display:inline-flex;align-items:center;padding:14px 26px;border-radius:12px;font-weight:600;font-size:15px;color:var(--ink);text-decoration:none;font-family:var(--display);background:var(--gold)}
+.proceed-actions a.btn-jup.is-primary{background:var(--gold);color:var(--ink);border:0}
+.proceed-actions a.btn-jup:not(.is-primary){background:transparent;border:1px solid rgba(143,176,222,.35);color:var(--text)}
+.proceed-actions button.ghost{background:transparent;border:1px solid rgba(143,176,222,.35);color:var(--text)}
+.wallet-help{display:none;margin:14px 0;padding:14px 16px;border-radius:14px;border:1px solid rgba(224,179,90,.28);background:rgba(224,179,90,.07)}
+.wallet-help.is-visible{display:block}
+.wallet-help p{margin:0 0 12px;color:var(--text);font-size:13px;line-height:1.55}
+.wallet-help p strong{color:var(--amber)}
+.wallet-help-btns{display:flex;flex-wrap:wrap;gap:8px}
+.wallet-help-btns a{display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;border:1px solid rgba(143,176,222,.35);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;background:rgba(18,28,43,.8)}
+.wallet-help-btns a.primary{background:var(--gold);color:var(--ink);border:0}
+.proceed-actions a.btn-jup.is-disabled{opacity:.5;pointer-events:none}
+.swap-panel-external{display:none;margin-bottom:20px;padding:20px;border-radius:16px;border:1px solid rgba(224,179,90,.35);background:rgba(224,179,90,.08);text-align:center}
+.swap-panel-external p{margin:0 0 16px;color:var(--text);font-size:14px;line-height:1.6}
+.swap-panel-external .btn-jup{display:inline-flex;align-items:center;padding:16px 28px;border-radius:12px;font-weight:600;font-size:16px;color:var(--ink);text-decoration:none;font-family:var(--display);background:var(--gold);margin-bottom:12px}
+.swap-panel-external .swap-back{display:inline-block;margin-top:4px;background:transparent;border:0;color:var(--dim);font-size:13px;cursor:pointer;text-decoration:underline;font-family:var(--body)}
+.swap-panel-wallet-help{display:none;margin-bottom:14px;padding:14px 16px;border-radius:14px;border:1px solid rgba(224,179,90,.28);background:rgba(224,179,90,.07)}
+.swap-panel-wallet-help.is-visible{display:block}
+.swap-panel-wallet-help p{margin:0;color:var(--text);font-size:13px;line-height:1.55}
+.scan-reminder{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--dim);margin-top:14px;display:none}
+.fee-note{color:var(--dim);font-size:12px;line-height:1.65;margin-top:16px}
+:root{
+  --jupiter-plugin-primary: 216, 188, 102;
+  --jupiter-plugin-background: 10, 15, 10;
+  --jupiter-plugin-primaryText: 237, 231, 213;
+  --jupiter-plugin-warning: 224, 179, 90;
+  --jupiter-plugin-interactive: 30, 42, 30;
+  --jupiter-plugin-module: 16, 23, 16;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="https://cyre.dev/">
+    <svg width="28" height="28" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="21.5" stroke="#8FB0DE" stroke-width="1.6"/>
+      <path d="M24 10c4.6 2.6 8.4 3.4 11 3.6v10.2c0 7.4-4.6 11.9-11 14.6-6.4-2.7-11-7.2-11-14.6V13.6c2.6-.2 6.4-1 11-3.6z" stroke="#8FB0DE" stroke-width="1.6" fill="none"/>
+      <path d="M15.5 24.5c2.6-3.4 5.4-5.1 8.5-5.1s5.9 1.7 8.5 5.1c-2.6 3.4-5.4 5.1-8.5 5.1s-5.9-1.7-8.5-5.1z" stroke="#ECE8DF" stroke-width="1.4" fill="none"/>
+      <circle cx="24" cy="24.5" r="2.4" fill="#8FB0DE"/>
+    </svg>
+    <span class="wordmark">Cyre</span>
+  </a>
+  <div class="kicker">Cyre console · protected swap</div>
+  <h1>Before you trade: read the <span>patterns</span>.</h1>
+  <p class="sub">Paste any address — Solana, Ethereum, Base, Arbitrum, Robinhood Chain. Cyre shows on-chain facts at the moment you scan. Facts, not verdicts — you decide. Free scan; nothing to sign until you choose to swap.</p>
+
+  <div class="scanbox">
+    <input id="mint" placeholder="Paste any address — mint or 0x…" autocomplete="off" spellcheck="false">
+    <button id="go" onclick="scan()">Scan</button>
+  </div>
+  <div class="hint">Free scan · no wallet until you choose to swap · nothing to sign on scan</div>
+  <p class="token-note">On-chain facts at the moment you scan — not a recommendation to buy. Solana swaps unlock here after you read the signals. EVM and other chains open in the multichain console.</p>
+  <div class="err"<div class="err" id="err"></div>
+
+  <div class="swap-teaser" id="swap-teaser">
+    <h2>Step 2 — Protected swap</h2>
+    <p>Jupiter swap unlocks here after you scan a Solana mint. Every other swap lets you buy blind — this one makes you look first.</p>
+    <ol>
+      <li>Paste any address and tap <strong>Scan</strong></li>
+      <li>Read the signals (HIGH patterns need an extra click-through)</li>
+      <li>Tap <strong>Swap on Jupiter ↗</strong> — works on every phone and browser</li>
+      <li>Desktop with Phantom installed? Use <strong>Proceed to swap here</strong> for the embedded widget</li>
+    </ol>
+  </div>
+
+  <div id="report">
+    <div class="token-id" id="token-id">
+      <small>Project name</small>
+      <div class="token-id-row">
+        <span class="token-name" id="token-name"></span>
+        <span class="token-symbol" id="token-symbol"></span>
+      </div>
+      <span class="token-mint" id="token-mint"></span>
+    </div>
+    <div class="risk-banner" id="banner"><b id="riskword"></b><small id="riskscore"></small></div>
+    <div class="facts" id="facts"></div>
+    <div id="signals"></div>
+    <div class="disclaim">Patterns, not verdicts. This scan reports on-chain facts at the moment you run it; it is not investment advice, cannot detect every risk, and a clean scan is not a recommendation to buy. CYRE never DMs you or asks you to connect a wallet anywhere but this page.</div>
+
+    <div class="proceed-block" id="proceed-block">
+      <p>Review the signals above. Swapping unlocks only for this scanned token — not an endorsement.</p>
+      <div class="high-confirm" id="high-confirm">
+        <label><input type="checkbox" id="high-read"> I've read the signals above and understand this scan is not a guarantee.</label>
+      </div>
+      <div class="wallet-help" id="wallet-help">
+        <p><strong>No wallet extension detected.</strong> Mobile Safari/Chrome and most desktop browsers without Phantom cannot connect inside the embedded widget. Use <strong>Swap on Jupiter</strong> below (opens jup.ag with your scanned token), or open this page inside Phantom/Solflare's in-app browser.</p>
+        <div class="wallet-help-btns">
+          <a class="primary" id="open-phantom" href="#">Open in Phantom</a>
+          <a id="open-solflare" href="#">Open in Solflare</a>
+        </div>
+      </div>
+      <div class="proceed-actions">
+        <a class="btn-jup is-primary" id="swap-jupiter-app" href="#" target="_blank" rel="noopener noreferrer">Swap on Jupiter ↗</a>
+        <button type="button" id="proceed-swap" disabled>Proceed to swap here</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice" id="swap-notice" role="status"></div>
+
+  <div class="swap-panel" id="swap-panel">
+    <h2>Swap via Jupiter</h2>
+    <p class="swap-lede" id="swap-panel-lede">Connect your Phantom or Solflare extension below. CYRE does not hold funds or keys.</p>
+    <div class="swap-panel-external" id="swap-panel-external">
+      <p><strong>This browser can't connect a wallet.</strong> The embedded picker shows "No wallet found" on mobile Safari/Chrome. Tap below to swap on jup.ag — your scanned token is already filled in.</p>
+      <a class="btn-jup" id="swap-panel-jup-btn" href="#" target="_blank" rel="noopener noreferrer">Swap on Jupiter ↗</a>
+      <br>
+      <button type="button" class="swap-back" id="swap-back">← Back to scan results</button>
+    </div>
+    <div class="swap-panel-wallet-help" id="swap-panel-wallet-help">
+      <p><strong>No wallet found?</strong> Use <a href="#" id="swap-panel-jup-link">Swap on Jupiter ↗</a> instead.</p>
+    </div>
+    <div id="jup" aria-label="Jupiter swap widget"></div>
+    <div class="scan-reminder" id="scan-reminder" aria-live="polite"></div>
+    <p class="fee-note">CYRE routes swaps through Jupiter and adds a 0.5% platform fee. Hidden fees are how trust dies; ours is a line item. Patterns, not verdicts.</p>
+  </div>
+</div>
+
+<script>
+async function scan(){
+  var m = document.getElementById('mint').value.trim();
+  var err = document.getElementById('err'), rep = document.getElementById('report'), go = document.getElementById('go');
+  err.style.display='none'; rep.style.display='none';
+  if (window.CyreScanSwap) window.CyreScanSwap.onScanStart();
+  if(/^0x[a-fA-F0-9]{40}$/.test(m)){ location.href='https://scan.cyre.dev/app?address='+encodeURIComponent(m); return; }
+  if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(m)){ err.textContent='Paste a Solana mint or a 0x contract address.'; err.style.display='block'; return; }
+  go.disabled = true; go.textContent = 'Scanning…';
+  try{
+    // Fire holders enrichment in parallel so CDN/RPC misses on the main
+    // response cannot leave Top holder / Top 10 stuck on "Not measured".
+    var mainP = fetch('/api/token?mint='+encodeURIComponent(m), { cache: 'no-store' }).then(function(r){ return r.json().then(function(d){ return { r:r, d:d }; }); });
+    var holdP = fetch('/api/token?mint='+encodeURIComponent(m)+'&holders=1', { cache: 'no-store' }).then(function(r){ return r.json().then(function(d){ return { r:r, d:d }; }); }).catch(function(){ return null; });
+
+    var main = await mainP;
+    var d = main.d;
+    if(!main.r.ok) throw new Error(d.error||'scan failed');
+
+    go.textContent = 'Measuring holders…';
+    var hold = await holdP;
+    if (hold && hold.d) {
+      if (!d.name && hold.d.name) d.name = hold.d.name;
+      if (!d.symbol && hold.d.symbol) d.symbol = hold.d.symbol;
+    }
+    if (hold && hold.r && hold.r.ok && hold.d && hold.d.holdersMeasured) {
+      d.top1Pct = hold.d.top1Pct;
+      d.top10Pct = hold.d.top10Pct;
+      d.holdersMeasured = true;
+      d.holdersSource = hold.d.holdersSource || d.holdersSource;
+      d.signals = (d.signals || []).filter(function(s){
+        return !(s && s.text && (
+          s.text.indexOf('Holder concentration not measured') === 0 ||
+          s.text.indexOf('Largest single account holds') === 0 ||
+          s.text.indexOf('Top 10 accounts hold') === 0
+        ));
+      });
+      if (d.top1Pct != null && d.top1Pct > 20) {
+        d.signals.splice(Math.min(2, d.signals.length), 0, {
+          level: 'med',
+          text: 'Largest single account holds ' + Number(d.top1Pct).toFixed(1) + '% of supply. Note: large accounts are sometimes liquidity pools, not individuals.'
+        });
+      }
+      if (d.top10Pct != null && d.top10Pct > 60) {
+        d.signals.splice(Math.min(3, d.signals.length), 0, {
+          level: 'med',
+          text: 'Top 10 accounts hold ' + Number(d.top10Pct).toFixed(1) + '% of supply — concentrated.'
+        });
+      } else if (d.top10Pct != null && d.top10Pct > 0) {
+        d.signals.splice(Math.min(3, d.signals.length), 0, {
+          level: 'info',
+          text: 'Top 10 accounts hold ' + Number(d.top10Pct).toFixed(1) + '% of supply.'
+        });
+      }
+    }
+
+    // Recompute risk score after holder enrichment (higher = more risk flags)
+    d.score = 0;
+    if (!d.mintAuthorityRevoked) d.score += 30;
+    if (!d.freezeAuthorityRevoked) d.score += 25;
+    if (d.top1Pct != null && d.top1Pct > 20) d.score += 15;
+    if (d.top10Pct != null && d.top10Pct > 60) d.score += 15;
+    d.risk = d.score >= 45 ? 'HIGH' : d.score >= 20 ? 'MEDIUM' : 'LOW';
+
+    if (!d.name || !d.symbol) {
+      var resolved = await resolveProjectName(m, d);
+      if (resolved.name && !d.name) d.name = resolved.name;
+      if (resolved.symbol && !d.symbol) d.symbol = resolved.symbol;
+    }
+
+    renderTokenId(d, m);
+    var b = document.getElementById('banner');
+    b.className = 'risk-banner r-'+d.risk;
+    document.getElementById('riskword').textContent = d.risk+' RISK PATTERN';
+    document.getElementById('riskscore').textContent = scoreLine(d);
+    document.getElementById('facts').innerHTML =
+      fact('Mint authority', d.mintAuthorityRevoked?'Revoked ✓':'ACTIVE ⚠') +
+      fact('Freeze authority', d.freezeAuthorityRevoked?'Revoked ✓':'ACTIVE ⚠') +
+      fact('Top holder', d.top1Pct != null ? d.top1Pct+'%' : 'Not measured') +
+      fact('Top 10 holders', d.top10Pct != null ? d.top10Pct+'%' : 'Not measured');
+    document.getElementById('signals').innerHTML = d.signals.map(function(s){
+      return '<div class="sig"><i class="i-'+s.level+'"></i><p>'+s.text+'</p></div>';
+    }).join('');
+    rep.style.display='block';
+    if (window.CyreScanSwap) window.CyreScanSwap.onScanSuccess(m, d);
+  }catch(e){ err.textContent = e.message; err.style.display='block'; }
+  go.disabled = false; go.textContent = 'Scan';
+}
+function fact(k,v){ return '<div class="fact"><small>'+k+'</small><b>'+v+'</b></div>'; }
+function renderTokenId(d, mint){
+  var box = document.getElementById('token-id');
+  var name = (d && d.name) ? String(d.name).trim() : '';
+  var symbol = (d && d.symbol) ? String(d.symbol).trim() : '';
+  document.getElementById('token-name').textContent = name || 'Name not found';
+  document.getElementById('token-symbol').textContent = symbol ? ('$' + symbol) : '';
+  document.getElementById('token-mint').textContent = mint || (d && d.mint) || '';
+  box.style.display = 'block';
+}
+async function resolveProjectName(mint, seeded){
+  var out = { name: (seeded && seeded.name) || null, symbol: (seeded && seeded.symbol) || null };
+  if (out.name && out.symbol) return out;
+  try {
+    var dx = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + encodeURIComponent(mint), { cache: 'no-store' });
+    if (dx.ok) {
+      var dj = await dx.json();
+      var pair = (dj && dj.pairs && dj.pairs[0]) || null;
+      var base = pair && pair.baseToken;
+      if (base && base.address === mint) {
+        if (!out.name && base.name) out.name = String(base.name).trim();
+        if (!out.symbol && base.symbol) out.symbol = String(base.symbol).trim();
+      }
+    }
+  } catch (_) {}
+  if (out.name && out.symbol) return out;
+  try {
+    var jr = await fetch('https://lite-api.jup.ag/tokens/v2/search?query=' + encodeURIComponent(mint), { cache: 'no-store' });
+    if (jr.ok) {
+      var arr = await jr.json();
+      var rows = Array.isArray(arr) ? arr : [];
+      var hit = null;
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i] && rows[i].id === mint) { hit = rows[i]; break; }
+      }
+      if (!hit) hit = rows[0];
+      if (hit) {
+        if (!out.name && hit.name) out.name = String(hit.name).trim();
+        if (!out.symbol && hit.symbol) out.symbol = String(hit.symbol).trim();
+      }
+    }
+  } catch (_) {}
+  return out;
+}
+function scoreLine(d){
+  var supply = 'supply ' + Number(d.supply).toLocaleString();
+  var s = Number(d.score) || 0;
+  // Higher = more risk flags. 0 is a real result (clean on measured checks), not "missing".
+  if (s === 0) return 'Risk score 0 / 85 — no flags · ' + supply;
+  return 'Risk score ' + s + ' / 85 · ' + supply;
+}
+document.getElementById('mint').addEventListener('keydown',function(e){ if(e.key==='Enter') scan(); });
+(function(){
+  var p = new URLSearchParams(location.search);
+  var m = (p.get('address') || p.get('mint') || p.get('q') || '').trim();
+  var embed = p.get('embed') === '1' || window.self !== window.top;
+  // Standalone landings always belong on the multichain console.
+  if (!embed) {
+    location.replace('https://scan.cyre.dev/app' + (m ? ('?address=' + encodeURIComponent(m)) : ''));
+    return;
+  }
+  if (!m) return;
+  document.getElementById('mint').value = m;
+  if (/^0x[a-fA-F0-9]{40}$/.test(m)) {
+    location.replace('https://scan.cyre.dev/app?address=' + encodeURIComponent(m));
+    return;
+  }
+  scan();
+})();
+</script>
+</body>
+</html>
