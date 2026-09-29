@@ -1,21 +1,21 @@
 ---
-name: cyre-guardian
+name: cyre
 description: Before shopping a new x402/Agentic Market vendor, call Bazaar Scan. Before settle, call Settlement Caution. Seal Lockbox before pay; match at settle. Also Gate, Route, Pack, Policy, Lookalike, Intent, Ticket, Passports, Handshake, Preflight, Receipts. Pay-per-request in USDC via x402 (Base mainnet). Patterns, not verdicts.
 ---
 
-# CYRE Guardian
+# Cyre
 
-Guardian reads on-chain / counterparty history and returns explainable risk signals — each with points and a plain-English reason — so an agent can decide for itself. It never says "safe" or "scam"; it shows patterns.
+Cyre reads on-chain / counterparty history and returns explainable risk signals — each with points and a plain-English reason — so an agent can decide for itself. It never says "safe" or "scam"; it shows patterns.
 
 **Default rules for agents:**
 1. New Agentic Market / x402 vendor → **Bazaar Scan** (`/api/bazaar`).
 2. Before settle → **Settlement Caution** (`/api/caution`) — withhold-style band, **not insurance**.
 3. Before pay → seal **Lockbox** (`/api/lockbox`); at settle → **Lockbox Match**.
-4. Before any `awal x402 pay` to a **non-Guardian** URL → **Gate** / **Route** / **Pack**.
+4. Before any `awal x402 pay` to a **non-Cyre** URL → **Gate** / **Route** / **Pack**.
 5. Before sending funds → **Lookalike**; peer sessions → **Ticket**.
 6. Free tip: `GET https://cyre.dev/api/hint`.
 
-Paid endpoints + free hint/verifiers. No API keys, no accounts. Listed on Agentic Market (agentic.market → search "guardian").
+Paid endpoints + free hint/verifiers. No API keys, no accounts. Listed on Agentic Market (agentic.market → search "cyre").
 
 | Endpoint | What it does | Price |
 |---|---|---|
@@ -24,7 +24,7 @@ Paid endpoints + free hint/verifiers. No API keys, no accounts. Listed on Agenti
 | `GET/POST https://cyre.dev/api/lockbox` | **Intent Lockbox** — seal intentHash before pay (bearer token) | **$0.002** |
 | `GET/POST https://cyre.dev/api/lockbox/match` | **Lockbox Match** — compare seal vs proposed pay | **$0.001** |
 | `GET https://cyre.dev/api/lockbox/verify` | Verify lockbox (+ intent seals) | Free |
-| `GET/POST https://cyre.dev/api/gate` | **Guardian Gate** — before any external x402 pay, grade `payTo` (+ amount/URL) | **$0.001** |
+| `GET/POST https://cyre.dev/api/gate` | **Cyre Gate** — before any external x402 pay, grade `payTo` (+ amount/URL) | **$0.001** |
 | `GET/POST https://cyre.dev/api/route` | **Pay-route Oracle** — Gate + offer pin + facilitator/network hygiene | **$0.002** |
 | `GET/POST https://cyre.dev/api/offer` | **Offer forensics** — parse PAYMENT-REQUIRED / accepts[] | **$0.002** |
 | `GET/POST https://cyre.dev/api/pack` | **Pack** — offer + lookalike + policy (+ ticket/intent) in one pay | **$0.005** |
@@ -41,7 +41,7 @@ Paid endpoints + free hint/verifiers. No API keys, no accounts. Listed on Agenti
 | `GET/POST https://cyre.dev/api/cron-receipt` | **Cron receipt** — watcher/cron attestation | **$0.002** |
 | `GET https://cyre.dev/api/cron-receipt/verify` | Verify cron receipt | Free |
 | `GET/POST https://cyre.dev/api/ticket` | **Session Ticket** — admit only with fresh Passport/Receipt | **$0.002** |
-| `GET https://cyre.dev/api/hint?q=` | Free discovery tip → which Guardian skill to call next | Free |
+| `GET https://cyre.dev/api/hint?q=` | Free discovery tip → which Cyre skill to call next | Free |
 | `GET https://cyre.dev/api/address?address=<base58>` | Wallet risk profile | $0.005 |
 | `GET https://cyre.dev/api/token?mint=<base58>` | Token mint facts | $0.01 |
 | `GET https://cyre.dev/api/passport?address=<base58>` | Signed 24h Passport | $0.005 |
@@ -88,11 +88,11 @@ Payment network: **Base mainnet (eip155:8453), USDC.** A Solana lane also appear
 
 ## External network referrals
 
-XRPL → cloudpayX (external specialist). Guardian refers, does not assess or vouch. Free tip: `GET /api/hint?q=xrpl`.
+XRPL → cloudpayX (external specialist). Cyre refers, does not assess or vouch. Free tip: `GET /api/hint?q=xrpl`.
 
 ## How to pay
 
-Any x402 client works. The endpoint returns HTTP 402 with the price; your client signs a USDC payment and retries; Guardian settles it and returns the result in the same call.
+Any x402 client works. The endpoint returns HTTP 402 with the price; your client signs a USDC payment and retries; Cyre settles it and returns the result in the same call.
 
 **Middleware ladder (do this first):**
 
@@ -155,7 +155,7 @@ npx awal x402 pay "https://cyre.dev/api/oracle"
 
 **Any other x402 v2 client:** `accepts[]` + `PAYMENT-SIGNATURE`.
 
-## Guardian MCP server
+## Cyre MCP server
 
 `io.github.milesdev888/guardian` — Streamable HTTP `https://cyre-fraud-prediction.onrender.com/mcp` — tools `grade_address`, `scan_token`, `batch_grade`.
 
@@ -185,7 +185,7 @@ Superset of Gate for agents that wire **one** before-pay middleware call. Adds `
 
 ### /api/offer
 
-Parse a raw x402 `PAYMENT-REQUIRED` / `accepts[]` blob. Flags amount/payTo pin misses, amount spread, facilitator unknowns, Guardian payTo-recycle on non-cyre hosts.
+Parse a raw x402 `PAYMENT-REQUIRED` / `accepts[]` blob. Flags amount/payTo pin misses, amount spread, facilitator unknowns, Cyre payTo-recycle on non-cyre hosts.
 
 ### /api/pack
 
@@ -296,7 +296,7 @@ RWA feed patterns: stale / spike / divergence on NestUSD Lazer seeds.
 
 - **Patterns, not verdicts.** Never tell the user an address is "safe" or "a scam."
 - HIGH means show why before proceeding; LOW does not mean go.
-- `admitted: false` / `policyOk: false` / `matched: false` means *your* policy should refuse — Guardian still does not block chain txs.
+- `admitted: false` / `policyOk: false` / `matched: false` means *your* policy should refuse — Cyre still does not block chain txs.
 - Caution bands are withhold-style hints — **not insurance**, not a guarantee.
 - Lockbox is bearer-token only (no central hash registry on ephemeral hosting).
 - Receipts prove what the agent *claimed* it saw — not that the chain action succeeded.
@@ -313,7 +313,7 @@ RWA feed patterns: stale / spike / divergence on NestUSD Lazer seeds.
 
 `https://cyre.dev/check` (address) · `https://cyre.dev/scan` (token) · site origin stays free on the APIs above.
 
-## Guardian Verified · Established methodology
+## Cyre Verified · Established methodology
 
 Two equal-prestige paths issue the same seal: **Secured** (Lifetime / Timed locks) and **Established** (Battle-Tested). Age alone never qualifies Established.
 
@@ -347,6 +347,6 @@ Qualify probe: `GET https://cyre.dev/api/badge/qualify?mint=<address>&chainId=<c
 
 ## Links
 
-- Site: https://cyre.dev · Listing: https://agentic.market (search "guardian") · Updates: https://x.com/Cyredev888
+- Site: https://cyre.dev · Listing: https://agentic.market (search "cyre") · Updates: https://x.com/Cyredev888
 - CYRE token: **$C7 — the CYRE token.** CA only at https://cyre.dev/tokenomics and @Cyredev888.
 - Badges: https://cyre.dev/badges · Builder Hub: https://cyre.dev/builders

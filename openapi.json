@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "CYRE Guardian MCP",
+    "title": "Cyre MCP",
     "version": "1.0.0",
     "description": "x402-gated MCP server for Solana address grading and token scans. Patterns, not verdicts. Skill: https://cyre.dev/SKILL.md"
   },
@@ -13,7 +13,7 @@
   "paths": {
     "/mcp": {
       "post": {
-        "summary": "Guardian MCP (Streamable HTTP, JSON-RPC)",
+        "summary": "Cyre MCP (Streamable HTTP, JSON-RPC)",
         "description": "Paid MCP endpoint. Tools: grade_address, scan_token, batch_grade. HTTP 402 before MCP traffic.",
         "requestBody": {
           "required": true,

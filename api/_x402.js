@@ -406,14 +406,36 @@ export function offerMatches(accepted, expected) {
 import { detectNetwork, xrplHandoffBody } from '../lib/peers.js';
 import { recordTrafficEventFire, classifySource } from './_traffic.js';
 
+// Guardian name retired (Sep 2026) — every public offer / Bazaar listing says Cyre.
+// Display text only: header names, keys and signed payloads are untouched.
+export function cyreBrand(text) {
+  return String(text)
+    .replace(/\bCYRE Guardian\b/g, 'Cyre')
+    .replace(/\bCyre Guardian\b/g, 'Cyre')
+    .replace(/\bnon-Guardian\b/g, 'non-Cyre')
+    .replace(/\bGuardian's\b/g, "Cyre's")
+    .replace(/\bGuardian\b/g, 'Cyre');
+}
+
+function cyreBrandDeep(value) {
+  if (typeof value === 'string') return cyreBrand(value);
+  if (Array.isArray(value)) return value.map(cyreBrandDeep);
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = cyreBrandDeep(v);
+    return out;
+  }
+  return value;
+}
+
 export function createX402Gate(opts) {
   const price = String(opts.price);
   const resourcePath = opts.resourcePath;
-  const description = opts.description + ' Agent guide: https://cyre.dev/SKILL.md';
-  const serviceName = opts.serviceName || 'CYRE Guardian';
+  const description = cyreBrand(opts.description) + ' Agent guide: https://cyre.dev/SKILL.md';
+  const serviceName = opts.serviceName ? cyreBrand(opts.serviceName) : 'Cyre';
   const tags = opts.tags || ['risk', 'fraud', 'solana', 'security'];
-  const iconUrl = opts.iconUrl || 'https://cyre.dev/c7-cobra-256.png?v=c7g2';
-  const discovery = opts.discovery;
+  const iconUrl = opts.iconUrl || 'https://cyre.dev/c7-token-icon-256.png?v=c7b';
+  const discovery = opts.discovery ? cyreBrandDeep(opts.discovery) : opts.discovery;
   const isFree = opts.isFree || isCyreSiteRequest;
   const baseOnly = !!opts.baseOnly;
 
@@ -433,7 +455,7 @@ export function createX402Gate(opts) {
   }
 
   return async function x402Gate(req) {
-    // XRPL handoff BEFORE payment — agents must not pay to learn Guardian doesn't cover XRPL.
+    // XRPL handoff BEFORE payment — agents must not pay to learn Cyre doesn't cover XRPL.
     if (detectNetwork(req) === 'xrpl') {
       return { status: 400, body: xrplHandoffBody(req) };
     }
