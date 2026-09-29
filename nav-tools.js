@@ -20,7 +20,7 @@
       var app = document.createElement('a');
       app.href = '/app';
       app.className = 'nav-app';
-      app.textContent = 'Guardian App';
+      app.textContent = 'Cyre App';
       var req = nav.querySelector('.req');
       if (req) nav.insertBefore(app, req);
       else nav.appendChild(app);
