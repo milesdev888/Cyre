@@ -1,11 +1,14 @@
 {
   "name": "CYRE",
   "symbol": "C7",
-  "description": "CYRE \u2014 Synthetic Intelligence infrastructure for real-world assets on Solana. Patterns, not verdicts.",
-  "image": "https://cyre.dev/cyre-coin-512.png?v=cy1",
+  "description": "Onchain intelligence for traders and AI agents. Scan any contract across Solana, Ethereum, Base & Arbitrum. Pay-per-query via x402. Patterns, not verdicts.",
+  "image": "https://cyre.dev/c7-token-icon-512.png?v=c7b",
   "external_url": "https://cyre.dev",
   "extensions": {
+    "website": "https://cyre.dev",
     "twitter": "https://x.com/Cyredev888",
-    "website": "https://cyre.dev"
+    "telegram": "https://t.me/cyredev888",
+    "github": "https://github.com/milesdev888/Cyre"
   }
 }
+Ty
