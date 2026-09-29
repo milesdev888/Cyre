@@ -9,7 +9,7 @@ import { USDC_USD, C7_USD } from './_badge-order.js';
 const SCAN_BASE = process.env.GUARDIAN_SCAN_URL || 'https://scan.cyre.dev';
 const SITE = process.env.GUARDIAN_SITE_URL || 'https://cyre.dev';
 const DISCLAIMER =
-  'Guardian Verified is a measured qualifying-path seal with live re-check — patterns and lock evidence, not investment advice.';
+  'Cyre Verified is a measured qualifying-path seal with live re-check — patterns and lock evidence, not investment advice.';
 
 async function fetchScan(mint) {
   const url = `${SCAN_BASE}/api/scan?address=${encodeURIComponent(mint)}`;
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
       eligible: true,
       showBuy: true,
       qualify,
-      cta: 'Get Guardian Verified — $25',
+      cta: 'Get Cyre Verified — $25',
       checkoutUrl: `${SITE}/order?mint=${encodeURIComponent(mint)}`,
       paths: QUALIFY_PATHS,
       disclaimer: DISCLAIMER

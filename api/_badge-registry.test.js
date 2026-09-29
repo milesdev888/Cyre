@@ -34,11 +34,11 @@ assert.equal(
     symbol: GENESIS_BADGE.symbol,
     serial: GENESIS_SERIAL
   }),
-  'Guardian Verified · CYRE ($C7) · GRD-2026-00001'
+  'Cyre Verified · CYRE ($C7) · GRD-2026-00001'
 );
 assert.equal(
   formatVerifiedOgTitle({ serial: GENESIS_SERIAL }),
-  'Guardian Verified · GRD-2026-00001'
+  'Cyre Verified · GRD-2026-00001'
 );
 
 assert.equal(formatSerial(2026, 1), 'GRD-2026-00001');

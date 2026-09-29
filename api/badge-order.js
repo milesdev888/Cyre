@@ -1,4 +1,4 @@
-// api/badge-order.js — Create / read / watch paid Guardian Verified orders.
+// api/badge-order.js — Create / read / watch paid Cyre Verified orders.
 // POST { mint, usdcChain? } — live-scan qualify; if eligible and unissued → create ORDER (30m lock).
 // usdcChain: ethereum | base | arbitrum | solana (default base). Robinhood Chain excluded.
 // Non-qualifying mints get 422 with no checkout — money cannot buy a non-qualifying badge.
@@ -33,7 +33,7 @@ import { getBadgeByMint, hasRevocationHistory } from './_badge-registry.js';
 import { watchOrders } from './_badge-pay-watch.js';
 
 const DISCLAIMER =
-  'Guardian Verified is a measured qualifying-path seal with live re-check — patterns and lock evidence, not investment advice. Digital assets are volatile. Payment does not guarantee issuance; founder brand-safety approval is required.';
+  'Cyre Verified is a measured qualifying-path seal with live re-check — patterns and lock evidence, not investment advice. Digital assets are volatile. Payment does not guarantee issuance; founder brand-safety approval is required.';
 const SCAN_BASE = process.env.GUARDIAN_SCAN_URL || 'https://scan.cyre.dev';
 const SITE = process.env.GUARDIAN_SITE_URL || 'https://cyre.dev';
 
@@ -277,7 +277,7 @@ export default async function handler(req, res) {
     return res.status(201).json({
       ...publicOrderView(order),
       checkoutUrl: order.statusUrl,
-      cta: `Get Guardian Verified — $${USDC_USD} USDC or $${C7_USD} in $C7.`,
+      cta: `Get Cyre Verified — $${USDC_USD} USDC or $${C7_USD} in $C7.`,
       paths: QUALIFY_PATHS
     });
   } catch (e) {

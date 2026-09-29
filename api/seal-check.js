@@ -83,7 +83,7 @@ a{color:var(--gold)}
 </head>
 <body>
 <div class="wrap">
-  <div class="brand">Cyre Guardian · Seal check</div>
+  <div class="brand">Cyre · Seal check</div>
   <div class="card ${tone}">
     ${
       seal

@@ -1,4 +1,4 @@
-// api/_badge-order.js — Paid Guardian Verified orders (multi-chain USDC | $C7 Solana Pay).
+// api/_badge-order.js — Paid Cyre Verified orders (multi-chain USDC | $C7 Solana Pay).
 // Comp issuance (badge-register) NEVER creates orders; paid orders NEVER look like comps.
 // Status machine:
 //   AWAITING_PAYMENT → (expire) EXPIRED
@@ -681,7 +681,7 @@ export async function createPaidOrder({ mint, chainId, qualify, siteUrl, usdcCha
         amount: usdcDisplay,
         splToken: usdcMeta.asset,
         reference: usdcReference,
-        label: 'Guardian Verified',
+        label: 'Cyre Verified',
         message: `Order ${id} USDC`
       }),
       explorerName: usdcMeta.explorerName,
@@ -773,7 +773,7 @@ export async function createPaidOrder({ mint, chainId, qualify, siteUrl, usdcCha
               amount: c7.amountDisplay,
               splToken: C7_MINT,
               reference: c7Reference,
-              label: 'Guardian Verified',
+              label: 'Cyre Verified',
               message: `Order ${id}`
             }),
             note: `Send ${c7.amountDisplay} $C7 (locked ≈ $${C7_USD} at order time) to the Solana burn-receive treasury. Include the Solana Pay reference for exact matching. $C7 payments are recorded in the burn ledger and burned weekly.`
@@ -796,7 +796,7 @@ export async function createPaidOrder({ mint, chainId, qualify, siteUrl, usdcCha
     burnLedgerId: null,
     statusUrl: `${SITE}/order/${id}`,
     disclaimer:
-      'Guardian Verified is a measured qualifying-path seal with live re-check — patterns and lock evidence, not investment advice. Digital assets are volatile. Payment does not guarantee issuance; founder brand-safety approval is required. Unpaid orders expire after 30 minutes.'
+      'Cyre Verified is a measured qualifying-path seal with live re-check — patterns and lock evidence, not investment advice. Digital assets are volatile. Payment does not guarantee issuance; founder brand-safety approval is required. Unpaid orders expire after 30 minutes.'
   };
 
   await saveOrder(order);

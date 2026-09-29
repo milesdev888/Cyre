@@ -657,7 +657,7 @@ export function renderBadgeOg(input) {
   const revoked = input.status === 'REVOKED';
   const expired = input.status === 'EXPIRED';
 
-  drawText(rgba, 'GUARDIAN', 72, 70, 5, 201, 162, 39);
+  drawText(rgba, 'CYRE', 72, 70, 5, 201, 162, 39);
   drawText(
     rgba,
     input.status === 'VALID' ? 'BADGE VERIFIED' : input.status,
@@ -725,7 +725,7 @@ const VERIFY_SEAL_DISPLAY = 420; // seal-forward verify unfurl
 
 /**
  * Verify-page og:title + OG card headline.
- * Format: Guardian Verified · {name} (${ticker}) · {serial}
+ * Format: Cyre Verified · {name} (${ticker}) · {serial}
  *
  * @param {{ name?: string|null, symbol?: string|null, serial?: string|null }} input
  * @returns {string}
@@ -736,10 +736,10 @@ export function formatVerifiedOgTitle(input = {}) {
   const serial = String(input.serial || '').trim();
   const project =
     name && ticker ? `${name} ($${ticker})` : name || (ticker ? `$${ticker}` : '');
-  if (project && serial) return `Guardian Verified · ${project} · ${serial}`;
-  if (serial) return `Guardian Verified · ${serial}`;
-  if (project) return `Guardian Verified · ${project}`;
-  return 'Guardian Verified';
+  if (project && serial) return `Cyre Verified · ${project} · ${serial}`;
+  if (serial) return `Cyre Verified · ${serial}`;
+  if (project) return `Cyre Verified · ${project}`;
+  return 'Cyre Verified';
 }
 
 /**

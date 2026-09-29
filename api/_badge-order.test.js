@@ -56,7 +56,7 @@ const payUrl = buildSolanaPayUrl({
   amount: c7.amountDisplay,
   splToken: '979sitxCjWFPdAsrF2ybKNENwFcpiHDwaAasC5Xa5qww',
   reference: ref,
-  label: 'Guardian Verified'
+  label: 'Cyre Verified'
 });
 assert.match(payUrl, /^solana:/);
 assert.match(payUrl, /reference=/);

@@ -27,9 +27,9 @@ const markup = html.slice(tagOpen, sectionEnd + '</section>'.length);
 
 const required = [
   'THE $C7 LOOP',
-  'Every Guardian Verified badge paid in C7 removes supply forever',
+  'Every Cyre Verified badge paid in C7 removes supply forever',
   'SCAN',
-  'Project runs a Guardian scan',
+  'Project runs a Cyre scan',
   'QUALIFY',
   'LP locked · authorities revoked · grade earned',
   'BADGE',
