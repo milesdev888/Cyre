@@ -32,7 +32,7 @@
     'box-shadow:0 0 0 2px rgba(143,176,222,.25),0 0 28px rgba(143,176,222,.4),0 0 48px rgba(143,176,222,.22);' +
     'transition:transform .2s,box-shadow .2s}' +
     '#gp-fab:hover,#gp-fab:focus-visible{transform:scale(1.05);box-shadow:0 0 0 2px rgba(143,176,222,.65),0 0 36px rgba(143,176,222,.55),0 0 60px rgba(143,176,222,.3);outline:none}' +
-    '#gp-fab img{width:100%;height:100%;object-fit:contain;border-radius:0;display:block;background:transparent}' +
+    '#gp-fab img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;background:transparent}' +
     '#gp-fab .gp-pulse{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;' +
     'background:#A9C4E8;border:2px solid #0E1622;box-shadow:0 0 10px rgba(143,176,222,.7)}' +
     '#gp-fab .gp-pulse::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(143,176,222,.55);' +
@@ -188,7 +188,7 @@
     fab.setAttribute('aria-expanded', 'false');
     fab.setAttribute('aria-controls', 'gp-panel');
     fab.innerHTML =
-      '<img src="/c7-cobra-256-transparent.png?v=c7t1" srcset="/c7-cobra-256-transparent.png?v=c7t1 1x, /c7-cobra-512-transparent.png?v=c7t1 2x" alt="" width="64" height="64">' +
+      '<img src="/c7-token-icon-256.png?v=c7b" srcset="/c7-token-icon-256.png?v=c7b 1x, /c7-token-icon-512.png?v=c7b 2x" alt="" width="64" height="64">' +
       '<span class="gp-pulse" aria-hidden="true"></span>' +
       '<span class="gp-live">LIVE</span>';
     root.appendChild(fab);
@@ -217,7 +217,7 @@
     root.appendChild(panel);
     video = panel.querySelector('video');
     var log = panel.querySelector('.gp-log');
-    addMsg(log, "I'm Guardian. Ask me what I'm watching.", 'bot');
+    addMsg(log, "I'm Cyre. Ask me what I'm watching.", 'bot');
     fab.addEventListener('click', function () {
       if (panel.classList.contains('is-open')) close();
       else open();
