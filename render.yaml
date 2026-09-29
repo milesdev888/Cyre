@@ -11,7 +11,7 @@ services:
     runtime: node
     plan: free
     region: oregon
-    repo: https://github.com/milesdev888/-Cyre-Guardian
+    repo: https://github.com/milesdev888/Cyre
     branch: main
     buildCommand: "true"
     startCommand: node x-connector.cjs
