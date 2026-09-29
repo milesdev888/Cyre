@@ -9,6 +9,7 @@ import zlib from 'node:zlib';
 import QRCode from 'qrcode';
 import { decodePng, encodePng, encodePngRgb, encodeOgPng, downscaleRgba } from './_badge-og-render.js';
 import { AA_PLATINUM } from '../brand/aa-platinum.js';
+import { getBadgeBySerial } from './_badge-registry.js';
 
 export const SEAL_CANVAS = 1800;
 /** Compressed OG unfurl size — ~1024px square, palette PNG under 300KB. */
@@ -19,8 +20,9 @@ export const SEAL_UI_SIZE = 256;
 const BAND_R = 760;
 const GUIDE_INNER = 728;
 const GUIDE_OUTER = 852;
-const GOLD_HI = [248, 224, 118];
-const GOLD_LO = [212, 168, 52];
+// Band + guide rings — silver-blue to match the Cyre project badge (was trophy gold).
+const GOLD_HI = [222, 232, 248];
+const GOLD_LO = [128, 168, 222];
 /** Platinum cool sheen for AA path words — from brand/aa-platinum.js (shared). */
 const PLAT_HI = AA_PLATINUM.rgb.hi;
 const PLAT_LO = AA_PLATINUM.rgb.steel;
@@ -558,6 +560,188 @@ function applyRevoked(rgba, W, H) {
  * }} input
  * @returns {Promise<{ rgba: Buffer, width: number, height: number, serial: string, qr?: object|null }>}
  */
+// ---------------------------------------------------------------------------
+// Project badge (Sep 2026): round ring in the Cyre C7-icon style, the project's
+// own $TICKER + name in the centre, green check at lower-right. Drawn
+// procedurally — no medallion art, no gold pass. Band + QR unchanged.
+// ---------------------------------------------------------------------------
+let displayAtlasCache;
+function loadDisplayAtlas() {
+  if (displayAtlasCache !== undefined) return displayAtlasCache;
+  const pngPath = assetPath('brand', 'seals', 'glyph-atlas-display.png');
+  const jsonPath = assetPath('brand', 'seals', 'glyph-atlas-display.json');
+  try {
+    displayAtlasCache =
+      pngPath && jsonPath
+        ? { img: decodePng(fs.readFileSync(pngPath)), meta: JSON.parse(fs.readFileSync(jsonPath, 'utf8')) }
+        : null;
+  } catch {
+    displayAtlasCache = null;
+  }
+  return displayAtlasCache;
+}
+
+function blendPx(rgba, W, H, x, y, r, g, b, a) {
+  if (x < 0 || y < 0 || x >= W || y >= H || a <= 0) return;
+  const i = (y * W + x) * 4;
+  const srcA = Math.min(1, a / 255);
+  const dstA = rgba[i + 3] / 255;
+  const outA = srcA + dstA * (1 - srcA);
+  if (outA <= 0) return;
+  rgba[i] = Math.round((r * srcA + rgba[i] * dstA * (1 - srcA)) / outA);
+  rgba[i + 1] = Math.round((g * srcA + rgba[i + 1] * dstA * (1 - srcA)) / outA);
+  rgba[i + 2] = Math.round((b * srcA + rgba[i + 2] * dstA * (1 - srcA)) / outA);
+  rgba[i + 3] = Math.round(outA * 255);
+}
+
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/** Glow + metallic silver-blue ring + deep navy disk + thin inner line. */
+function paintProjectDisk(rgba, W, H, cx, cy, R) {
+  const ringW = R * 0.065;
+  const glowW = R * 0.1;
+  const x0 = Math.max(0, Math.floor(cx - R - glowW));
+  const x1 = Math.min(W - 1, Math.ceil(cx + R + glowW));
+  const y0 = Math.max(0, Math.floor(cy - R - glowW));
+  const y1 = Math.min(H - 1, Math.ceil(cy + R + glowW));
+  for (let y = y0; y <= y1; y++) {
+    const t = (y - (cy - R)) / (2 * R);
+    const tc = Math.max(0, Math.min(1, t));
+    for (let x = x0; x <= x1; x++) {
+      const r = Math.hypot(x - cx, y - cy);
+      if (r > R) {
+        const k = 1 - (r - R) / glowW;
+        if (k > 0) blendPx(rgba, W, H, x, y, 80, 150, 240, k * k * 120);
+        if (r < R + 1.5) {
+          const aa = (R + 1.5 - r) / 1.5;
+          blendPx(rgba, W, H, x, y, lerp(175, 60, tc), lerp(220, 130, tc), lerp(245, 200, tc), aa * 255);
+        }
+        continue;
+      }
+      if (r >= R - ringW) {
+        blendPx(rgba, W, H, x, y, lerp(175, 60, tc), lerp(220, 130, tc), lerp(245, 200, tc), 255);
+        continue;
+      }
+      const hl = Math.max(0, 0.45 - Math.hypot(x - cx, y - (cy - R * 0.28)) / (2.2 * R)) * 50;
+      blendPx(
+        rgba, W, H, x, y,
+        Math.min(255, lerp(20, 5, tc) + hl),
+        Math.min(255, lerp(40, 11, tc) + hl),
+        Math.min(255, lerp(78, 26, tc) + hl),
+        255
+      );
+    }
+  }
+  const ri = R - ringW - R * 0.022;
+  for (let deg = 0; deg < 360; deg += 0.12) {
+    const rad = (deg * Math.PI) / 180;
+    const px = Math.round(cx + ri * Math.cos(rad));
+    const py = Math.round(cy + ri * Math.sin(rad));
+    fillRect(rgba, W, H, px - 1, py - 1, 3, 3, 70, 110, 170, 200);
+  }
+}
+
+function distToSeg(px, py, ax, ay, bx, by) {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const l2 = dx * dx + dy * dy || 1;
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2));
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+/** Green check disk sitting on the ring at lower-right. */
+function paintCheck(rgba, W, H, cx, cy, R) {
+  const ang = Math.PI / 4;
+  const ccx = cx + R * 0.8 * Math.cos(ang);
+  const ccy = cy + R * 0.8 * Math.sin(ang);
+  const cr = R * 0.185;
+  const rim = R * 0.022;
+  const lw = R * 0.049;
+  const pts = [
+    [ccx - cr * 0.45, ccy + cr * 0.02],
+    [ccx - cr * 0.1, ccy + cr * 0.38],
+    [ccx + cr * 0.5, ccy - cr * 0.35]
+  ];
+  const ext = cr + rim + 2;
+  for (let y = Math.floor(ccy - ext); y <= Math.ceil(ccy + ext); y++) {
+    for (let x = Math.floor(ccx - ext); x <= Math.ceil(ccx + ext); x++) {
+      const r = Math.hypot(x - ccx, y - ccy);
+      if (r > cr + rim + 1) continue;
+      if (r > cr) {
+        blendPx(rgba, W, H, x, y, 8, 14, 26, Math.min(1, cr + rim + 1 - r) * 255);
+        continue;
+      }
+      blendPx(rgba, W, H, x, y, 60, 190, 110, Math.min(1, cr + 1 - r) * 255);
+      const d = Math.min(distToSeg(x, y, ...pts[0], ...pts[1]), distToSeg(x, y, ...pts[1], ...pts[2]));
+      if (d < lw / 2 + 1) blendPx(rgba, W, H, x, y, 255, 255, 255, Math.min(1, lw / 2 + 1 - d) * 255);
+    }
+  }
+}
+
+/** Centered single line from the display atlas; auto-shrinks to maxW. */
+function drawDisplayLine(rgba, W, H, atlas, text, cx, capCenterY, capPx, maxW, rgb) {
+  const { img, meta } = atlas;
+  const chars = [...String(text || '')].filter((ch) => meta.glyphs[ch]);
+  if (!chars.length) return;
+  const capH = meta.baseline - (2 * meta.capCenter - meta.baseline);
+  let scale = capPx / capH;
+  const total = chars.reduce((s, ch) => s + meta.glyphs[ch].adv, 0) * scale;
+  if (total > maxW) scale *= maxW / total;
+  let pen = cx - (chars.reduce((s, ch) => s + meta.glyphs[ch].adv, 0) * scale) / 2;
+  const top = capCenterY - meta.capCenter * scale;
+  const th = Math.max(1, Math.round(meta.height * scale));
+  for (const ch of chars) {
+    const g = meta.glyphs[ch];
+    if (ch !== ' ') {
+      const buf = Buffer.alloc(g.w * meta.height * 4);
+      for (let y = 0; y < meta.height; y++) {
+        for (let x = 0; x < g.w; x++) {
+          const si = (y * img.width + Math.min(img.width - 1, g.x + x)) * 4;
+          const di = (y * g.w + x) * 4;
+          buf[di] = rgb[0];
+          buf[di + 1] = rgb[1];
+          buf[di + 2] = rgb[2];
+          buf[di + 3] = img.rgba[si + 3];
+        }
+      }
+      const tw = Math.max(1, Math.round(g.w * scale));
+      blitScaled(rgba, W, H, { rgba: buf, width: g.w, height: meta.height }, Math.round(pen - g.ox * scale), Math.round(top), tw, th);
+    }
+    pen += g.adv * scale;
+  }
+}
+
+async function resolveProjectLabel(input, serial) {
+  let symbol = String(input.symbol || '').trim();
+  let name = String(input.name || '').trim();
+  if ((!symbol || !name) && serial) {
+    try {
+      const badge = await getBadgeBySerial(serial);
+      if (badge) {
+        symbol = symbol || String(badge.symbol || '').trim();
+        name = name || String(badge.name || '').trim();
+      }
+    } catch {
+      /* label is cosmetic — never fail the seal */
+    }
+  }
+  return { symbol, name };
+}
+
+function paintProjectBadge(rgba, W, H, cx, cy, R, label) {
+  paintProjectDisk(rgba, W, H, cx, cy, R);
+  const atlas = loadDisplayAtlas();
+  const k = R / 0.92; // mock-up unit: half-canvas at ring radius 0.92
+  if (atlas) {
+    const ticker = label.symbol ? '$' + label.symbol.toUpperCase().slice(0, 12) : 'VERIFIED';
+    drawDisplayLine(rgba, W, H, atlas, ticker, cx, cy - k * 0.08, k * 0.33, k * 1.25, [244, 247, 252]);
+    if (label.name) {
+      drawDisplayLine(rgba, W, H, atlas, label.name.slice(0, 28), cx, cy + k * 0.26, k * 0.08, k * 1.2, [160, 190, 230]);
+    }
+  }
+  paintCheck(rgba, W, H, cx, cy, R);
+}
+
 async function paintOfficialSeal(input) {
   const serial = String(input.serial || '').trim().toUpperCase();
   const ca = String(input.ca || '').trim();
@@ -581,14 +765,10 @@ async function paintOfficialSeal(input) {
   // Transparent plate — medallion + band (+ optional QR). QR plate itself is fully opaque.
   const rgba = Buffer.alloc(W * H * 4, 0);
 
-  const med = brightenTrophyGold(loadMedallion());
-  const target = GUIDE_INNER * 2 - 8;
-  const dx = Math.round((W - target) / 2);
-  const dy = Math.round((H - target) / 2);
-  blitScaled(rgba, W, H, med, dx, dy, target, target);
-
   const cx = W / 2;
   const cy = H / 2;
+  const label = await resolveProjectLabel(input, serial);
+  paintProjectBadge(rgba, W, H, cx, cy, GUIDE_INNER - 4 - Math.round((GUIDE_INNER - 4) * 0.1), label);
   drawGuideRing(rgba, W, H, cx, cy, GUIDE_INNER, GOLD_LO[0], GOLD_LO[1], GOLD_LO[2], 160);
   drawGuideRing(rgba, W, H, cx, cy, GUIDE_OUTER, GOLD_LO[0], GOLD_LO[1], GOLD_LO[2], 160);
 
