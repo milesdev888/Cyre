@@ -13,6 +13,9 @@
 //   X402_INTERNAL_KEY — bypass via x-guardian-key; also auth to the B402 relay
 // See docs/B402-RESEARCH.md · docs/B402-ENV.md
 
+// ESM: `require` does not exist on Vercel's runtime — import crypto explicitly.
+import * as nodeCrypto from 'node:crypto';
+
 const DEFAULT_FACILITATOR = 'https://x402.org/facilitator';
 const CDP_FACILITATOR = 'https://api.cdp.coinbase.com/platform/v2/x402';
 const DEFAULT_B402_RELAY = 'https://cyre-fraud-prediction.onrender.com/internal/b402';
@@ -173,7 +176,7 @@ function b64url(buf) {
 }
 
 function cdpPrivateKey() {
-  const crypto = require('crypto');
+  const crypto = nodeCrypto;
   const secret = CDP_KEY_SECRET.trim();
   if (secret.includes('BEGIN')) {
     return { key: crypto.createPrivateKey(secret), alg: 'ES256' };
@@ -194,7 +197,7 @@ function cdpPrivateKey() {
 }
 
 function cdpJwt(method, urlPath) {
-  const crypto = require('crypto');
+  const crypto = nodeCrypto;
   const { key, alg } = cdpPrivateKey();
   const now = Math.floor(Date.now() / 1000);
   const header = { alg, kid: CDP_KEY_ID, typ: 'JWT', nonce: crypto.randomBytes(16).toString('hex') };
@@ -311,12 +314,32 @@ async function fetchSupported(lane) {
   return unwrapFacilitatorData(text ? JSON.parse(text) : {});
 }
 
+const SVM_ALIASES = [
+  ['solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp', 'solana', 'solana-mainnet'],
+  ['solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1', 'solana-devnet']
+];
+
+/** Facilitators list Solana under either the CAIP-2 id (x402 v2) or the v1 short name. */
+export function svmNetworkAliases(network) {
+  const row = SVM_ALIASES.find((r) => r.includes(network));
+  return row || [network];
+}
+
+/**
+ * Drop the cached fee payer so the next 402 refetches /supported.
+ * Called when the facilitator rejects a Solana payment (e.g. Coinbase rotated its fee payer).
+ */
+export function invalidateSvmFeePayer() {
+  svmExtraCache = { ...svmExtraCache, at: 0 };
+}
+
 /** Pick the SVM fee payer the facilitator advertises for this network. Exported for tests. */
 export function pickSvmFeePayer(data, network) {
   const kinds = (data && (data.kinds || data.accepted)) || [];
   if (!Array.isArray(kinds)) return null;
+  const names = svmNetworkAliases(network);
   for (const k of kinds) {
-    if (k && k.network === network && (k.scheme || 'exact') === 'exact' &&
+    if (k && names.includes(k.network) && (k.scheme || 'exact') === 'exact' &&
         k.extra && typeof k.extra.feePayer === 'string' && k.extra.feePayer) {
       return k.extra.feePayer;
     }
@@ -338,10 +361,21 @@ export async function resolveSvmExtra(lane) {
     return svmExtraCache.extra;
   }
   let feePayer = null;
+  let fetched = false;
   try {
-    feePayer = pickSvmFeePayer(await fetchSupported(lane), env.network);
+    const data = await fetchSupported(lane);
+    fetched = true;
+    feePayer = pickSvmFeePayer(data, env.network);
+    if (!feePayer) {
+      const seen = ((data && (data.kinds || data.accepted)) || []).map((k) => k && k.network).filter(Boolean);
+      console.error('svm supported: no feePayer for', env.network, 'facilitator lists', JSON.stringify(seen).slice(0, 300));
+    }
   } catch (e) {
     console.error('svm supported fetch failed', e && e.message);
+  }
+  // Facilitator briefly unreachable: keep serving the last known fee payer rather than hiding Solana.
+  if (!feePayer && !fetched && svmExtraCache.extra && svmExtraCache.key === cacheKey) {
+    return svmExtraCache.extra;
   }
   if (!feePayer) feePayer = (process.env.X402_SOLANA_FEE_PAYER || '').trim() || null;
   if (!feePayer) return null;
@@ -622,11 +656,13 @@ export function createX402Gate(opts) {
       });
       if (!v || v.isValid !== true) {
         const reason = (v && (v.invalidMessage || v.invalidReason)) || 'Payment invalid';
+        if (lane.name === 'solana') invalidateSvmFeePayer();
         return { status: 402, body: paymentRequired(resourceUrl, accepts, reason) };
       }
       const s = await settleWithPoll(lane, paymentPayload, requirements);
       if (!s || s.success !== true) {
         const reason = (s && (s.errorMessage || s.errorReason)) || 'Settlement failed';
+        if (lane.name === 'solana') invalidateSvmFeePayer();
         return { status: 402, body: paymentRequired(resourceUrl, accepts, reason) };
       }
       recordTrafficEventFire({
