@@ -10,10 +10,8 @@ const SOL_DEV = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
 const FEE_PAYER = 'CKPKJWNdJEqa81x7CkZ14BVPiY6y16Sxs7owznqtWYp5';
 const realFetch = globalThis.fetch;
 
-// api/_x402.js signs CDP JWTs with require('crypto') (provided by Vercel's bundle);
-// give plain-Node ESM the same.
-import { createRequire } from 'node:module';
-globalThis.require = globalThis.require || createRequire(import.meta.url);
+// No require() shim on purpose: api/_x402.js is ESM, and Vercel has no global
+// require. A shim here hid the production bug where /supported never signed.
 
 function resetEnv(extra = {}) {
   for (const k of Object.keys(process.env)) {
@@ -65,6 +63,33 @@ async function run() {
     assert(sol.requirements.extra.feePayer === FEE_PAYER, 'feePayer set: ' + JSON.stringify(sol.requirements.extra));
     assert(seen.some((s) => s.url === 'https://fac.example/x402/supported' && s.method === 'GET'), 'GET /supported');
     console.log('ok solana accept has feePayer');
+  }
+
+  // --- v1 short name "solana" is accepted for mainnet ---
+  {
+    resetEnv();
+    const mod = await loadFresh();
+    const data = { kinds: [{ scheme: 'exact', network: 'solana', extra: { feePayer: FEE_PAYER } }] };
+    assert(mod.pickSvmFeePayer(data, SOL_MAIN) === FEE_PAYER, 'v1 alias');
+    assert(mod.pickSvmFeePayer({ kinds: [{ network: 'solana-devnet', extra: { feePayer: 'x' } }] }, SOL_MAIN) === null, 'devnet not mainnet');
+    console.log('ok v1 network alias');
+  }
+
+  // --- stale fee payer served when facilitator is down; refetch after invalidate ---
+  {
+    resetEnv({ X402_NETWORK: 'mainnet', X402_PAY_TO: 'SoLPayTo1111111111111111111111111111111111', X402_FACILITATOR: 'https://fac.example/x402' });
+    const mod = await loadFresh();
+    mod.clearSvmExtraCache();
+    const lane = mod.armedLanes().find((l) => l.name === 'solana');
+    mockSupported([{ scheme: 'exact', network: SOL_MAIN, extra: { feePayer: FEE_PAYER } }]);
+    assert((await mod.resolveSvmExtra(lane)).feePayer === FEE_PAYER, 'first fetch');
+    mod.invalidateSvmFeePayer();
+    globalThis.fetch = async () => { throw new Error('facilitator down'); };
+    assert((await mod.resolveSvmExtra(lane)).feePayer === FEE_PAYER, 'stale served while down');
+    mockSupported([{ scheme: 'exact', network: SOL_MAIN, extra: { feePayer: 'RotatedPayer111' } }]);
+    mod.invalidateSvmFeePayer();
+    assert((await mod.resolveSvmExtra(lane)).feePayer === 'RotatedPayer111', 'rotation picked up');
+    console.log('ok stale-on-outage + rotation refetch');
   }
 
   // --- no feePayer available → Solana omitted, Base still offered ---
