@@ -41,6 +41,9 @@ const SETTLE_POLL_INTERVAL_MS = 400;
 /** @type {{ at: number, key: string, extra: object|null }} */
 let bscExtraCache = { at: 0, key: '', extra: null };
 
+/** @type {{ at: number, key: string, extra: object|null }} */
+let svmExtraCache = { at: 0, key: '', extra: null };
+
 function bscAssetConfig() {
   const net = (process.env.X402_NETWORK_BSC || 'mainnet').toLowerCase();
   const envKey = net === 'testnet' ? 'testnet' : 'mainnet';
@@ -72,7 +75,9 @@ function buildLanes() {
     {
       name: 'solana',
       payTo: process.env.X402_PAY_TO || '',
-      facilitator: (process.env.X402_FACILITATOR || DEFAULT_FACILITATOR).replace(/\/$/, ''),
+      // Solana mainnet needs a mainnet facilitator (x402.org is testnet-only): use CDP when keys exist.
+      facilitator: (process.env.X402_FACILITATOR ||
+        (NET === 'mainnet' && CDP_KEY_ID && CDP_KEY_SECRET ? CDP_FACILITATOR : DEFAULT_FACILITATOR)).replace(/\/$/, ''),
       auth: 'default',
       verifyPath: '/verify',
       settlePath: '/settle',
@@ -103,8 +108,20 @@ export function sixDecimalToLaneAtomic(priceSix, decimals) {
   return (p / div).toString();
 }
 
+/**
+ * Never advertise test-money lanes on the production deployment: a Solana *devnet*
+ * accept on cyre.dev is unpayable for real agents and pollutes the Bazaar listing.
+ * X402_ALLOW_DEVNET_IN_PROD=true restores the old behaviour.
+ */
+function isDevnetLaneInProduction(lane) {
+  return process.env.VERCEL_ENV === 'production' &&
+    process.env.X402_ALLOW_DEVNET_IN_PROD !== 'true' &&
+    lane.name !== 'bsc' &&
+    laneNet(lane) !== 'mainnet';
+}
+
 export function armedLanes() {
-  return buildLanes().filter((l) => l.payTo);
+  return buildLanes().filter((l) => l.payTo && !isDevnetLaneInProduction(l));
 }
 
 export function listArmedLaneNames() {
@@ -113,6 +130,10 @@ export function listArmedLaneNames() {
 
 export function clearBscExtraCache() {
   bscExtraCache = { at: 0, key: '', extra: null };
+}
+
+export function clearSvmExtraCache() {
+  svmExtraCache = { at: 0, key: '', extra: null };
 }
 
 function laneNet(lane) {
@@ -276,6 +297,59 @@ export async function resolveBscExtra(lane) {
   return null;
 }
 
+/** GET facilitator /supported (CDP needs a GET-scoped JWT). */
+async function fetchSupported(lane) {
+  const base = lane.facilitator;
+  const headers = {};
+  if (base.includes('api.cdp.coinbase.com') && CDP_KEY_ID && CDP_KEY_SECRET) {
+    const urlPath = new URL(base + '/supported').pathname;
+    headers.authorization = 'Bearer ' + cdpJwt('GET', urlPath);
+  }
+  const r = await fetch(base + '/supported', { method: 'GET', headers });
+  const text = await r.text();
+  if (!r.ok) throw new Error('supported ' + r.status + ' ' + text.slice(0, 200));
+  return unwrapFacilitatorData(text ? JSON.parse(text) : {});
+}
+
+/** Pick the SVM fee payer the facilitator advertises for this network. Exported for tests. */
+export function pickSvmFeePayer(data, network) {
+  const kinds = (data && (data.kinds || data.accepted)) || [];
+  if (!Array.isArray(kinds)) return null;
+  for (const k of kinds) {
+    if (k && k.network === network && (k.scheme || 'exact') === 'exact' &&
+        k.extra && typeof k.extra.feePayer === 'string' && k.extra.feePayer) {
+      return k.extra.feePayer;
+    }
+  }
+  return null;
+}
+
+/**
+ * Solana (SVM) accepts must name the facilitator's fee payer in `extra.feePayer`,
+ * otherwise no x402 client can build the transaction. Resolve it from /supported
+ * (cached), else X402_SOLANA_FEE_PAYER. Returns null when unknown — caller omits the
+ * Solana accept (never guess).
+ */
+export async function resolveSvmExtra(lane) {
+  const env = laneEnv(lane);
+  const cacheKey = [env.network, lane.facilitator].join('|');
+  const now = Date.now();
+  if (svmExtraCache.extra && svmExtraCache.key === cacheKey && now - svmExtraCache.at < BSC_EXTRA_TTL_MS) {
+    return svmExtraCache.extra;
+  }
+  let feePayer = null;
+  try {
+    feePayer = pickSvmFeePayer(await fetchSupported(lane), env.network);
+  } catch (e) {
+    console.error('svm supported fetch failed', e && e.message);
+  }
+  if (!feePayer) feePayer = (process.env.X402_SOLANA_FEE_PAYER || '').trim() || null;
+  if (!feePayer) return null;
+  const extra = { feePayer };
+  svmExtraCache = { at: now, key: cacheKey, extra };
+  return extra;
+}
+
 /**
  * Build offer rows; drop BSC when extra cannot be resolved (never guess).
  * @returns {Promise<Array<{ lane: object, requirements: object }>>}
@@ -288,6 +362,12 @@ export async function buildOfferRows(lanes, priceSix) {
       if (!extra || !extra.signerAddress || !extra.spenderAddress) continue;
       const requirements = laneRequirements(lane, priceSix);
       requirements.extra = extra;
+      rows.push({ lane, requirements });
+    } else if (lane.name === 'solana') {
+      const extra = await resolveSvmExtra(lane);
+      if (!extra || !extra.feePayer) continue;
+      const requirements = laneRequirements(lane, priceSix);
+      requirements.extra = { ...(requirements.extra || {}), ...extra };
       rows.push({ lane, requirements });
     } else {
       rows.push({ lane, requirements: laneRequirements(lane, priceSix) });
