@@ -21,6 +21,26 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
+/** Human date for verify UI — e.g. "Sep 9, 2026". */
+function formatIssuedDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC'
+  });
+}
+
+/** Capitalize certificate type for display — "project" → "Project". */
+function formatCertType(type) {
+  const t = String(type || 'project').trim();
+  if (!t) return 'Project';
+  return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+}
+
 export default async function handler(req, res) {
   let serialRaw = String((req.query && req.query.serial) || '').trim();
   let serial = normalizeCertSerial(serialRaw) || '';
@@ -94,6 +114,7 @@ export default async function handler(req, res) {
     --live: #3ddc84; --bad: #d96a5e; --warn: #5a82bf; --text: #ece8df; --dim: #9aa5b4;
   }
   * { box-sizing: border-box; margin: 0; }
+  html { overflow-x: hidden; max-width: 100%; }
   body {
     min-height: 100vh; color: var(--text);
     font: 400 16px/1.55 "IBM Plex Sans", system-ui, sans-serif;
@@ -101,9 +122,11 @@ export default async function handler(req, res) {
       radial-gradient(1000px 500px at 15% -10%, rgba(143,176,222,.12), transparent 55%),
       radial-gradient(800px 480px at 90% 0%, rgba(90,130,191,.14), transparent 50%),
       linear-gradient(165deg, #0a162f 0%, #0e1a38 45%, #0a1428 100%);
-    padding: 36px 18px 72px;
+    padding: 36px max(16px, env(safe-area-inset-right, 0px)) 72px max(16px, env(safe-area-inset-left, 0px));
+    overflow-x: hidden;
+    max-width: 100%;
   }
-  .wrap { max-width: 880px; margin: 0 auto; }
+  .wrap { max-width: 880px; margin: 0 auto; width: 100%; min-width: 0; }
   .brand { font: 700 36px/1.1 "Cormorant Garamond", Georgia, serif; color: var(--gold); }
   h1 { font: 600 24px/1.25 "Cormorant Garamond", Georgia, serif; margin: 18px 0 6px; }
   .sub { color: var(--dim); margin-bottom: 22px; }
@@ -182,9 +205,9 @@ export default async function handler(req, res) {
         <div class="panel">
           <h2>Registered certificate</h2>
           <div><b>Serial</b> <span class="mono" id="serialOut">${cert ? esc(cert.serial) : ''}</span></div>
-          <div id="typeOut">${cert ? esc(cert.type || 'project') : ''}</div>
+          <div id="typeOut">${cert ? esc(formatCertType(cert.type)) : ''}</div>
           <div id="nameOut">${cert && cert.displayName ? esc(cert.displayName) : ''}${cert && cert.symbol ? ' · $' + esc(cert.symbol) : ''}</div>
-          <div class="dim" id="issuedOut">${cert && cert.issuedAt ? 'Issued ' + esc(cert.issuedAt) : ''}</div>
+          <div class="dim" id="issuedOut">${cert && cert.issuedAt ? 'Issued ' + esc(formatIssuedDate(cert.issuedAt)) : ''}</div>
         </div>
         <div class="panel">
           <h2>Proofs</h2>

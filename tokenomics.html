@@ -21,9 +21,10 @@
 <style>
 :root{--ink:#0E1622;--panel:#121C2B;--line:#243246;--text:#ECE8DF;--dim:#9AA5B4;--gold:#8FB0DE;--cyan:#A9C4E8;--live:#5fbf7a;--red:#d96a5e;--amber:#ffbe50;--violet:#A9C4E8}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+html{overflow-x:hidden;max-width:100%}
+body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100%}
 a{color:var(--gold);text-decoration:none}
-.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+.wrap{max-width:980px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));min-width:0;width:100%}
 nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
 .logo{font-family:Cormorant Garamond,sans-serif;font-weight:700;font-size:18px;letter-spacing:.5px;color:var(--text);display:inline-flex;align-items:baseline;gap:8px}
 .logo img{width:22px;height:22px;border-radius:50%;display:block;box-shadow:0 0 12px rgba(143,176,222,.4);border:1px solid rgba(143,176,222,.28);align-self:center}
@@ -429,6 +430,6 @@ footer{border-top:1px solid var(--line);padding:22px 0 44px;color:#6c7891;font-s
 </footer>
 </div>
 <script defer src="/embed-mode.js"></script>
-<script src="/ai-vibe-loader.js?v=fab-portal1" defer></script>
+<script src="/ai-vibe-loader.js?v=fab-mobile1" defer></script>
 </body>
 </html>

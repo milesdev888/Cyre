@@ -26,7 +26,7 @@
     onceScript('cy-guardian-voice', '/guardian-voice.js');
     onceScript('cy-access-form', '/access-form.js');
     onceScript('cy-nav-tools', '/nav-tools.js');
-    onceScript('cy-guardian-popout', '/guardian-popout.js?v=fab-portal1');
+    onceScript('cy-guardian-popout', '/guardian-popout.js?v=fab-mobile1');
     // Scrub any leftover mesh canvas from older cached vortex builds
     onceScript('cy-vortex-scrub', '/vortex.js?v=cortex-mesh1');
   }
