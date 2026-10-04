@@ -71,7 +71,10 @@ async function fetchOracle() {
           return this;
         },
       };
-      Promise.resolve(oracleHandler({ method: 'GET', query: {}, headers: {} }, res))
+      const headers = {};
+      const gk = process.env.X402_INTERNAL_KEY || '';
+      if (gk) headers['x-guardian-key'] = gk;
+      Promise.resolve(oracleHandler({ method: 'GET', query: {}, headers }, res))
         .then(() => {
           if (!settled) done(null);
         })
