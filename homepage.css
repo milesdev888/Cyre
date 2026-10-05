@@ -20,7 +20,11 @@
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  max-width:100%;
+}
 body{
   margin:0;
   min-height:100vh;
@@ -30,6 +34,7 @@ body{
     radial-gradient(ellipse 70% 40% at 85% -5%, rgba(0,82,255,.07), transparent 55%),
     #0a0b0d;
   overflow-x:hidden;
+  max-width:100%;
   -webkit-font-smoothing:antialiased;
 }
 body.menu-open{overflow:hidden}

@@ -23,8 +23,11 @@
     '#gp-root{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9500}' +
     '#gp-root > *{pointer-events:auto}' +
     'html.embed-mode #gp-root{display:none!important}' +
-    /* Reserve bottom space so body copy / CoinGecko never sit under the FAB. */
-    'html.gp-fab-on,html.gp-fab-on body{padding-bottom:max(88px,calc(72px + env(safe-area-inset-bottom,0px)))!important}' +
+    /* Reserve bottom + right space so body copy / CoinGecko never sit under the FAB. */
+    'html.gp-fab-on,html.gp-fab-on body{padding-bottom:max(112px,calc(96px + env(safe-area-inset-bottom,0px)))!important;' +
+    'padding-right:max(12px,env(safe-area-inset-right,0px))!important}' +
+    'html.gp-fab-on .shell,html.gp-fab-on .wrap,html.gp-fab-on main,html.gp-fab-on footer{' +
+    'padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}' +
     '#gp-fab{position:absolute;right:max(16px,env(safe-area-inset-right,0px));' +
     'bottom:max(16px,env(safe-area-inset-bottom,0px));' +
     'z-index:2;width:64px;height:64px;border-radius:50%;' +
