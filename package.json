@@ -16,6 +16,7 @@
     "test:badge": "node api/_badge-registry.test.js && node api/_badge-seal-qr.test.js",
     "test:badge-order": "node api/_badge-order.test.js && node scripts/badge-order-forbidden-words.test.js",
     "test:badge-name-screen": "node api/_badge-name-screen.test.js",
-    "test:cert": "node api/_cert-registry.test.js"
+    "test:cert": "node api/_cert-registry.test.js",
+    "test:paid-402": "node api/paid-routes-402.test.js"
   }
 }

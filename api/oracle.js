@@ -1,4 +1,8 @@
 // api/oracle.js — CYRE Oracle Pulse v1 (NestUSD Lazer seeds; no invented Hermes hex)
+// x402 for agents (X402_PRICE_ORACLE, default $0.01); site origin + x-guardian-key free.
+
+import { createX402Gate, applyX402Result, isCyreSiteRequest } from './_x402.js';
+
 const LAZER='https://pyth-lazer.dourolabs.app';
 const HERMES='https://hermes.pyth.network';
 const DISCLAIMER='Patterns, not verdicts.';
@@ -24,4 +28,81 @@ function deferredFeed(seed,extraDetail){return{symbol:seed.symbol,mint:seed.mint
 function buildFeedHermesPeer(seed,hermesMap,nowSec){const peer=seed.peer;if(!peer||!peer.feedId)return deferredFeed(seed,'NestUSD Lazer deferred — no PYTH_LAZER_API_KEY.');const row=hermesMap[String(peer.feedId).replace(/^0x/,'').toLowerCase()]||null;if(!row||row.price==null)return deferredFeed(seed,'Hermes peer '+peer.symbol+' unavailable this run.');const publishTime=row.publishTime;const lastUpdateAgeSec=publishTime!=null?Math.max(0,nowSec-publishTime):null;return{symbol:seed.symbol,mint:seed.mint,source:'hermes-peer',feedId:seed.feedId,feedLabel:(peer.feedLabel||peer.symbol)+' · Pyth Hermes',price:row.price,conf:row.conf,publishTime,lastUpdateAgeSec,moveWindow:null,peerSpread:null,evaluated:true,detail:'Live equity peer via Pyth Hermes. NestUSD Lazer xStock deferred until PYTH_LAZER_API_KEY is set.',peerSymbol:peer.symbol};}
 function buildFeed(seed,lazerLatestMap,lazerPriorMap,hermesMap,nowSec,lazerStatus){if(seed.source==='deferred'||seed.feedId==null)return deferredFeed(seed);if(!lazerStatus.keyPresent){if(seed.peer)return buildFeedHermesPeer(seed,hermesMap,nowSec);return deferredFeed(seed,'Lazer ID '+seed.feedId+' documented (NestUSD). Needs PYTH_LAZER_API_KEY (public 403). Never invent prices.');}const row=lazerLatestMap[seed.feedId]||null;if(!row||row.price==null)return deferredFeed(seed,'Lazer miss for ID '+seed.feedId+(lazerStatus.detail?' ('+lazerStatus.detail+')':''));const price=row.price,conf=row.conf,publishTime=row.publishTime;const lastUpdateAgeSec=publishTime!=null?Math.max(0,nowSec-publishTime):null;const prior=lazerPriorMap[seed.feedId]||null;const priorPrice=prior&&prior.price!=null?prior.price:null;const movePct=pctMove(priorPrice,price);const moveWindow=movePct==null?null:{windowSec:MOVE_WINDOW_SEC,fromPrice:priorPrice,toPrice:price,movePct:Number(movePct.toFixed(4))};let peerSpread=null;if(seed.peer&&seed.peer.feedId){const peerObj=hermesMap[String(seed.peer.feedId).replace(/^0x/,'').toLowerCase()]||null;const peerPrice=peerObj&&peerObj.price!=null?peerObj.price:null;const spread=pctSpread(price,peerPrice);if(spread!=null&&peerPrice!=null)peerSpread={peerSymbol:seed.peer.symbol,peerFeedId:seed.peer.feedId,peerPrice,spreadPct:Number(spread.toFixed(4))};}return{symbol:seed.symbol,mint:seed.mint,source:'pyth-lazer',feedId:seed.feedId,feedLabel:seed.feedLabel||null,price,conf,publishTime,lastUpdateAgeSec,moveWindow,peerSpread,evaluated:true};}
 function buildPatterns(feeds){const patterns=[];for(const f of feeds){if(!f.evaluated){patterns.push({id:'deferred_'+f.symbol,pattern:'deferred',symbol:f.symbol,triggered:false,evaluated:false,detail:f.detail||'Feed not evaluated.'});if(f.symbol==='AAPLx'||f.symbol==='TSLAx'||f.symbol==='SPYx')patterns.push({id:'divergence_'+f.symbol,pattern:'divergence',symbol:f.symbol,triggered:false,evaluated:false,detail:'Divergence deferred until Lazer primary measured (or Chainlink later).'});continue;}const age=f.lastUpdateAgeSec;patterns.push({id:'stale_'+f.symbol,pattern:'stale',symbol:f.symbol,triggered:age!=null&&age>STALE_THRESHOLD_SEC,evaluated:true,detail:age==null?'No publishTime for '+f.symbol+'.':'lastUpdateAgeSec='+age+' (threshold '+STALE_THRESHOLD_SEC+'s).',measured:{lastUpdateAgeSec:age,thresholdSec:STALE_THRESHOLD_SEC}});const move=f.moveWindow&&typeof f.moveWindow.movePct==='number'?f.moveWindow.movePct:null;const spikeNote=f.source==='hermes-peer'?'Move window needs Lazer history — Hermes peer is live price only.':'Move window not measured for '+f.symbol+'.';patterns.push({id:'spike_'+f.symbol,pattern:'spike',symbol:f.symbol,triggered:move!=null&&Math.abs(move)>=SPIKE_THRESHOLD_PCT,evaluated:move!=null,detail:move==null?spikeNote:'moveWindow='+move+'% over '+MOVE_WINDOW_SEC+'s (threshold ±'+SPIKE_THRESHOLD_PCT+'%).',measured:{movePct:move,windowSec:MOVE_WINDOW_SEC,thresholdPct:SPIKE_THRESHOLD_PCT}});if(f.source==='hermes-peer'){patterns.push({id:'divergence_'+f.symbol,pattern:'divergence',symbol:f.symbol,triggered:false,evaluated:false,detail:'Divergence deferred — showing equity peer only until Lazer xStock primary is measured.'});continue;}if(f.peerSpread&&typeof f.peerSpread.spreadPct==='number'){const spread=f.peerSpread.spreadPct;patterns.push({id:'divergence_'+f.symbol,pattern:'divergence',symbol:f.symbol,triggered:spread>=DIVERGENCE_THRESHOLD_PCT,evaluated:true,detail:'peerSpread='+spread+'% vs '+f.peerSpread.peerSymbol+' (threshold '+DIVERGENCE_THRESHOLD_PCT+'%).',measured:{spreadPct:spread,peerSymbol:f.peerSpread.peerSymbol,peerPrice:f.peerSpread.peerPrice,feedPrice:f.price,thresholdPct:DIVERGENCE_THRESHOLD_PCT}});}else if(f.symbol==='AAPLx'||f.symbol==='TSLAx'||f.symbol==='SPYx'){patterns.push({id:'divergence_'+f.symbol,pattern:'divergence',symbol:f.symbol,triggered:false,evaluated:false,detail:'Peer equity unavailable — divergence deferred.'});}}return patterns;}
-export default async function handler(req,res){res.setHeader('Cache-Control','no-store');const fetchedAt=new Date().toISOString();const nowSec=Math.floor(Date.now()/1000);const priorSec=nowSec-MOVE_WINDOW_SEC;try{const apiKey=lazerKey();const lazerIds=[],peerIds=[];for(const s of SEED_FEEDS){if(s.source==='pyth-lazer'&&s.feedId!=null)lazerIds.push(Number(s.feedId));if(s.peer&&s.peer.feedId)peerIds.push(s.peer.feedId);}let lazerLatestMap=Object.create(null),lazerPriorMap=Object.create(null),hermesMap=Object.create(null);const lazerStatus={keyPresent:!!apiKey,detail:null};if(apiKey){const latest=await lazerLatest(lazerIds,apiKey);lazerLatestMap=latest.map;lazerStatus.detail=latest.detail;try{lazerPriorMap=await lazerAt(priorSec,lazerIds,apiKey);}catch(e){console.error('oracle lazer prior',e&&e.message);}}else{lazerStatus.detail='PYTH_LAZER_API_KEY unset — Hermes peer fallback when available.';}try{hermesMap=await hermesLatest(peerIds);}catch(e){console.error('oracle hermes',e&&e.message);}const feeds=SEED_FEEDS.map(s=>buildFeed(s,lazerLatestMap,lazerPriorMap,hermesMap,nowSec,lazerStatus));const patterns=buildPatterns(feeds);const evaluatedFeeds=feeds.filter(f=>f.evaluated).length;const triggered=patterns.filter(p=>p.evaluated!==false&&p.triggered).length;const readingMode=apiKey?'pyth-lazer':evaluatedFeeds?'hermes-peer-fallback':'deferred';return res.status(200).json({ok:true,kind:'cyre-oracle',version:1,disclaimer:DISCLAIMER,fetchedAt,readingMode,window:{moveWindowSec:MOVE_WINDOW_SEC,staleThresholdSec:STALE_THRESHOLD_SEC,spikeThresholdPct:SPIKE_THRESHOLD_PCT,divergenceThresholdPct:DIVERGENCE_THRESHOLD_PCT},endpoints:{lazerLatest:LAZER+'/v1/latest_price',lazerAt:LAZER+'/v1/price',hermesLatestPeers:HERMES+'/v2/updates/price/latest?ids[]=… (equity peers only)'},researchSeeds:{note:'NestUSD Lazer seeds; USDY/OUSG/syrupUSDC deferred.',lazer:{AAPLx:1792,TSLAx:1847,SPYx:1843},deferred:['USDY','OUSG','syrupUSDC']},counters:{feedsConfigured:feeds.length,feedsEvaluated:evaluatedFeeds,patternsTriggered:triggered},feeds,patterns});}catch(e){console.error('oracle',e&&e.message);res.setHeader('Cache-Control','no-store');return res.status(200).json({ok:false,kind:'cyre-oracle',version:1,disclaimer:DISCLAIMER,fetchedAt,error:'Could not read oracle feeds. Retry shortly.',feeds:[],patterns:[]});}}
+
+const DESCRIPTION =
+  'Cyre Oracle Pulse — NestUSD Lazer / Hermes peer RWA feed pulse: stale, spike, and divergence patterns with measured numbers only. Patterns, not verdicts.';
+
+const DISCOVERY = {
+  bazaar: {
+    info: {
+      input: {
+        type: 'http',
+        method: 'GET',
+        queryParams: {}
+      },
+      output: {
+        type: 'json',
+        example: {
+          ok: true,
+          kind: 'cyre-oracle',
+          version: 1,
+          readingMode: 'hermes-peer-fallback',
+          counters: { feedsConfigured: 6, feedsEvaluated: 3, patternsTriggered: 0 },
+          disclaimer: DISCLAIMER
+        }
+      }
+    },
+    schema: {
+      $schema: 'https://json-schema.org/draft/2020-12/schema',
+      type: 'object',
+      properties: {
+        input: {
+          type: 'object',
+          properties: {
+            type: { type: 'string', const: 'http' },
+            method: { type: 'string', enum: ['GET', 'HEAD', 'DELETE'] },
+            queryParams: { type: 'object', additionalProperties: false }
+          },
+          required: ['type', 'method'],
+          additionalProperties: false
+        },
+        output: { type: 'object', properties: { type: { type: 'string' } }, required: ['type'] }
+      },
+      required: ['input']
+    }
+  }
+};
+
+const x402Gate = createX402Gate({
+  price: String(process.env.X402_PRICE_ORACLE || '10000'),
+  resourcePath: '/api/oracle',
+  description: DESCRIPTION,
+  serviceName: 'CYRE Guardian',
+  tags: ['oracle', 'rwa', 'pyth', 'lazer', 'feeds', 'agents', 'pulse'],
+  discovery: DISCOVERY,
+  isFree: isCyreSiteRequest
+});
+
+
+async function runOracle(req, res) {res.setHeader('Cache-Control','no-store');const fetchedAt=new Date().toISOString();const nowSec=Math.floor(Date.now()/1000);const priorSec=nowSec-MOVE_WINDOW_SEC;try{const apiKey=lazerKey();const lazerIds=[],peerIds=[];for(const s of SEED_FEEDS){if(s.source==='pyth-lazer'&&s.feedId!=null)lazerIds.push(Number(s.feedId));if(s.peer&&s.peer.feedId)peerIds.push(s.peer.feedId);}let lazerLatestMap=Object.create(null),lazerPriorMap=Object.create(null),hermesMap=Object.create(null);const lazerStatus={keyPresent:!!apiKey,detail:null};if(apiKey){const latest=await lazerLatest(lazerIds,apiKey);lazerLatestMap=latest.map;lazerStatus.detail=latest.detail;try{lazerPriorMap=await lazerAt(priorSec,lazerIds,apiKey);}catch(e){console.error('oracle lazer prior',e&&e.message);}}else{lazerStatus.detail='PYTH_LAZER_API_KEY unset — Hermes peer fallback when available.';}try{hermesMap=await hermesLatest(peerIds);}catch(e){console.error('oracle hermes',e&&e.message);}const feeds=SEED_FEEDS.map(s=>buildFeed(s,lazerLatestMap,lazerPriorMap,hermesMap,nowSec,lazerStatus));const patterns=buildPatterns(feeds);const evaluatedFeeds=feeds.filter(f=>f.evaluated).length;const triggered=patterns.filter(p=>p.evaluated!==false&&p.triggered).length;const readingMode=apiKey?'pyth-lazer':evaluatedFeeds?'hermes-peer-fallback':'deferred';return res.status(200).json({ok:true,kind:'cyre-oracle',version:1,disclaimer:DISCLAIMER,fetchedAt,readingMode,window:{moveWindowSec:MOVE_WINDOW_SEC,staleThresholdSec:STALE_THRESHOLD_SEC,spikeThresholdPct:SPIKE_THRESHOLD_PCT,divergenceThresholdPct:DIVERGENCE_THRESHOLD_PCT},endpoints:{lazerLatest:LAZER+'/v1/latest_price',lazerAt:LAZER+'/v1/price',hermesLatestPeers:HERMES+'/v2/updates/price/latest?ids[]=… (equity peers only)'},researchSeeds:{note:'NestUSD Lazer seeds; USDY/OUSG/syrupUSDC deferred.',lazer:{AAPLx:1792,TSLAx:1847,SPYx:1843},deferred:['USDY','OUSG','syrupUSDC']},counters:{feedsConfigured:feeds.length,feedsEvaluated:evaluatedFeeds,patternsTriggered:triggered},feeds,patterns});}catch(e){console.error('oracle',e&&e.message);res.setHeader('Cache-Control','no-store');return res.status(200).json({ok:false,kind:'cyre-oracle',version:1,disclaimer:DISCLAIMER,fetchedAt,error:'Could not read oracle feeds. Retry shortly.',feeds:[],patterns:[]});}}
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, payment-signature, x-payment, x-guardian-key');
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  if (req.method !== 'GET' && req.method !== 'POST' && req.method !== 'HEAD') {
+    return res.status(405).json({ ok: false, error: 'Use GET or POST', disclaimer: DISCLAIMER });
+  }
+
+  const hasPayment = !!(req.headers['payment-signature'] || req.headers['x-payment']);
+  if (!hasPayment) {
+    const quote = await x402Gate(req);
+    if (applyX402Result(res, quote)) return;
+  } else {
+    const gatePay = await x402Gate(req);
+    if (applyX402Result(res, gatePay)) return;
+  }
+
+  return runOracle(req, res);
+}
