@@ -74,7 +74,8 @@
     var ageTxt = sec != null ? sec + 's ago' : 'just now';
     setChip('chip-live', 'Cyre active', 'LIVE');
     setChip('chip-watch', 'Slot ' + fmtSlot(d.slot), 'WATCHING');
-    setLiveBanner('Cyre watching Solana · ' + ageTxt + ' · slot ' + fmtSlot(d.slot), true);
+    var ag = d.alpenglow === true ? ' · Alpenglow' : '';
+    setLiveBanner('Cyre watching Solana' + ag + ' · ' + ageTxt + ' · slot ' + fmtSlot(d.slot), true);
   }
 
   function tick() {
