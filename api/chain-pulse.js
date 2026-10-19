@@ -7,15 +7,35 @@ const CACHE_SEC = Math.min(Math.max(parseInt(process.env.CHAIN_PULSE_CACHE_SEC |
 
 let cache = { at: 0, payload: null };
 
-async function getSlot() {
+async function rpc(method, params) {
   const r = await fetch(RPC, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getSlot', params: [{ commitment: 'processed' }] }),
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
   });
   const d = await r.json();
-  if (d.error) throw new Error(d.error.message || 'RPC error');
+  if (d.error) {
+    const err = new Error(d.error.message || 'RPC error');
+    err.code = d.error.code;
+    throw err;
+  }
   return d.result;
+}
+
+async function getSlot() {
+  return rpc('getSlot', [{ commitment: 'processed' }]);
+}
+
+// Alpenglow detection (mainnet activation Oct 21 2026, epoch 1064).
+// getAgGenesisCert returns null under TowerBFT, the genesis certificate once Alpenglow is live,
+// and "Method not found" on nodes older than Agave v4.3. Never fatal for the pulse.
+async function alpenglowActive() {
+  try {
+    const cert = await rpc('getAgGenesisCert', []);
+    return cert ? true : false;
+  } catch (e) {
+    return null; // unknown (old node / method not found / transient)
+  }
 }
 
 export default async function handler(req, res) {
@@ -26,15 +46,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const slot = await getSlot();
+    const [slot, alpenglow] = await Promise.all([getSlot(), alpenglowActive()]);
     const fetchedAt = new Date().toISOString();
     const payload = {
       ok: true,
       kind: 'cyre-chain-pulse',
-      version: 1,
+      version: 2,
       watching: true,
       network: 'mainnet-beta',
       slot,
+      alpenglow, // true | false | null (unknown)
       fetchedAt,
       disclaimer: 'Light chain pulse only — not a wallet scan.',
       mode: 'light-pulse',
