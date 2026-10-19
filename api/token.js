@@ -20,6 +20,10 @@ const FALLBACKS = String(process.env.SOLANA_RPC_FALLBACK || '')
   .map((s) => s.trim())
   .filter(Boolean);
 const RPCS = [PRIMARY, ...FALLBACKS].filter((u, i, a) => u && a.indexOf(u) === i);
+// Alpenglow: 'confirmed' and 'finalized' converge after activation (Oct 21 2026).
+// Keep 'confirmed' until then (finalized is ~12.8s slower pre-Alpenglow); flip via env afterwards.
+const COMMITMENT = process.env.SOLANA_COMMITMENT || 'confirmed';
+
 
 const TOKEN_DESCRIPTION = 'Guardian token scan — mint/freeze authority, LP lock/burn, deployer age, holder concentration. Patterns, not verdicts.';
 
@@ -195,12 +199,12 @@ function accountUiAmount(row, decimalsFallback) {
 }
 
 async function measureHoldersViaRpc(mint, supply, decimals) {
-  // Prefer confirmed commitment; some providers want a string commitment, others an object.
+  // Prefer COMMITMENT (env SOLANA_COMMITMENT, default confirmed); some providers want a string commitment, others an object.
   let largest = null;
   let lastErr = null;
   const attempts = [
-    [mint, { commitment: 'confirmed' }],
-    [mint, 'confirmed'],
+    [mint, { commitment: COMMITMENT }],
+    [mint, COMMITMENT],
     [mint]
   ];
   for (let i = 0; i < attempts.length; i++) {
@@ -417,11 +421,11 @@ export default async function handler(req, res) {
     let supplyValue = null;
     let mintInfo = null;
     if (holdersOnly) {
-      const tokSupply = await rpc('getTokenSupply', [mint, { commitment: 'confirmed' }]);
+      const tokSupply = await rpc('getTokenSupply', [mint, { commitment: COMMITMENT }]);
       supplyValue = tokSupply && tokSupply.value;
       if (!supplyValue) return res.status(404).json({ error: 'mint supply not found' });
     } else {
-      const acct = await rpc('getAccountInfo', [mint, { encoding: 'jsonParsed', commitment: 'confirmed' }]);
+      const acct = await rpc('getAccountInfo', [mint, { encoding: 'jsonParsed', commitment: COMMITMENT }]);
       if (!acct || !acct.value) return res.status(404).json({ error: 'account not found' });
       const parsed = acct.value.data && acct.value.data.parsed;
       if (!parsed || parsed.type !== 'mint')
